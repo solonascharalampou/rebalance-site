@@ -1,0 +1,2958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light">
+<title>Rebalance Physiotherapy & Clinical Pilates — Nicosia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<style>
+  :root{
+    --oat:#F6EDE8; --paper:#FBF4F0; --sand:#EBDAD3; --clay:#D4A8A0;
+    --ink:#4A3B3E; --char:#5C474B; --olive:#C77B7B; --olive-d:#b06767;
+    --sage:#E0A8A8; --rust:#C16E6E; --mut:#8a7a7c; --line:rgba(74,59,62,.13);
+    --good:#9C8AA5; --warn:#C98A5C; --bad:#B85C57; --gold:#D4A24B;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth;color-scheme:light only}
+  :root{color-scheme:light only}
+  body{background:var(--oat);color:var(--ink);font-family:'Inter',sans-serif;font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;forced-color-adjust:none}
+  ::selection{background:var(--olive);color:var(--oat)}
+  h1,h2,h3,h4{font-family:'Fraunces',serif;font-weight:300;letter-spacing:-.02em;line-height:1.05}
+  button{font-family:inherit;cursor:pointer}
+  a{color:inherit;text-decoration:none}
+  input,select{font-family:inherit}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 40px}
+  .eyebrow{font-size:11px;letter-spacing:.34em;text-transform:uppercase;font-weight:500;color:var(--rust)}
+  .eb-short{display:none}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:15px 32px;background:var(--ink);color:var(--oat);
+    border:none;font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:400;transition:background .3s,transform .3s;border-radius:40px}
+  .btn:hover{background:var(--olive-d);transform:translateY(-2px)}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--ink)}
+  .btn.ghost:hover{background:var(--ink);color:var(--oat)}
+  .btn.sage{background:var(--olive)}
+  .btn.sm{padding:11px 22px;font-size:11px}
+  .btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+  /* ============ NAV ============ */
+  nav{position:fixed;top:0;left:0;right:0;z-index:2000;backdrop-filter:blur(12px);background:rgba(246,237,232,.92);border-bottom:1px solid var(--line)}
+  .nav-in{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:16px 40px;max-width:1180px;margin:0 auto}
+  .logo{font-family:'Fraunces',serif;font-size:19px;letter-spacing:.02em;display:flex;align-items:center;gap:11px;flex-shrink:0;white-space:nowrap}
+  .logo .seed{width:24px;height:24px;flex-shrink:0}
+  .nav-links{display:flex;gap:30px;font-size:13px;letter-spacing:.08em;color:var(--mut);align-items:center}
+  .nav-links a{transition:color .3s;cursor:pointer;white-space:nowrap}.nav-links a:hover{color:var(--ink)}
+  .nav-cta{display:flex;gap:11px;align-items:center;flex-shrink:0}
+  .lang-btn{background:none;border:1px solid var(--line);border-radius:20px;padding:7px 12px;font-size:11px;
+    letter-spacing:.08em;color:var(--char);cursor:pointer;font-weight:500;transition:all .2s}
+  .lang-btn:hover{border-color:var(--rust);color:var(--rust)}
+  .portal-switch{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--mut);border:1px solid var(--line);border-radius:30px;padding:9px 15px;background:rgba(255,255,255,.5);white-space:nowrap;cursor:pointer}
+  .portal-switch:hover{border-color:var(--olive);color:var(--ink)}
+  .btn.sm{white-space:nowrap}
+  .burger{display:none;flex-direction:column;gap:5px;background:none;border:none;padding:6px;cursor:pointer;flex-shrink:0}
+  .burger span{width:24px;height:2px;background:var(--ink);border-radius:2px;transition:transform .3s,opacity .3s}
+  .burger.x span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .burger.x span:nth-child(2){opacity:0}
+  .burger.x span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  .mobile-menu{display:none;flex-direction:column;gap:4px;padding:0 24px;max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s ease;background:rgba(251,244,240,.97);border-top:1px solid transparent}
+  .mobile-menu.open{max-height:380px;padding:14px 24px 22px;border-top:1px solid var(--line)}
+  .mobile-menu a{padding:13px 4px;font-size:15px;color:var(--char);border-bottom:1px solid var(--line);cursor:pointer}
+  .mobile-menu .btn{margin-top:14px;width:100%}
+  .mobile-menu .btn.ghost{margin-top:8px}
+  @media(max-width:880px){
+    .nav-links{display:none}
+    .nav-cta{display:flex;align-items:center;gap:4px}
+    .nav-cta .portal-switch,.nav-cta .btn{display:none}
+    .nav-cta .lang-btn{display:block;margin-right:10px;padding:8px 13px}
+    .burger{display:flex}
+    .mobile-menu{display:flex}
+  }
+
+  /* view system */
+  .view{display:none}.view.on{display:block}
+  .min-h{min-height:100vh}
+
+  /* ============ PUBLIC: HERO ============ */
+  .hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden;padding:120px 0 60px}
+  .hero::before{content:"";position:absolute;inset:0;z-index:-2;background:
+    radial-gradient(70% 90% at 82% 18%,rgba(224,168,168,.5),transparent 60%),
+    radial-gradient(60% 70% at 12% 88%,rgba(212,168,160,.5),transparent 62%),
+    linear-gradient(160deg,#fbf2ee,#f3e0d9)}
+  .blob{position:absolute;z-index:-1;border-radius:50%;filter:blur(8px);opacity:.5}
+  .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center;width:100%}
+  .hero h1{font-size:clamp(3rem,8vw,7rem);margin:24px 0}
+  .hero h1 em{font-style:italic;color:var(--rust)}
+  .hero p{max-width:42ch;color:var(--char);font-size:17px;margin-bottom:34px}
+  .hero-actions{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+  .hero-stat{display:flex;gap:40px;margin-top:48px;padding-top:28px;border-top:1px solid var(--line)}
+  .hero-stat .k{font-family:'Fraunces',serif;font-size:2rem;color:var(--olive)}
+  .hero-stat .l{font-size:12px;color:var(--mut);letter-spacing:.04em}
+  .hero-visual{position:relative;aspect-ratio:3/4;border-radius:200px 200px 24px 24px;overflow:hidden;
+    background:linear-gradient(165deg,#e0a8a8,#c77b7b 55%,#8a5860);box-shadow:0 40px 80px -30px rgba(138,80,90,.5)}
+  .hero-visual .fig{position:absolute;bottom:0;left:50%;transform:translateX(-50%);height:92%;opacity:.95}
+  .hero-visual .ring{position:absolute;top:14%;left:50%;transform:translateX(-50%);width:46%;aspect-ratio:1;border:1.5px solid rgba(239,233,221,.35);border-radius:50%}
+  @media(max-width:900px){
+    .hero-grid{grid-template-columns:1fr;gap:36px}
+    .hero-visual{order:-1;max-width:none;width:100%;aspect-ratio:16/12;border-radius:24px;margin:0}
+    .hero-visual .ring{top:8%;width:38%}
+    .hero p{max-width:none}
+    .hero-stat{justify-content:flex-start}
+  }
+  @media(max-width:640px){
+    .wrap{padding:0 22px}
+    .nav-in{padding:15px 22px}
+    .hero{padding:96px 0 44px;min-height:auto}
+    .hero h1,.ctaband h2,.lead2 h2,.approach h2,.visit-card h2{overflow-wrap:anywhere}
+    .hero h1{font-size:clamp(3.2rem,15vw,4.2rem);margin:18px 0}
+    .hero .eyebrow{font-size:10px;letter-spacing:.22em}
+    .eb-full{display:none}.eb-short{display:inline}
+    .hero p{font-size:16px;margin-bottom:28px;line-height:1.55}
+    .hero-actions{flex-direction:column;align-items:stretch;gap:12px;width:100%}
+    .hero-actions .btn{width:100%;padding:16px}
+    .hero-stat{gap:0;justify-content:space-between;margin-top:38px;padding-top:24px}
+    .hero-stat .k{font-size:1.6rem}
+    .hero-stat .l{font-size:11px}
+    .strip-t{padding-left:22px;font-size:19px;gap:34px}
+    .eyebrow{word-spacing:-1px}
+    section.blk{padding-top:62px;padding-bottom:62px}
+    .lead2 h2{font-size:1.9rem}
+    .prow{grid-template-columns:28px 1fr;gap:14px;padding:24px 0}
+    .prow .num{font-size:11px}
+    .prow h3{font-size:1.5rem}
+    .approach{margin:0 14px;padding:56px 0;border-radius:24px}
+    .approach h2{font-size:1.8rem;margin-bottom:40px}
+    .g3{gap:26px}
+    .ctaband{padding:90px 0}
+    .ctaband p{font-size:15px}
+
+    /* ---- PORTAL MOBILE ---- */
+    .portal{padding-top:84px}
+    .portal.wrap, .portal .wrap{padding-left:18px;padding-right:18px}
+    .phead h1{font-size:1.7rem}
+    .back{margin-bottom:14px}
+    /* stepper: tighter, allow wrap */
+    .steps{flex-wrap:wrap;gap:6px 4px;font-size:11px;margin-bottom:22px}
+    .steps .sep{width:12px}
+    .steps .s .n{width:19px;height:19px;font-size:10px}
+    /* auth card */
+    .authwrap{margin:20px auto}
+    .card{padding:26px 22px}
+    /* class list rows */
+    .cls{padding:18px 18px;border-radius:13px;gap:14px}
+    .cls h3{font-size:1.25rem}
+    .cls .meta{font-size:12px}
+    .cls .price{font-size:1.15rem;white-space:nowrap}
+    .cls>div:last-child{flex-shrink:0}
+    /* day bar: smaller chips, momentum scroll */
+    .daybar{gap:8px;-webkit-overflow-scrolling:touch}
+    .day{min-width:62px;padding:9px 12px}
+    .day .dn{font-size:1.1rem}
+    /* time slots: 3 across, comfortable tap targets */
+    .slots{grid-template-columns:repeat(2,1fr);gap:10px}
+    .slot{padding:15px 8px}
+    .slot .t{font-size:1rem}
+    .slot .lft{font-size:10px}
+    /* receipt / pay */
+    .pay{max-width:none}
+    .receipt{padding:22px 20px}
+    .rr{font-size:13.5px}
+    /* type choice already stacks; tighten */
+    .tc-card{padding:26px 22px}
+    /* packages stack */
+    .pkglist{gap:14px}
+    .pkg{padding:26px 22px}
+    /* my sessions / bookings */
+    .booking{padding:18px 18px}
+    .booking h3{font-size:1.15rem}
+    .bact{gap:8px}
+    .bact button{padding:9px 14px;font-size:10.5px}
+
+    /* ---- TRAINER SCHEDULE MOBILE (the cramped part) ---- */
+    .tslots{grid-template-columns:1fr;gap:14px}
+    .classcard{padding:16px 16px 14px}
+    .tgrid-head{flex-direction:column;align-items:flex-start;gap:10px}
+    .legend{font-size:11px;gap:14px}
+    .cl-head{gap:10px}
+    .cl-time{font-size:1.2rem}
+    .cl-count{font-size:10.5px}
+    /* spot rows: free spots stack their buttons; taken rows use the new two-tier layout */
+    .spot-row{flex-wrap:wrap;gap:8px 10px;padding:12px 12px}
+    .spot-row.taken{flex-wrap:nowrap}
+    .sp-name{font-size:13.5px}
+    .spot-row:not(.taken) .sp-name{flex:1 1 100%}
+    .sp-act{flex:1 1 100%;display:flex;gap:8px}
+    .sp-act button{flex:1;padding:9px 8px;font-size:11px}
+    .sp-top .sp-name{flex:1 1 auto}
+    .cl-ctrl button{flex:1;padding:10px 8px;font-size:11px}
+    /* modals fill more of the screen */
+    .sheet{padding:24px 22px;border-radius:16px}
+    .sheet .row{flex-direction:column-reverse;gap:10px}
+    .sheet .row .btn{width:100%}
+    /* toast doesn't hug edges */
+    .toast{left:16px;right:16px;transform:translateY(140%);max-width:none;width:auto}
+    .toast.show{transform:translateY(0)}
+  }
+
+  /* marquee */
+  .strip{border-block:1px solid var(--line);overflow:hidden;padding:16px 0;background:rgba(247,243,234,.5)}
+  .strip-t{display:inline-flex;gap:50px;white-space:nowrap;padding-left:40px;animation:slide 34s linear infinite;font-family:'Fraunces',serif;font-style:italic;font-size:23px;color:var(--clay)}
+  .strip-t b{color:var(--ink);font-style:normal;font-weight:300}
+  @keyframes slide{to{transform:translateX(-50%)}}
+
+  /* practice */
+  section.blk{padding-top:110px;padding-bottom:110px}
+  .lead2{display:grid;grid-template-columns:1fr 1.05fr;gap:70px;align-items:start;margin-bottom:60px}
+  .lead2 h2{font-size:clamp(2rem,4.5vw,3.4rem)}
+  .lead2 .body{color:var(--char);font-size:16px;max-width:48ch}.lead2 .body p+p{margin-top:18px}
+  @media(max-width:820px){.lead2{grid-template-columns:1fr;gap:28px}}
+  .visit-section{position:relative;height:560px;overflow:hidden;z-index:1;isolation:isolate}
+  .visit-section .leaflet-pane,.visit-section .leaflet-top,.visit-section .leaflet-control{z-index:auto !important}
+  .visit-section #rebMap{position:absolute;inset:0;width:100%;height:100%;background:#f3ddd6;z-index:1}
+  .visit-card{position:absolute;z-index:400;top:50%;left:max(40px,calc((100% - 1180px)/2 + 40px));transform:translateY(-50%);
+    width:min(400px,calc(100% - 80px));background:rgba(251,244,240,.86);backdrop-filter:blur(16px);
+    border:1px solid rgba(255,255,255,.6);border-radius:22px;padding:38px 36px;
+    box-shadow:0 30px 70px -24px rgba(138,80,90,.5)}
+  .visit-card h2{font-size:clamp(1.8rem,3.4vw,2.6rem);margin-top:12px}
+  .contact{margin-top:24px;display:flex;flex-direction:column;gap:15px}
+  .crow{display:flex;gap:13px;align-items:flex-start;font-size:15px;color:var(--char);line-height:1.5}
+  .crow .ci{font-size:17px;flex-shrink:0;margin-top:1px}
+  .crow b{font-weight:600;color:var(--ink)}
+  .contact a{color:var(--rust);text-decoration:underline;text-underline-offset:3px}
+  .contact a:hover{color:var(--olive-d)}
+  .leaflet-popup-content{font-family:'Inter',sans-serif;font-size:13px}
+  .leaflet-popup-content b{font-family:'Fraunces',serif;font-weight:400;font-size:15px}
+  @media(max-width:640px){
+    .visit-section{height:auto;min-height:0}
+    .visit-section #rebMap{position:relative;height:340px}
+    .visit-card{position:relative;top:auto;left:auto;transform:none;width:auto;margin:-60px 18px 0;z-index:400}
+  }
+  .prac{border-top:1px solid var(--line)}
+  .prow{display:grid;grid-template-columns:64px 1fr auto;gap:28px;align-items:center;padding:34px 0;border-bottom:1px solid var(--line);transition:padding .4s,background .4s}
+  .prow:hover{padding-inline:20px;background:rgba(138,154,110,.07)}
+  .prow .num{font-size:12px;letter-spacing:.18em;color:var(--rust)}
+  .prow h3{font-size:clamp(1.5rem,3vw,2.1rem)}
+  .prow .d{font-size:14px;color:var(--mut);max-width:38ch;text-align:right;justify-self:end}
+  @media(max-width:720px){.prow{grid-template-columns:40px 1fr}.prow .d{display:none}}
+
+  /* approach dark */
+  .approach{background:linear-gradient(160deg,#fbeae6,#f3ddd6);color:var(--ink);border-radius:36px;margin:0 40px;padding:90px 0;border:1px solid var(--line)}
+  .approach .wrap{max-width:1100px}
+  .approach .eyebrow{color:var(--rust)}
+  .approach h2{font-size:clamp(2rem,4vw,3rem);max-width:20ch;margin:22px 0 60px}
+  .approach h2 em{font-style:italic;color:var(--rust)}
+  .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:46px}
+  .g3 .c{border-top:1px solid var(--line);padding-top:22px}
+  .g3 .c .k{font-family:'Fraunces',serif;font-size:2.4rem;color:var(--olive)}
+  .g3 .c h4{font-size:18px;margin:12px 0 10px;font-family:'Inter';font-weight:500}
+  .g3 .c p{font-size:14px;color:var(--mut)}
+  @media(max-width:820px){.approach{margin-inline:16px}.g3{grid-template-columns:1fr;gap:30px}}
+
+  /* cta band */
+  .ctaband{text-align:center;padding:130px 0}
+  .ctaband h2{font-size:clamp(2.6rem,7vw,5.5rem)}
+  .ctaband h2 em{font-style:italic;color:var(--rust)}
+  .ctaband p{color:var(--mut);max-width:44ch;margin:20px auto 38px;font-size:16px}
+
+  footer{border-top:1px solid var(--line);padding:48px 0;background:var(--paper)}
+  .foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;font-size:13px;color:var(--mut)}
+
+  /* ============ PORTAL SHELL ============ */
+  .portal{padding-top:96px;min-height:100vh}
+  .phead{padding:26px 0 10px}
+  .phead .eyebrow{display:block;margin-bottom:8px}
+  .phead h1{font-size:clamp(1.9rem,4vw,2.8rem)}
+  .ptabs{display:flex;gap:6px;margin:22px 0 30px;border-bottom:1px solid var(--line)}
+  .ptabs button{background:none;border:none;padding:12px 18px;font-size:13px;letter-spacing:.06em;color:var(--mut);border-bottom:2px solid transparent;margin-bottom:-1px}
+  .ptabs button.on{color:var(--ink);border-color:var(--olive)}
+  .ppanel{display:none;padding-bottom:90px}.ppanel.on{display:block}
+
+  /* auth card */
+  .authwrap{max-width:420px;margin:40px auto}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:32px}
+  .roleswitch{display:flex;gap:0;border:1px solid var(--line);border-radius:40px;padding:4px;margin-bottom:24px}
+  .roleswitch button{flex:1;border:none;background:none;padding:11px;border-radius:40px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+  .roleswitch button.on{background:var(--ink);color:var(--oat)}
+  /* AI chatbot */
+  /* ---- animated receipt (prints out after payment) ---- */
+  .receipt-overlay{position:fixed;inset:0;z-index:3500;background:rgba(38,36,31,.72);backdrop-filter:blur(6px);
+    display:none;align-items:center;justify-content:center;padding:20px}
+  .receipt-overlay.show{display:flex;animation:fadeIn .35s ease}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .printer{width:min(360px,92vw);display:flex;flex-direction:column;align-items:center}
+  .printer-top{width:100%;background:linear-gradient(180deg,#4A3B3E,#372c2f);border-radius:16px 16px 6px 6px;
+    padding:16px 18px 12px;box-shadow:0 20px 50px -18px rgba(0,0,0,.7);position:relative;z-index:2}
+  .printer-slot{height:8px;background:#1a1416;border-radius:6px;box-shadow:inset 0 2px 5px rgba(0,0,0,.8)}
+  .printer-lights{display:flex;gap:6px;justify-content:flex-end;margin-top:10px}
+  .printer-lights i{width:7px;height:7px;border-radius:50%;background:#6b565a}
+  .printer-lights i:first-child{background:#8AA96E;animation:blink 1s infinite}
+  @keyframes blink{50%{opacity:.3}}
+  .paper-wrap{width:calc(100% - 26px);overflow:hidden;margin-top:-4px}
+  .paper{background:#fffdfb;color:#3a2f31;padding:22px 20px 16px;font-family:'Inter',sans-serif;font-size:12.5px;
+    box-shadow:0 22px 44px -16px rgba(0,0,0,.45);
+    transform:translateY(-100%);
+    /* torn bottom edge */
+    -webkit-mask-image:radial-gradient(circle at 6px 100%, transparent 0 5px, #000 5.5px);
+    mask-image:radial-gradient(circle at 6px 100%, transparent 0 5px, #000 5.5px);
+    -webkit-mask-size:12px 100%; mask-size:12px 100%;
+    -webkit-mask-repeat:repeat-x; mask-repeat:repeat-x;}
+  .receipt-overlay.show .paper{animation:print 1.5s cubic-bezier(.25,.9,.3,1) .25s forwards}
+  @keyframes print{to{transform:translateY(0)}}
+  .pr-logo{text-align:center;margin-bottom:6px}
+  .pr-title{text-align:center;font-family:'Fraunces',serif;font-size:1.25rem;letter-spacing:.16em}
+  .pr-sub{text-align:center;font-size:10.5px;color:#8A7A7C;line-height:1.5;margin:4px 0 12px}
+  .pr-line{height:1px;background:#e2d6d2;margin:10px 0}
+  .pr-line.dashed{background:none;border-top:1px dashed #d8c9c4}
+  .pr-row{display:flex;justify-content:space-between;gap:12px;padding:4px 0;font-size:12.5px}
+  .pr-row span{color:#8A7A7C}
+  .pr-row b{font-weight:600;text-align:right}
+  .pr-row.total{font-family:'Fraunces',serif;font-size:1.05rem;padding:8px 0}
+  .pr-row.total b{color:#C16E6E}
+  .pr-thanks{text-align:center;font-size:11.5px;margin-top:10px;line-height:1.6}
+  .pr-thanks span{color:#8A7A7C;font-size:10.5px}
+  .pr-barcode{height:26px;margin-top:12px;background:repeating-linear-gradient(90deg,#3a2f31 0 2px,transparent 2px 4px,#3a2f31 4px 5px,transparent 5px 9px);opacity:.75}
+  #prDone{margin-top:24px;opacity:0;animation:fadeIn .5s ease 1.8s forwards;min-width:160px}
+  .pr-actions{display:flex;gap:10px;margin-top:24px;width:100%;opacity:0;animation:fadeIn .5s ease 1.8s forwards}
+  .pr-actions .btn{flex:1;margin-top:0!important;animation:none!important;opacity:1!important}
+  .pr-actions .btn.ghost{background:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.5);color:var(--ink)}
+  .pr-actions .btn.ghost:hover{background:#fff}
+
+  .chat-fab{position:fixed;bottom:22px;right:22px;z-index:2400;width:58px;height:58px;border-radius:50%;border:none;
+    background:linear-gradient(135deg,var(--rust),var(--olive));color:#fff;font-size:1.5rem;cursor:pointer;
+    box-shadow:0 14px 34px -10px rgba(193,110,110,.7);transition:transform .3s,opacity .3s}
+  .chat-fab:hover{transform:scale(1.08)}
+  .chat-fab.hidden{opacity:0;pointer-events:none;transform:scale(.5)}
+  .chat-panel{position:fixed;bottom:22px;right:22px;z-index:2401;width:min(380px,calc(100vw - 32px));height:min(560px,calc(100vh - 100px));
+    background:var(--paper);border:1px solid var(--line);border-radius:22px;display:flex;flex-direction:column;overflow:hidden;
+    box-shadow:0 40px 80px -30px rgba(74,59,62,.6);opacity:0;pointer-events:none;transform:translateY(20px) scale(.96);transition:all .35s cubic-bezier(.2,.8,.2,1)}
+  .chat-panel.open{opacity:1;pointer-events:auto;transform:translateY(0) scale(1)}
+  .chat-head{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;background:linear-gradient(135deg,var(--rust),var(--olive));color:#fff}
+  .chat-head b{font-family:'Fraunces',serif;font-weight:400;font-size:1.1rem;display:block}
+  .chat-status{font-size:11.5px;opacity:.85}
+  .chat-close{background:rgba(255,255,255,.2);border:none;color:#fff;width:30px;height:30px;border-radius:50%;font-size:1.2rem;cursor:pointer}
+  .chat-body{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px}
+  .chat-msg{max-width:82%;padding:11px 15px;border-radius:16px;font-size:14px;line-height:1.5}
+  .chat-msg.bot{background:#fff;border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px}
+  .chat-msg.user{background:var(--ink);color:var(--oat);align-self:flex-end;border-bottom-right-radius:4px}
+  .chat-msg.thinking{color:var(--mut);font-style:italic}
+  .chat-msg.typing{display:flex;gap:5px;align-items:center;padding:14px 16px}
+  .chat-msg.typing .dot{width:7px;height:7px;border-radius:50%;background:var(--clay);animation:cdot 1.2s infinite ease-in-out}
+  .chat-msg.typing .dot:nth-child(2){animation-delay:.2s}
+  .chat-msg.typing .dot:nth-child(3){animation-delay:.4s}
+  @keyframes cdot{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+  .chat-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+  .chat-chips button{background:#fff;border:1px solid var(--line);border-radius:20px;padding:8px 14px;font-size:12.5px;color:var(--ink);cursor:pointer;transition:all .2s}
+  .chat-chips button:hover{border-color:var(--rust);color:var(--rust)}
+  .chat-input{display:flex;gap:8px;padding:14px;border-top:1px solid var(--line);background:var(--paper)}
+  .chat-input input{flex:1;border:1px solid var(--line);border-radius:22px;padding:11px 16px;font-size:14px;background:#fff}
+  .chat-input button{flex-shrink:0;width:42px;height:42px;border-radius:50%;border:none;background:var(--ink);color:var(--oat);font-size:1.1rem;cursor:pointer}
+  @media(max-width:560px){.chat-panel{bottom:12px;right:12px;height:min(70vh,540px)}.chat-fab{bottom:16px;right:16px}}
+  /* remember me + two-factor */
+  .remember-check{display:flex;align-items:center;gap:10px;margin-top:18px;font-size:13px;color:var(--char);
+    text-transform:none;letter-spacing:0;cursor:pointer;font-weight:400}
+  .remember-check input{width:auto;flex-shrink:0;accent-color:var(--olive);margin:0}
+  .totp-qr{width:180px;height:180px;margin:6px auto 14px;display:block;border-radius:12px;
+    border:1px solid var(--line);background:#fff;padding:8px}
+  .totp-manual{margin-bottom:16px;font-size:12px;color:var(--mut)}
+  .totp-manual summary{cursor:pointer}
+  .totp-manual code{display:block;margin-top:8px;background:var(--sand);padding:10px;border-radius:8px;
+    font-size:12px;word-break:break-all;letter-spacing:.08em;color:var(--ink)}
+
+  /* email verification */
+  .verify-card{text-align:center;background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:36px 28px;box-shadow:0 30px 60px -30px rgba(138,80,90,.4)}
+  .verify-ico{font-size:2.2rem;margin-bottom:10px}
+  .verify-card h2{font-family:'Fraunces',serif;font-weight:300;font-size:1.7rem;margin-bottom:8px}
+  .verify-sub{font-size:13.5px;color:var(--mut);line-height:1.5;margin-bottom:22px}
+  .verify-sub b{color:var(--ink)}
+  .code-inputs{display:flex;gap:8px;justify-content:center}
+  .code-inputs input{width:44px;height:54px;text-align:center;font-size:1.5rem;font-family:'Fraunces',serif;border:1px solid var(--line);border-radius:12px;background:#fff;padding:0}
+  .code-inputs input:focus{border-color:var(--olive);outline:none}
+  .verify-demo{font-size:12px;color:var(--rust);margin-top:14px;background:rgba(201,123,123,.1);border-radius:8px;padding:8px 10px}
+  .verify-demo:empty{display:none}
+  @media(max-width:560px){.code-inputs input{width:40px;height:50px;font-size:1.3rem}}
+  label{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:15px 0 7px}
+  input,select{width:100%;padding:13px 15px;background:#fff;border:1px solid var(--line);border-radius:10px;font-size:15px;color:var(--ink);color-scheme:light;-webkit-text-fill-color:var(--ink)}
+  input:focus,select:focus{outline:none;border-color:var(--olive)}
+  .fine{font-size:12.5px;color:var(--mut);text-align:center;margin-top:16px}
+  .linkbtn{background:none;border:none;color:var(--rust);text-decoration:underline;text-underline-offset:3px;font-size:inherit}
+
+  /* booking flow */
+  .steps{display:flex;gap:8px;align-items:center;justify-content:center;font-size:12px;color:var(--mut);margin:6px 0 26px}
+  .steps .s{display:flex;align-items:center;gap:7px;opacity:.45}
+  .steps .s.on{opacity:1;color:var(--ink)}
+  .steps .s .n{width:21px;height:21px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:11px}
+  .steps .s.on .n{background:var(--ink);color:var(--oat);border-color:var(--ink)}
+  .steps .sep{width:22px;height:1px;background:var(--line)}
+  .flow{display:none}.flow.on{display:block}
+
+  .classlist{display:grid;gap:13px;max-width:760px;margin:0 auto}
+  .cls{display:flex;justify-content:space-between;align-items:center;gap:20px;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:22px 26px;transition:border-color .3s,transform .3s}
+  .cls:hover{border-color:var(--olive);transform:translateX(4px)}
+  .cls h3{font-size:1.4rem}.cls .meta{font-size:13px;color:var(--mut);margin-top:5px}
+  .cls .price{font-family:'Fraunces',serif;font-size:1.4rem;text-align:right}
+  .cls .pk{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--rust);text-align:right;margin-top:3px}
+
+  .daybar{display:flex;gap:10px;overflow-x:auto;padding-bottom:12px;max-width:760px;margin:0 auto 4px}
+  .day{flex:0 0 auto;text-align:center;padding:11px 16px;border:1px solid var(--line);border-radius:12px;background:var(--paper);min-width:72px}
+  .day.on{background:var(--ink);color:var(--oat);border-color:var(--ink)}
+  .day .dow{font-size:10px;letter-spacing:.1em;text-transform:uppercase;opacity:.7;display:block}
+  .day .dn{font-family:'Fraunces',serif;font-size:1.2rem;display:block;margin-top:2px}
+  .slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(116px,1fr));gap:11px;max-width:760px;margin:16px auto 0}
+  .slot{padding:15px 10px;border:1px solid var(--line);border-radius:12px;background:var(--paper);text-align:center;transition:all .25s}
+  .slot .t{font-family:'Fraunces',serif;font-size:1.1rem}
+  .slot .lft{font-size:11px;color:var(--mut);margin-top:3px}
+  .slot:hover:not(.full){border-color:var(--olive)}
+  .slot.on{background:var(--olive);color:#fff;border-color:var(--olive)}.slot.on .lft{color:rgba(255,255,255,.85)}
+  .slot.full{opacity:.4;cursor:not-allowed;text-decoration:line-through}
+  .gcal{display:flex;gap:8px;align-items:center;justify-content:center;font-size:12px;color:var(--mut);margin-top:20px}
+  .gcal .d{width:7px;height:7px;border-radius:50%;background:var(--good)}
+
+  .pay{max-width:430px;margin:0 auto}
+  .receipt{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:26px 30px}
+  .rr{display:flex;justify-content:space-between;padding:10px 0;font-size:14px;border-bottom:1px dashed var(--line)}
+  .rr:last-of-type{border-bottom:none}.rr .k{color:var(--mut)}
+  .rr.tot{font-family:'Fraunces',serif;font-size:1.25rem;border-top:1px solid var(--ink);border-bottom:none;margin-top:6px;padding-top:14px}
+  .viva{display:flex;gap:13px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:16px;font-size:13px;color:var(--char)}
+  .viva-logo{width:40px;height:40px;flex-shrink:0}
+  .viva b{font-weight:700;color:#16243A}
+  .viva-sub{color:var(--mut);font-size:12px}
+  /* branded Viva pay button */
+  .viva-btn{width:100%;margin-top:18px;display:flex;align-items:center;justify-content:center;gap:12px;
+    background:linear-gradient(135deg,#16243A,#1f3350);color:#fff;border:none;border-radius:40px;
+    padding:17px 24px;font-family:'Inter',sans-serif;font-size:15px;font-weight:500;letter-spacing:.02em;cursor:pointer;
+    box-shadow:0 14px 30px -12px rgba(22,36,58,.6);transition:transform .25s,box-shadow .25s}
+  .viva-btn:hover{transform:translateY(-2px);box-shadow:0 20px 40px -14px rgba(22,36,58,.7)}
+  .viva-btn:active{transform:translateY(0)}
+  .viva-btn .vb-lock{font-size:13px;opacity:.85}
+  .viva-btn .vb-brand{display:flex;align-items:center;gap:6px;font-weight:600;letter-spacing:.01em;color:#fff;border-left:1px solid rgba(255,255,255,.2);padding-left:12px}
+  .viva-btn.is-credit{background:linear-gradient(135deg,#6b5594,#8a6db0);box-shadow:0 14px 30px -12px rgba(107,85,148,.6)}
+  .policy{font-size:12.5px;color:var(--mut);background:rgba(138,154,110,.09);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-top:16px;line-height:1.6}
+  .policy b{color:var(--ink);font-weight:600}
+
+  .booking{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin-bottom:13px}
+  .booking .top{display:flex;justify-content:space-between;gap:14px;align-items:start}
+  .booking h3{font-size:1.3rem}.booking .when{font-size:14px;color:var(--mut);margin-top:4px}
+  .pill{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;padding:5px 11px;border-radius:30px;white-space:nowrap}
+  .pill.ok{background:rgba(94,122,79,.16);color:var(--good)}
+  .pill.resc{background:rgba(181,115,60,.16);color:var(--warn)}
+  .pill.lost{background:rgba(168,73,59,.14);color:var(--bad)}
+  .pill.open{background:rgba(201,162,75,.18);color:#8a6d1f}
+  .bact{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .bact button{padding:9px 16px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--line);border-radius:30px;background:#fff;color:var(--ink)}
+  .bact button:hover{border-color:var(--ink)}.bact button.danger{color:var(--bad);border-color:rgba(168,73,59,.4)}
+  .cd{font-size:12.5px;color:var(--mut);margin-top:11px}.cd b{color:var(--ink);font-weight:600}
+
+  /* trainer schedule grid */
+  .tgrid-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;margin-bottom:8px}
+  .tgrid-head h3{font-size:1.4rem}
+  .legend{display:flex;gap:18px;font-size:12px;color:var(--mut);flex-wrap:wrap}
+  .legend span{display:flex;align-items:center;gap:7px}
+  .legend i{width:11px;height:11px;border-radius:4px;display:inline-block}
+  /* trainer class cards (5-spot) */
+  .tslots{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin-top:18px}
+  .classcard{border:1px solid var(--line);border-radius:16px;padding:18px 18px 16px;background:var(--paper);transition:box-shadow .25s}
+  .classcard:hover{box-shadow:0 18px 40px -28px rgba(138,80,90,.5)}
+  .classcard.is-closed{opacity:.62}
+  .cl-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
+  .cl-time{font-family:'Fraunces',serif;font-size:1.3rem;margin-right:10px}
+  .cl-name{font-size:12.5px;color:var(--mut)}
+  .cl-count{font-size:11px;letter-spacing:.04em;color:var(--olive-d);background:rgba(110,138,154,.14);padding:5px 10px;border-radius:20px;white-space:nowrap}
+  .cl-count.closed{color:var(--bad);background:rgba(168,73,59,.12)}
+  .cl-count.private{color:#6b5594;background:rgba(150,120,180,.18)}
+  .classcard.is-private{border-color:rgba(150,120,180,.45);background:linear-gradient(165deg,#f4eef8,var(--paper))}
+  .spot-row.private-row{background:linear-gradient(165deg,#efe7f6,#faf6fd);border-color:rgba(150,120,180,.4)}
+  .private-row .sp-i{background:rgba(150,120,180,.2)}
+  .private-note{font-size:12px;color:var(--mut);padding:10px 4px 2px;line-height:1.5}
+  .spot-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+  .spot-row{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:10px;background:#fff;border:1px solid var(--line);font-size:13px}
+  .spot-row.free{border-style:dashed;background:transparent}
+  .spot-row.taken{background:linear-gradient(165deg,#fbeae6,#fdf5f2);border-color:rgba(193,110,110,.4)}
+  .spot-row.held{background:rgba(42,42,44,.04);color:var(--mut)}
+  .sp-i{width:20px;height:20px;border-radius:50%;background:var(--sand);color:var(--char);display:grid;place-items:center;font-size:11px;flex-shrink:0}
+  .sp-name{flex:1;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .sp-act{display:flex;gap:6px;flex-shrink:0}
+  .sp-act button{font-size:10px;letter-spacing:.04em;text-transform:uppercase;padding:6px 10px;border:1px solid var(--line);border-radius:18px;background:#fff;color:var(--ink);white-space:nowrap}
+  .sp-act button:hover{border-color:var(--ink)}
+  .sp-act button.danger{color:var(--bad);border-color:rgba(168,73,59,.35)}
+  .cl-ctrl{display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:13px}
+  .cl-ctrl button{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;padding:8px 13px;border:1px solid var(--line);border-radius:20px;background:#fff;color:var(--ink)}
+  .cl-ctrl button:hover{border-color:var(--ink)}
+  .cl-ctrl button.danger{color:var(--bad);border-color:rgba(168,73,59,.35)}
+  .paytag{display:inline-block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:18px;font-weight:500}
+  .paytag.viva{background:rgba(110,138,154,.18);color:#4a6b78}
+  .paytag.cash{background:rgba(94,138,128,.2);color:#3f6b60}
+  .paytag.unpaid{background:rgba(201,138,92,.2);color:#9a5f2b}
+  .paytag.card{background:rgba(110,138,154,.18);color:#4a6b78}
+  /* earnings panel */
+  .earn-head{margin-bottom:18px}
+  .earn-sub{font-size:13px;color:var(--mut);margin-top:4px}
+  .period-tabs{display:flex;gap:6px;margin-top:14px;background:var(--sand);padding:4px;border-radius:24px}
+  .period-tabs button{flex:1;border:none;background:none;padding:9px 6px;border-radius:20px;font-size:11.5px;
+    letter-spacing:.03em;color:var(--mut);cursor:pointer;transition:all .2s}
+  .period-tabs button.on{background:#fff;color:var(--ink);box-shadow:0 2px 8px -2px rgba(74,59,62,.2)}
+  .earn-total{background:linear-gradient(135deg,#16243A,#1f3350);color:#fff;border-radius:18px;padding:26px 28px;display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;box-shadow:0 20px 44px -22px rgba(22,36,58,.6)}
+  .et-label{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+  .et-amount{font-family:'Fraunces',serif;font-size:2.2rem}
+  .earn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+  .earn-card{border:1px solid var(--line);border-radius:14px;padding:18px 16px;background:var(--paper);text-align:center}
+  .ec-amt{font-family:'Fraunces',serif;font-size:1.6rem;margin:10px 0 4px}
+  .ec-note{font-size:11px;color:var(--mut)}
+  .earn-split{border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .es-row{display:flex;justify-content:space-between;padding:14px 18px;font-size:14px;border-bottom:1px solid var(--line)}
+  .es-row:last-child{border-bottom:none}
+  .es-row b{font-weight:600}
+  .es-row.total{background:rgba(138,154,110,.08);font-family:'Fraunces',serif}
+  .es-row.total b{font-size:1.15rem}
+  @media(max-width:560px){.earn-grid{grid-template-columns:1fr;gap:10px}.earn-card{display:flex;align-items:center;justify-content:space-between;text-align:left}.earn-card .ec-amt{margin:0}.earn-card .ec-note{display:none}}
+  .paytag.pkg{background:rgba(150,120,180,.18);color:#6b5594}
+  /* packages */
+  .pkglist{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:8px}
+  .pkg{position:relative;border:1px solid var(--line);border-radius:18px;background:var(--paper);padding:30px 26px;text-align:center;transition:transform .3s,box-shadow .3s}
+  .pkg:hover{transform:translateY(-4px);box-shadow:0 24px 50px -28px rgba(138,80,90,.5)}
+  .pkg.best{border-color:var(--rust);background:linear-gradient(180deg,#fbeae6,var(--paper))}
+  .pkg-flag{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--rust);color:#fff;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:5px 12px;border-radius:20px;white-space:nowrap}
+  .pkg h3{font-size:1.3rem;margin-bottom:10px}
+  .pkg-price{font-family:'Fraunces',serif;font-size:2.4rem;color:var(--ink)}
+  .pkg-note{font-size:13px;color:var(--mut);margin-top:8px;min-height:34px}
+  @media(max-width:760px){.pkglist{grid-template-columns:1fr}}
+  .credit-banner{background:rgba(150,120,180,.13);border:1px solid rgba(150,120,180,.3);border-radius:12px;padding:13px 16px;font-size:14px;color:#5b4880;margin-bottom:18px}
+  .credit-banner b{color:#4a3a6b}
+  .pkg-link{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  /* private vs class choice */
+  .typechoice{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:680px;margin:0 auto}
+  .tc-card{border:1px solid var(--line);border-radius:18px;background:var(--paper);padding:32px 28px;text-align:center;cursor:pointer;transition:transform .3s,border-color .3s,box-shadow .3s}
+  .tc-card:hover{transform:translateY(-4px);border-color:var(--olive);box-shadow:0 24px 50px -28px rgba(138,80,90,.5)}
+  .tc-ico{font-size:2rem;margin-bottom:10px}
+  .tc-card h3{font-size:1.5rem;margin-bottom:8px}
+  .tc-card p{font-size:13.5px;color:var(--mut);min-height:40px}
+  .tc-price{font-family:'Fraunces',serif;font-size:1.7rem;margin-top:14px;color:var(--ink)}
+  @media(max-width:560px){.typechoice{grid-template-columns:1fr}}
+  .wi-target{font-size:13px;color:var(--olive-d);background:rgba(110,138,154,.12);border-radius:10px;padding:10px 13px;margin:6px 0 4px}
+  /* customer slot class-name line */
+  .slot .cls-name{font-size:11px;color:var(--rust);letter-spacing:.04em;margin-top:2px}
+
+  /* promo code row */
+  .promo-row{display:flex;gap:8px;margin-bottom:14px}
+  /* waitlist slots */
+  .slot.waitable{cursor:pointer;opacity:1;border-style:dashed;border-color:var(--clay)}
+  .slot.waitable:hover{border-color:var(--rust);background:rgba(201,123,123,.06)}
+  .slot.waitable .t{text-decoration:none;color:var(--char)}
+  .slot.waitable .lft{color:var(--rust)}
+  .slot.waitable.waiting{background:rgba(138,154,110,.12);border-color:var(--olive);border-style:solid}
+  .slot.waitable.waiting .lft{color:#4f5f38}
+
+  /* client history cards */
+  .client-card{border:1px solid var(--line);border-radius:16px;background:var(--paper);margin-bottom:12px;overflow:hidden}
+  .client-card.warn{border-color:rgba(201,138,92,.5)}
+  .cc-head{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;cursor:pointer;gap:12px}
+  .cc-head h3{font-family:'Fraunces',serif;font-weight:400;font-size:1.2rem}
+  .cc-meta{font-size:12.5px;color:var(--mut);margin-top:3px}
+  .cc-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+  .cc-noshow{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;background:rgba(201,138,92,.2);color:#9a5f2b;padding:4px 10px;border-radius:20px}
+  .cc-arrow{color:var(--mut);transition:transform .3s;font-size:1.1rem}
+  .client-card.open .cc-arrow{transform:rotate(180deg)}
+  .cc-history{max-height:0;overflow:hidden;transition:max-height .4s ease;list-style:none;padding:0 20px}
+  .client-card.open .cc-history{max-height:600px;padding-bottom:16px}
+  .cc-history li{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:13px}
+  .cc-history i{font-style:normal;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px;flex-shrink:0}
+  .h-ok{background:rgba(138,154,110,.25);color:#4f5f38}
+  .h-no{background:rgba(168,73,59,.18);color:var(--bad)}
+  .h-q{background:var(--sand);color:var(--mut)}
+  .cc-history .h-cls{color:var(--mut);margin-left:auto;font-size:12px}
+  /* client notes (trainer only) */
+  .cc-notes{max-height:0;overflow:hidden;transition:max-height .4s ease;padding:0 20px}
+  .client-card.open .cc-notes{max-height:340px;padding-bottom:18px}
+  .cc-notes label{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);display:block;margin:14px 0 7px}
+  .cc-notes label span{text-transform:none;letter-spacing:0;font-size:11px}
+  .cc-notes textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 13px;
+    font-family:'Inter',sans-serif;font-size:13px;background:#fff;color:var(--ink);resize:vertical}
+  .cc-notes textarea:focus{border-color:var(--olive);outline:none}
+  .cc-gdpr{font-size:11px;color:var(--mut);line-height:1.5;margin-top:8px;background:rgba(201,138,92,.08);
+    border-radius:8px;padding:8px 10px}
+  /* first-session intro line on receipt */
+  .rr.intro .k{color:var(--olive)!important;font-weight:600}
+  .rr.intro span:last-child{color:#4f5f38}
+
+  /* referral card */
+  .referral-card{margin-top:32px;text-align:center;background:linear-gradient(165deg,#f2f5ec,#fbfaf6);
+    border:1px solid rgba(138,154,110,.35);border-radius:20px;padding:28px 24px}
+  .rf-icon{font-size:1.9rem;margin-bottom:6px}
+  .referral-card h3{font-family:'Fraunces',serif;font-weight:400;font-size:1.35rem;margin-bottom:6px}
+  .referral-card p{font-size:13.5px;color:var(--char);line-height:1.6;margin-bottom:16px}
+  .rf-code{font-family:'Fraunces',serif;font-size:1.4rem;letter-spacing:.08em;background:#fff;
+    border:2px dashed var(--olive);border-radius:12px;padding:14px;margin-bottom:14px;color:var(--ink)}
+  .rf-stat{font-size:12.5px;color:#4f5f38;margin-top:12px}
+  .rf-stat:empty{display:none}
+
+  /* gift vouchers */
+  .gift-note{font-size:13px;color:var(--mut);background:rgba(201,123,123,.08);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:18px;line-height:1.5}
+  .redeem-box{margin-top:24px;padding-top:20px;border-top:1px solid var(--line)}
+  .redeem-box label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);display:block;margin-bottom:8px}
+  .voucher-card{max-width:400px;margin:0 auto;text-align:center;background:linear-gradient(165deg,#fdf6f3,#f8ece7);
+    border:1px solid var(--line);border-radius:22px;padding:34px 26px;position:relative;overflow:hidden;
+    box-shadow:0 30px 60px -28px rgba(138,80,90,.45)}
+  .vc-ribbon{position:absolute;top:16px;right:-34px;background:var(--rust);color:#fff;font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;padding:6px 40px;transform:rotate(35deg)}
+  .vc-logo{margin-bottom:8px}
+  .vc-title{font-family:'Fraunces',serif;font-size:1.3rem;letter-spacing:.16em;margin-bottom:16px}
+  .vc-for{font-size:14px;color:var(--char);margin-bottom:18px}
+  .vc-code{font-family:'Fraunces',serif;font-size:1.7rem;letter-spacing:.1em;background:#fff;border:2px dashed var(--clay);
+    border-radius:14px;padding:16px;color:var(--ink);margin-bottom:16px;word-break:break-all}
+  .vc-hint{font-size:12.5px;color:var(--mut);line-height:1.6;margin-bottom:22px}
+  .voucher-card .pr-actions{opacity:1;animation:none;margin-top:0}
+
+  /* recurring booking box */
+  .series-tag{display:inline-block;background:rgba(138,154,110,.16);color:#5d6b47;font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:20px;margin-left:8px;vertical-align:middle;font-family:'Inter',sans-serif}
+  /* attendance check-in */
+  .spot-row.taken{flex-direction:column;align-items:stretch;gap:10px}
+  .sp-top{display:flex;align-items:center;gap:10px}
+  .sp-top .sp-name{flex:1;font-weight:500}
+  .sp-x{flex-shrink:0;width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:#fff;
+    color:var(--mut);font-size:12px;cursor:pointer;line-height:1;padding:0}
+  .sp-x:hover{background:var(--bad);border-color:var(--bad);color:#fff}
+  .att-group{display:flex;gap:0;border:1px solid var(--line);border-radius:24px;overflow:hidden;background:#fff}
+  .att-btn{flex:1;border:none!important;background:none;padding:10px 8px!important;font-size:11.5px!important;
+    letter-spacing:.04em;color:var(--mut);cursor:pointer;transition:all .2s;border-radius:0!important}
+  .att-btn:first-child{border-right:1px solid var(--line)!important}
+  .att-btn:hover{background:var(--sand)}
+  .att-btn.on{background:var(--olive)!important;color:#fff!important}
+  .att-btn.no.on{background:var(--bad)!important;color:#fff!important}
+  .spot-row.is-here{background:linear-gradient(165deg,#eef2e6,#f8faf4);border-color:rgba(138,154,110,.45)}
+  .spot-row.is-absent{opacity:.7;background:rgba(168,73,59,.05)}
+  .repeat-box{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:14px;background:var(--paper)}
+  .rp-toggle{display:flex;align-items:flex-start;gap:11px;cursor:pointer;margin:0;text-transform:none;letter-spacing:0;font-size:13.5px;color:var(--char)}
+  .rp-toggle input{width:auto;margin-top:2px;flex-shrink:0;accent-color:var(--olive)}
+  .rp-toggle b{color:var(--ink);font-weight:600}
+  .rp-toggle small{color:var(--mut);font-size:12px}
+  .rp-weeks{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);font-size:13px;color:var(--mut)}
+  .rp-weeks select{width:auto;flex:0 0 auto;padding:8px 12px}
+  .promo-row input{flex:1;text-transform:uppercase;letter-spacing:.08em;font-size:13px}
+  .promo-row .btn{flex-shrink:0}
+
+  /* manage panel */
+  .manage-intro{font-size:13px;color:var(--mut);margin-bottom:20px}
+  .manage-sec{border:1px solid var(--line);border-radius:16px;padding:20px 20px 22px;margin-bottom:16px;background:var(--paper)}
+  .ms-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .ms-head h3{font-family:'Fraunces',serif;font-weight:400;font-size:1.3rem}
+  .ms-note{font-size:12.5px;color:var(--mut);margin-bottom:14px}
+  .ms-empty{font-size:13px;color:var(--mut);padding:8px 0}
+  .mg-card{display:flex;gap:14px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px;background:#fff}
+  .mg-fields{flex:1;display:flex;flex-direction:column;gap:10px}
+  .mg-fields label{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);display:flex;flex-direction:column;gap:5px;margin:0}
+  .mg-fields input{font-size:14px;text-transform:none;letter-spacing:0;color:var(--ink)}
+  .mg-two{display:flex;gap:10px}.mg-two label{flex:1}
+  .mg-check{flex-direction:row!important;align-items:center;gap:8px!important;text-transform:none!important;letter-spacing:0!important;font-size:12.5px!important;color:var(--char)!important}
+  .mg-check input{width:auto!important;accent-color:var(--olive)}
+  .mg-del{flex-shrink:0;background:none;border:1px solid rgba(168,73,59,.35);color:var(--bad);border-radius:20px;padding:8px 14px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;align-self:center}
+  .mg-del:hover{background:rgba(168,73,59,.08)}
+  .chip-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+  .chip{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:24px;padding:8px 8px 8px 15px;font-family:'Fraunces',serif;font-size:1rem}
+  .chip button{background:var(--sand);border:none;width:20px;height:20px;border-radius:50%;cursor:pointer;color:var(--ink);font-size:14px;line-height:1}
+  .chip button:hover{background:var(--bad);color:#fff}
+  .add-inline{display:flex;gap:8px;align-items:center}
+  .add-inline input{width:auto;flex:0 0 130px}
+  .cap-row{display:flex;align-items:center;gap:18px}
+  .cap-row span{font-family:'Fraunces',serif;font-size:1.8rem;min-width:30px;text-align:center}
+  .capbtn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:#fff;font-size:22px;cursor:pointer;color:var(--ink)}
+  .capbtn:hover{border-color:var(--olive);background:rgba(138,154,110,.06)}
+
+  /* privacy banner */
+  .privacy-banner{position:fixed;left:16px;right:16px;bottom:16px;z-index:2500;background:rgba(38,36,31,.97);
+    color:var(--oat);border-radius:16px;padding:18px 22px;display:flex;align-items:center;gap:20px;
+    box-shadow:0 20px 50px -18px rgba(0,0,0,.55);transform:translateY(160%);transition:transform .5s cubic-bezier(.2,.8,.2,1);max-width:820px;margin:0 auto}
+  .privacy-banner.show{transform:translateY(0)}
+  .pb-text{font-size:13.5px;line-height:1.5;flex:1}
+  .pb-text .linkbtn{color:var(--clay);text-decoration:underline;text-underline-offset:2px}
+  .pb-actions{flex-shrink:0}
+  @media(max-width:560px){.privacy-banner{flex-direction:column;align-items:stretch;gap:12px;text-align:center}.pb-actions .btn{width:100%}}
+  /* consent checkbox */
+  .consent-check{display:flex;align-items:flex-start;gap:10px;margin-top:16px;font-size:12.5px;color:var(--char);
+    letter-spacing:0;text-transform:none;font-weight:400;line-height:1.5;cursor:pointer}
+  .consent-check input{width:auto;margin-top:2px;flex-shrink:0;accent-color:var(--olive)}
+  .consent-check .linkbtn{color:var(--rust);text-decoration:underline;text-underline-offset:2px;padding:0}
+  /* privacy policy sheet */
+  .privacy-sheet{max-width:560px;max-height:82vh;display:flex;flex-direction:column}
+  .privacy-body{overflow-y:auto;margin:6px -4px 8px;padding:0 4px}
+  .privacy-body h4{font-family:'Fraunces',serif;font-weight:400;font-size:1.05rem;margin:16px 0 5px;color:var(--ink)}
+  .privacy-body p{font-size:13.5px;color:var(--char);line-height:1.6;margin-bottom:6px}
+  .pp-updated{font-size:12px;color:var(--mut);font-style:italic}
+  .pp-note{background:rgba(138,154,110,.1);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:14px;font-size:12.5px}
+
+  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(140%);background:var(--ink);color:var(--oat);
+    padding:15px 22px;border-radius:12px;font-size:14px;display:flex;gap:13px;align-items:center;z-index:3000;transition:transform .4s cubic-bezier(.2,.8,.2,1);max-width:90vw;box-shadow:0 18px 40px -16px rgba(0,0,0,.5)}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .toast .em{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--clay);white-space:nowrap}
+
+  .modal{position:fixed;inset:0;background:rgba(38,36,31,.5);display:none;place-items:center;z-index:3000;padding:24px}
+  .modal.show{display:grid}
+  .sheet{background:var(--oat);border:1px solid var(--line);border-radius:18px;max-width:430px;width:100%;padding:30px}
+  .sheet h3{font-size:1.5rem;margin-bottom:10px}.sheet p{font-size:14px;color:var(--mut)}
+  .sheet .row{display:flex;gap:12px;margin-top:22px}
+
+  .back{background:none;border:none;color:var(--mut);font-size:13px;margin-bottom:16px;display:inline-flex;gap:7px;align-items:center}
+  .back:hover{color:var(--ink)}
+  .empty{text-align:center;color:var(--mut);padding:48px 0}
+  .center{text-align:center}
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .85s cubic-bezier(.2,.7,.2,1),transform .85s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+
+  /* keep palette intact when the OS/browser forces dark mode */
+  @media (prefers-color-scheme: dark){
+    body{background:var(--oat)!important;color:var(--ink)!important}
+    .card,.cls,.day,.slot,.booking,.receipt,.ts{background:var(--paper)!important;color:var(--ink)!important}
+    .ts.booked{background:linear-gradient(165deg,#fbeae6,#f3ddd6)!important}
+    input,select{background:#fff!important;color:var(--ink)!important;-webkit-text-fill-color:var(--ink)!important}
+    .viva,.bact button,.ts .ctrl button{background:#fff!important;color:var(--ink)!important}
+    nav{background:rgba(246,237,232,.94)!important}
+    footer,.strip{background:var(--paper)!important}
+    .sheet{background:var(--oat)!important;color:var(--ink)!important}
+    .approach{color:var(--ink)!important}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav>
+  <div class="nav-in">
+    <a class="logo" onclick="show('home')">
+      <svg class="seed" viewBox="0 0 40 40" fill="none"><path d="M8 26C8 16 16 9 26 12C20 13 16 18 17 24C18 30 24 32 30 29C27 33 20 35 14 32C10 30 8 28 8 26Z" fill="#C77B7B"/><path d="M32 14C32 24 24 31 14 28C20 27 24 22 23 16C22 10 16 8 10 11C13 7 20 5 26 8C30 10 32 12 32 14Z" fill="#D4A8A0"/></svg>
+      Rebalance
+    </a>
+    <div class="nav-links">
+      <a onclick="show('home');jump('practice')">Practice</a>
+      <a onclick="show('home');jump('approach')">Approach</a>
+      <a onclick="show('home');jump('visit')">Visit</a>
+    </div>
+    <div class="nav-cta">
+      <button class="lang-btn" id="langBtn" onclick="toggleLang()" title="Ελληνικά / English">ΕΛ</button>
+      <button class="portal-switch" onclick="openTrainer()" data-i18n="nav_trainer">Trainer</button>
+      <button class="btn sm" onclick="openCustomer()" data-i18n="nav_book">Book / Sign in</button>
+    </div>
+    <button class="burger" id="burger" aria-label="Menu" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a onclick="closeMenu();show('home');jump('practice')">Practice</a>
+    <a onclick="closeMenu();show('home');jump('approach')">Approach</a>
+    <a onclick="closeMenu();show('home');jump('visit')">Visit</a>
+    <button class="btn" onclick="closeMenu();openCustomer()">Book / Sign in</button>
+    <button class="btn ghost" onclick="closeMenu();openTrainer()">Trainer login</button>
+  </div>
+</nav>
+
+<script>
+function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');document.getElementById('burger').classList.toggle('x');}
+function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');document.getElementById('burger').classList.remove('x');}
+</script>
+
+<!-- ============ PUBLIC HOME ============ -->
+<div class="view on" id="v-home">
+  <header class="hero">
+    <div class="blob" style="width:340px;height:340px;background:rgba(212,168,160,.5);top:60%;left:-60px"></div>
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow"><span class="eb-full">Physiotherapy · Clinical Pilates · GHS</span><span class="eb-short">Physiotherapy · Pilates · GHS</span></span>
+        <h1>Find your<br><em>balance.</em></h1>
+        <p>Physiotherapy and Clinical Pilates in Engomi, Nicosia. GHS-registered care, one body at a time — book a session, manage your bookings, and move back toward strength.</p>
+        <div class="hero-actions">
+          <button class="btn" onclick="openCustomer()">Book a session</button>
+          <button class="btn ghost" onclick="show('home');jump('practice')">See the practice</button>
+        </div>
+        <div class="hero-stat">
+          <div><div class="k">GHS</div><div class="l">Registered<br>provider</div></div>
+          <div><div class="k">4h</div><div class="l">Free reschedule<br>window</div></div>
+          <div><div class="k">7</div><div class="l">Days a week<br>availability</div></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="ring"></div>
+        <svg class="fig" viewBox="0 0 200 300" aria-hidden="true"><g fill="#fbf4f0" opacity=".9">
+          <circle cx="100" cy="52" r="26"/>
+          <path d="M66 86 Q100 74 134 86 L146 196 Q100 214 54 196 Z"/>
+          <path d="M66 90 L40 176 L56 184 L82 104 Z"/><path d="M134 90 L166 172 L150 184 L120 104 Z"/>
+          <rect x="74" y="194" width="20" height="100" rx="9"/><rect x="108" y="194" width="20" height="100" rx="9"/>
+        </g></svg>
+      </div>
+    </div>
+  </header>
+
+  <div class="strip"><div class="strip-t">
+    <span>Reformer</span><b>·</b><span>Rehabilitation</span><b>·</b><span>Breath</span><b>·</b><span>Mobility</span><b>·</b><span>Strength</span><b>·</b><span>Stillness</span><b>·</b>
+    <span>Reformer</span><b>·</b><span>Rehabilitation</span><b>·</b><span>Breath</span><b>·</b><span>Mobility</span><b>·</b><span>Strength</span><b>·</b><span>Stillness</span><b>·</b>
+  </div></div>
+
+  <section class="blk wrap reveal" id="practice">
+    <div class="lead2">
+      <div><span class="eyebrow" data-i18n="home_studio">The Studio</span><h2 style="margin-top:14px">A practice built around your body, not the timetable.</h2></div>
+      <div class="body"><p>We pair physiotherapy with Clinical Pilates in a calm studio in Engomi. Every session begins with assessment and ends with a plan — no two bodies follow the same route back to strength.</p><p>As a GHS (ΓΕΣΥ) provider, we keep sessions small and focused, so attention is never divided. You leave knowing what to do next, and why.</p></div>
+    </div>
+    <div class="prac">
+      <div class="prow"><span class="num">01</span><h3>Reformer Pilates</h3><span class="d">Spring-loaded resistance to rebuild control, balance and deep strength.</span></div>
+      <div class="prow"><span class="num">02</span><h3>Physiotherapy</h3><span class="d">Hands-on assessment and treatment for injury, pain and post-surgical recovery.</span></div>
+      <div class="prow"><span class="num">03</span><h3>Clinical Rehab</h3><span class="d">Structured programmes bridging treatment and full return to movement.</span></div>
+      <div class="prow"><span class="num">04</span><h3>Mat & Breath</h3><span class="d">Small group classes grounded in alignment, breath and mobility.</span></div>
+    </div>
+  </section>
+
+  <section class="approach reveal" id="approach">
+    <div class="wrap">
+      <span class="eyebrow" data-i18n="home_approach">Our Approach</span>
+      <h2>Recovery isn't rushed. It's <em>understood</em>, then practised.</h2>
+      <div class="g3">
+        <div class="c"><div class="k">01</div><h4>Assess</h4><p>We start with movement, history and goals — measuring before prescribing anything.</p></div>
+        <div class="c"><div class="k">02</div><h4>Build</h4><p>A programme shaped to your body, adjusted session by session as you change.</p></div>
+        <div class="c"><div class="k">03</div><h4>Sustain</h4><p>You leave with the tools to keep going on your own, stronger than you arrived.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="visit-section reveal" id="visit">
+    <div id="rebMap"></div>
+    <div class="visit-card">
+      <span class="eyebrow" data-i18n="home_visit">Where to find us</span>
+      <h2>Find us in<br>Engomi, Nicosia.</h2>
+      <div class="contact">
+        <div class="crow"><span class="ci">📍</span><div><b>Angelou Terzaki 4</b><br>Engomi (Έγκωμη), Nicosia, Cyprus</div></div>
+        <div class="crow"><span class="ci">☎</span><div><a href="tel:+35722035001">22 035001</a> · <a href="tel:+35796489727">96 489727</a></div></div>
+        <div class="crow"><span class="ci">📷</span><div><a href="https://instagram.com/rebalance_physio_pilates" target="_blank" rel="noopener">@rebalance_physio_pilates</a></div></div>
+      </div>
+      <a class="btn sm" style="margin-top:24px;width:100%" href="https://www.google.com/maps/search/?api=1&query=Angelou+Terzaki+4+Engomi+Nicosia" target="_blank" rel="noopener">Get directions →</a>
+    </div>
+  </section>
+
+  <section class="ctaband wrap reveal">
+    <h2>Begin where<br>you <em>are.</em></h2>
+    <p>Create an account, book your first assessment, and manage everything in one place.</p>
+    <button class="btn" onclick="openCustomer()">Book a session</button>
+  </section>
+
+  <footer><div class="wrap foot">
+    <span>Rebalance Physiotherapy & Clinical Pilates</span>
+    <span>© 2026 · Angelou Terzaki 4, Engomi · @rebalance_physio_pilates</span>
+  </div></footer>
+</div>
+
+<!-- ============ CUSTOMER PORTAL ============ -->
+<div class="view" id="v-cust">
+  <div class="portal wrap">
+    <button class="back" onclick="show('home')">← Back to site</button>
+
+    <!-- auth -->
+    <div class="flow on" id="c-auth">
+      <div class="authwrap">
+        <div class="card" id="c-authcard">
+          <div class="phead center" style="padding-top:0"><span class="eyebrow" data-i18n="portal_customer">Customer portal</span><h1 style="margin-top:8px" data-i18n="book_title">Book your mat</h1></div>
+          <div class="roleswitch" style="margin-top:24px">
+            <button class="on" id="ct-login" onclick="custTab('login')" data-i18n="login">Log in</button>
+            <button id="ct-signup" onclick="custTab('signup')" data-i18n="signup">Sign up</button>
+          </div>
+          <div id="cf-name" style="display:none"><label>Full name</label><input id="ci-name" placeholder="Eleni Georgiou"></div>
+          <label>Email</label><input id="ci-email" type="email" placeholder="you@email.com">
+          <label>Password</label><input id="ci-pass" type="password" placeholder="••••••••">
+          <div id="cf-ref" style="display:none"><label>Referral code (optional)</label><input id="ci-ref" placeholder="FRIEND-ABC" oninput="this.value=this.value.toUpperCase()"></div>
+          <label class="consent-check" id="cConsentWrap" style="display:none">
+            <input type="checkbox" id="ci-consent">
+            <span>I agree to the <button type="button" class="linkbtn" onclick="openPrivacy()">Privacy Policy</button> and consent to my data being used to manage my bookings.</span>
+          </label>
+          <label class="remember-check">
+            <input type="checkbox" id="ci-remember" checked>
+            <span>Keep me signed in on this device</span>
+          </label>
+          <button class="btn" style="width:100%;margin-top:16px" id="cAuthBtn" onclick="custAuth()">Log in</button>
+          <p class="fine" id="cAuthFine">New here? Switch to Sign up.</p>
+        </div>
+
+        <div id="c-verify" class="verify-card" style="display:none">
+          <div class="verify-ico">✉</div>
+          <h2>Check your email</h2>
+          <p class="verify-sub">We sent a 6-digit security code to <b id="verifyEmail"></b>. Enter it below to confirm it's you.</p>
+          <div class="code-inputs" id="codeInputs">
+            <input maxlength="1" inputmode="numeric" pattern="[0-9]"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric">
+          </div>
+          <button class="btn" style="width:100%;margin-top:20px" onclick="verifyCode()">Verify</button>
+          <p class="fine"><button class="linkbtn" onclick="resendCode()">Resend code</button> · <button class="linkbtn" onclick="cancelVerify()">Use a different email</button></p>
+          <p class="verify-demo" id="verifyDemo"></p>
+        </div>
+
+        <!-- authenticator code (when 2FA is on) -->
+        <div id="c-totp" class="verify-card" style="display:none">
+          <div class="verify-ico">🔐</div>
+          <h2>Authenticator code</h2>
+          <p class="verify-sub">Open Google Authenticator or Microsoft Authenticator and enter the current 6-digit code for <b>Rebalance</b>.</p>
+          <div class="code-inputs" id="totpInputs">
+            <input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric">
+          </div>
+          <button class="btn" style="width:100%;margin-top:20px" onclick="submitTotp()">Verify</button>
+          <p class="fine"><button class="linkbtn" onclick="cancelVerify()">Cancel</button></p>
+        </div>
+
+        <!-- 2FA setup (scan QR) -->
+        <div id="c-2fa-setup" class="verify-card" style="display:none">
+          <div class="verify-ico">🛡️</div>
+          <h2>Set up two-factor</h2>
+          <p class="verify-sub">Scan this with <b>Google Authenticator</b> or <b>Microsoft Authenticator</b>, then enter the 6-digit code it shows.</p>
+          <img id="totpQr" class="totp-qr" alt="QR code">
+          <details class="totp-manual">
+            <summary>Can't scan? Enter this key manually</summary>
+            <code id="totpSecret"></code>
+          </details>
+          <div class="code-inputs" id="setupInputs">
+            <input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric">
+          </div>
+          <button class="btn" style="width:100%;margin-top:20px" onclick="confirm2FA()">Turn on 2FA</button>
+          <p class="fine"><button class="linkbtn" onclick="close2FASetup()">Not now</button></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- booking flow -->
+    <div class="flow" id="c-flow">
+      <div class="phead"><span class="eyebrow" data-i18n="portal_customer">Customer portal</span><h1 id="cFlowTitle" data-i18n="book_session_h">Book a session</h1></div>
+      <div class="steps" id="cSteps">
+        <div class="s" data-st="1"><span class="n">1</span> Session</div><div class="sep"></div>
+        <div class="s" data-st="2"><span class="n">2</span> Type</div><div class="sep"></div>
+        <div class="s" data-st="3"><span class="n">3</span> Date</div><div class="sep"></div>
+        <div class="s" data-st="4"><span class="n">4</span> Pay</div>
+      </div>
+
+      <div class="flow on" id="cs-class">
+        <div id="creditBanner"></div>
+        <div class="classlist" id="classList"></div>
+        <div class="pkg-link center" style="margin-top:22px">
+          <button class="btn ghost sm" onclick="custStep('packages')" data-i18n="packages">View packages & offers</button>
+          <button class="btn ghost sm" onclick="custStep('mine')" data-i18n="my_sessions">My sessions</button>
+        </div>
+      </div>
+
+      <div class="flow" id="cs-packages">
+        <button class="back" onclick="custStep('class')">← Back</button>
+        <div class="phead" style="padding-top:0"><p style="color:var(--mut);font-size:14px;margin-top:8px">Prepay and your classes come out cheaper. Buy once with Viva, then book with no extra charge until your credits run out.</p></div>
+        <div class="roleswitch" style="max-width:340px;margin:0 auto 22px">
+          <button class="on" id="pk-mine" onclick="pkgMode('mine')" data-i18n="for_me">For me</button>
+          <button id="pk-gift" onclick="pkgMode('gift')" data-i18n="as_gift">🎁 As a gift</button>
+        </div>
+        <div class="gift-note" id="giftNote" style="display:none">
+          Buy a package as a gift. You'll get a voucher code to pass on — they redeem it in their own account.
+        </div>
+        <div class="pkglist" id="pkgList"></div>
+        <div class="redeem-box">
+          <label>Have a gift voucher?</label>
+          <div class="promo-row">
+            <input id="voucherInput" placeholder="Enter voucher code" oninput="this.value=this.value.toUpperCase()">
+            <button class="btn ghost sm" onclick="redeemVoucher()" data-i18n="redeem">Redeem</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- gift voucher result -->
+      <div class="flow" id="cs-gift">
+        <div class="voucher-card">
+          <div class="vc-ribbon">🎁 Gift Voucher</div>
+          <div class="vc-logo">
+            <svg viewBox="0 0 40 40" width="46" height="46" fill="none">
+              <path d="M8 26C8 16 16 9 26 12C20 13 16 18 17 24C18 30 24 32 30 29C27 33 20 35 14 32C10 30 8 28 8 26Z" fill="#C77B7B"/>
+              <path d="M32 14C32 24 24 31 14 28C20 27 24 22 23 16C22 10 16 8 10 11C13 7 20 5 26 8C30 10 32 12 32 14Z" fill="#D4A8A0"/>
+            </svg>
+          </div>
+          <div class="vc-title">REBALANCE</div>
+          <div class="vc-for" id="vcPkg">—</div>
+          <div class="vc-code" id="vcCode">—</div>
+          <p class="vc-hint">Share this code with them. They enter it under “Have a gift voucher?” to claim the classes.</p>
+          <div class="pr-actions">
+            <button class="btn ghost" onclick="shareVoucher()">Share / copy</button>
+            <button class="btn" onclick="custStep('class')">Done</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow" id="cs-type">
+        <button class="back" onclick="custStep('class')">← Session</button>
+        <div class="phead center" style="padding-top:0"><h2 id="typeTitle" style="font-family:'Fraunces';font-weight:300;font-size:1.9rem"></h2><p style="color:var(--mut);font-size:14px;margin-top:8px">How would you like to take it?</p></div>
+        <div class="typechoice" id="typeChoice"></div>
+      </div>
+
+      <div class="flow" id="cs-slots">
+        <button class="back" onclick="custStep('type')">← Back</button>
+        <div class="daybar" id="daybar"></div>
+        <div class="slots" id="slots"></div>
+        <div class="gcal"><span class="d"></span> Live availability — open times from the studio's Google Calendar.</div>
+      </div>
+
+      <div class="flow" id="cs-pay">
+        <button class="back" onclick="custStep('slots')">← Time</button>
+        <div class="pay">
+          <div class="repeat-box" id="repeatBox">
+            <label class="rp-toggle">
+              <input type="checkbox" id="rpOn" onchange="toggleRepeat()">
+              <span><b data-i18n="book_weekly">Book this weekly</b><br><small data-i18n="weekly_sub">Same class, same time, every week</small></span>
+            </label>
+            <div class="rp-weeks" id="rpWeeks" style="display:none">
+              <span>for</span>
+              <select id="rpCount" onchange="buildReceipt()">
+                <option value="2">2 weeks</option>
+                <option value="4" selected>4 weeks</option>
+                <option value="6">6 weeks</option>
+                <option value="8">8 weeks</option>
+              </select>
+            </div>
+          </div>
+          <div class="promo-row">
+            <input id="promoInput" placeholder="Promo code (optional)" oninput="this.value=this.value.toUpperCase()">
+            <button class="btn ghost sm" onclick="applyPromo()" data-i18n="apply">Apply</button>
+          </div>
+          <div class="receipt" id="receipt"></div>
+          <div class="viva" id="vivaRow">
+            <svg class="viva-logo" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Viva Wallet">
+              <!-- left V: outlined -->
+              <path d="M9 11 L20 11 L15 32 Q14.5 33.5 13.5 32 L7 13 Q6.4 11 9 11 Z" fill="none" stroke="#16243A" stroke-width="2.4" stroke-linejoin="round"/>
+              <!-- right V: solid, overlapping -->
+              <path d="M18.5 11 L29 11 Q31.6 11 31 13 L24.5 32 Q23.5 33.5 23 32 L18 13 Q17.4 11 18.5 11 Z" fill="#16243A"/>
+            </svg>
+            <div><b>viva</b> wallet · secure payment<br><span class="viva-sub">Card · Apple&nbsp;Pay · Google&nbsp;Pay</span></div>
+          </div>
+          <div class="policy"><b>Cancellation policy.</b> Cancel <b>more than 4 hours</b> before and you can reschedule — your payment moves to the new time. Within 4 hours, the session is lost. We email you either way.</div>
+          <button class="viva-btn" id="payBtn" onclick="custPay()">
+            <span class="vb-lock">🔒</span>
+            <span id="payLabel">Pay <span id="payAmt"></span></span>
+            <span class="vb-brand">
+              <svg viewBox="0 0 44 44" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 11 L20 11 L15 32 Q14.5 33.5 13.5 32 L7 13 Q6.4 11 9 11 Z" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round"/>
+                <path d="M18.5 11 L29 11 Q31.6 11 31 13 L24.5 32 Q23.5 33.5 23 32 L18 13 Q17.4 11 18.5 11 Z" fill="#fff"/>
+              </svg>
+              viva wallet
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <div class="flow" id="cs-mine">
+        <div class="phead" style="padding-top:6px"><h1 style="font-size:1.8rem" data-i18n="my_sessions_h">My sessions</h1></div>
+        <div id="myList"></div>
+        <div class="center" style="margin-top:22px"><button class="btn ghost" onclick="custStep('class')" data-i18n="book_another">+ Book another session</button></div>
+
+        <div class="referral-card">
+          <div class="rf-icon">🤝</div>
+          <h3 data-i18n="bring_friend">Bring a friend</h3>
+          <p>Share your code. When they book their first class, <b>you both get a free class</b>.</p>
+          <div class="rf-code" id="rfCode">—</div>
+          <button class="btn ghost" style="width:100%" onclick="shareReferral()" data-i18n="share_code">Share my code</button>
+          <div class="rf-stat" id="rfStat"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TRAINER PORTAL ============ -->
+<div class="view" id="v-train">
+  <div class="portal wrap">
+    <button class="back" onclick="show('home')">← Back to site</button>
+
+    <div class="flow on" id="t-auth">
+      <div class="authwrap"><div class="card" id="t-authcard">
+        <div class="phead center" style="padding-top:0"><span class="eyebrow" data-i18n="portal_trainer">Trainer portal</span><h1 style="margin-top:8px" data-i18n="trainer_signin">Studio sign in</h1></div>
+        <label style="margin-top:24px">Email</label><input id="ti-email" type="email" placeholder="trainer@rebalance.cy">
+        <label>Password</label><input id="ti-pass" type="password" placeholder="••••••••">
+        <label class="remember-check">
+          <input type="checkbox" id="ti-remember" checked>
+          <span>Keep me signed in on this device</span>
+        </label>
+        <button class="btn sage" style="width:100%;margin-top:16px" onclick="trainAuth()">Enter portal</button>
+        <p class="fine">Staff only. Customers book <button class="linkbtn" onclick="openCustomer()">here</button>.</p>
+        <p class="fine"><button class="linkbtn" onclick="open2FASetup('trainer')">🛡️ Set up two-factor authentication</button></p>
+      </div>
+
+      <div id="t-totp" class="verify-card" style="display:none">
+        <div class="verify-ico">🔐</div>
+        <h2>Authenticator code</h2>
+        <p class="verify-sub">Enter the current 6-digit code from your authenticator app.</p>
+        <div class="code-inputs" id="tTotpInputs">
+          <input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric">
+        </div>
+        <button class="btn sage" style="width:100%;margin-top:20px" onclick="submitTrainerTotp()">Verify</button>
+        <p class="fine"><button class="linkbtn" onclick="cancelTrainerTotp()">Cancel</button></p>
+      </div>
+      </div>
+    </div>
+
+    <div class="flow" id="t-app">
+      <div class="phead"><span class="eyebrow" data-i18n="portal_trainer">Trainer portal</span><h1 data-i18n="trainer_schedule">Studio schedule</h1></div>
+      <div class="ptabs">
+        <button class="on" data-tp="sched" onclick="trainTab('sched')">Schedule</button>
+        <button data-tp="clients" onclick="trainTab('clients')" data-i18n="clients">Clients</button>
+        <button data-tp="earnings" onclick="trainTab('earnings')" data-i18n="earnings">Earnings</button>
+        <button data-tp="manage" onclick="trainTab('manage')" data-i18n="manage">Manage</button>
+      </div>
+
+      <div class="ppanel on" id="tp-sched">
+        <div class="daybar" id="tDaybar" style="max-width:none"></div>
+        <div class="tgrid-head" style="margin-top:18px">
+          <h3 id="tDayLabel">Today</h3>
+          <div class="legend">
+            <span><i style="background:linear-gradient(165deg,#fbeae6,#f3ddd6)"></i> Booked spot</span>
+            <span><i style="background:#fff;border:1px dashed var(--mut)"></i> Free</span>
+            <span><i style="background:rgba(42,42,44,.12)"></i> Held / closed</span>
+          </div>
+        </div>
+        <div class="tslots" id="tSlots"></div>
+        <p style="font-size:12.5px;color:var(--mut);margin-top:22px">Each class is 1 hour with 5 reformers. Hold individual spots for friends, or close a whole class. Add walk-ins to any free spot and record Cash or Card. Booked clients can be cancelled on their behalf — they'll get an email. Changes sync to your Google Calendar.</p>
+      </div>
+
+      <div class="ppanel" id="tp-clients">
+        <div id="tClients"></div>
+      </div>
+
+      <div class="ppanel" id="tp-earnings">
+        <div class="earn-period" id="earnPeriod"></div>
+        <div id="earnSummary"></div>
+        <div id="earnBreakdown"></div>
+        <p style="font-size:12px;color:var(--mut);margin-top:20px;line-height:1.6">For your records. Card &amp; Viva payments are received electronically (traceable for GHS/VAT); cash is collected in studio. Keep this alongside your receipts for your Cyprus tax return. This is a summary tool, not official accounting advice.</p>
+      </div>
+
+      <div class="ppanel" id="tp-manage">
+        <p class="manage-intro">Everything here is editable — no code needed. Changes save automatically.</p>
+
+        <div class="manage-sec">
+          <div class="ms-head"><h3>Classes</h3><button class="btn ghost sm" onclick="addClass()">+ Add class</button></div>
+          <div id="mgClasses"></div>
+        </div>
+
+        <div class="manage-sec">
+          <div class="ms-head"><h3>Class times</h3></div>
+          <p class="ms-note">The hours classes run each day.</p>
+          <div id="mgTimes" class="chip-wrap"></div>
+          <div class="add-inline"><select id="newTime"></select><button class="btn ghost sm" onclick="addTime()">+ Add time</button></div>
+        </div>
+
+        <div class="manage-sec">
+          <div class="ms-head"><h3>Reformers per class</h3></div>
+          <p class="ms-note">How many people fit in one class.</p>
+          <div class="cap-row"><button class="capbtn" onclick="changeCap(-1)">−</button><span id="mgCap">5</span><button class="capbtn" onclick="changeCap(1)">+</button></div>
+        </div>
+
+        <div class="manage-sec">
+          <div class="ms-head"><h3>Packages &amp; offers</h3><button class="btn ghost sm" onclick="addPackage()">+ Add package</button></div>
+          <div id="mgPackages"></div>
+        </div>
+
+        <div class="manage-sec">
+          <div class="ms-head"><h3>Promo codes</h3><button class="btn ghost sm" onclick="addPromo()">+ Add code</button></div>
+          <div id="mgPromos"></div>
+        </div>
+
+        <div class="manage-sec">
+          <div class="ms-head"><h3>First-session offer</h3></div>
+          <p class="ms-note">A special price for someone's very first class, to bring new people in.</p>
+          <label class="mg-check" style="margin-bottom:12px">
+            <input type="checkbox" id="mgFirstOn" onchange="editFirstOffer()"> Offer a discounted first class
+          </label>
+          <div class="mg-two" id="mgFirstPriceWrap">
+            <label>First-class price €<input type="number" id="mgFirstPrice" onchange="editFirstOffer()"></label>
+          </div>
+        </div>
+
+        <div class="manage-sec">
+          <div class="ms-head"><h3>Trainers</h3><button class="btn ghost sm" onclick="addTrainer()">+ Add trainer</button></div>
+          <p class="ms-note">Each trainer can be assigned to classes. Earnings can be split by trainer.</p>
+          <div id="mgTrainers"></div>
+        </div>
+
+        <div class="manage-sec">
+          <div class="ms-head"><h3>Security</h3></div>
+          <p class="ms-note">Two-factor adds a 6-digit code from Google or Microsoft Authenticator on top of your password. Strongly recommended — this account holds every client's details.</p>
+          <button class="btn ghost" style="width:100%" onclick="open2FASetup('trainer')">🛡️ Set up two-factor authentication</button>
+        </div>
+
+        <div class="manage-sec">
+          <div class="ms-head"><h3>Backup</h3></div>
+          <p class="ms-note">Download a copy of every booking, client and receipt record. Keep it somewhere safe — do this regularly.</p>
+          <button class="btn ghost" style="width:100%" onclick="downloadBackup()">⤓ Download full backup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- modal + toast -->
+<div class="modal" id="modal"><div class="sheet">
+  <h3 id="mTitle"></h3><p id="mBody"></p><div id="mPolicy"></div>
+  <div class="row"><button class="btn ghost" style="flex:1" onclick="closeModal()">Keep it</button><button class="btn" style="flex:1" id="mConfirm"></button></div>
+</div></div>
+<div class="modal" id="walkinModal"><div class="sheet">
+  <h3>Add walk-in</h3><p>Book this spot for an in-person client and record how they paid.</p>
+  <div class="wi-target" id="wiClassLabel"></div>
+  <label>Client name</label><input id="wiName" placeholder="e.g. Maria K.">
+  <label>Payment</label>
+  <select id="wiPay">
+    <option value="cash">Cash — paid in studio</option>
+    <option value="card">Card — paid in studio</option>
+  </select>
+  <div class="row">
+    <button class="btn ghost" style="flex:1" onclick="document.getElementById('walkinModal').classList.remove('show')">Cancel</button>
+    <button class="btn" style="flex:1" onclick="saveWalkin()">Book + record</button>
+  </div>
+</div></div>
+<!-- Animated receipt (prints out after payment) -->
+<div class="receipt-overlay" id="receiptOverlay">
+  <div class="printer">
+    <div class="printer-top">
+      <div class="printer-slot"></div>
+      <div class="printer-lights"><i></i><i></i><i></i></div>
+    </div>
+    <div class="paper-wrap">
+      <div class="paper" id="paperReceipt">
+        <div class="pr-logo">
+          <svg viewBox="0 0 40 40" width="42" height="42" fill="none">
+            <path d="M8 26C8 16 16 9 26 12C20 13 16 18 17 24C18 30 24 32 30 29C27 33 20 35 14 32C10 30 8 28 8 26Z" fill="#C77B7B"/>
+            <path d="M32 14C32 24 24 31 14 28C20 27 24 22 23 16C22 10 16 8 10 11C13 7 20 5 26 8C30 10 32 12 32 14Z" fill="#D4A8A0"/>
+          </svg>
+        </div>
+        <div class="pr-title">REBALANCE</div>
+        <div class="pr-sub">Physiotherapy &amp; Clinical Pilates<br>Angelou Terzaki 4, Engomi · Nicosia</div>
+        <div class="pr-line"></div>
+        <div class="pr-row"><span>Receipt</span><b id="prNo">—</b></div>
+        <div class="pr-row"><span>Date</span><b id="prDate">—</b></div>
+        <div class="pr-line dashed"></div>
+        <div class="pr-row"><span>Session</span><b id="prClass">—</b></div>
+        <div class="pr-row"><span>Type</span><b id="prType">—</b></div>
+        <div class="pr-row"><span>When</span><b id="prWhen">—</b></div>
+        <div class="pr-row" id="prPromoRow" style="display:none"><span>Promo</span><b id="prPromo">—</b></div>
+        <div class="pr-line dashed"></div>
+        <div class="pr-row total"><span>TOTAL PAID</span><b id="prTotal">—</b></div>
+        <div class="pr-row"><span>Method</span><b id="prMethod">—</b></div>
+        <div class="pr-line"></div>
+        <div class="pr-thanks">Thank you for training with us 🌿<br><span>A copy has been emailed to you</span></div>
+        <div class="pr-barcode"></div>
+      </div>
+    </div>
+    <div class="pr-actions" id="prActions">
+      <button class="btn ghost" onclick="saveReceiptPDF()">⤓ Save PDF</button>
+      <button class="btn" id="prDone" onclick="closeReceipt()">Done</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- AI chatbot -->
+<button class="chat-fab" id="chatFab" onclick="toggleChat()" aria-label="Chat with us">
+  <span class="cf-icon">✦</span>
+</button>
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-head">
+    <div><b>Rebalance Assistant</b><span class="chat-status">Ask about classes, pricing, or booking</span></div>
+    <button class="chat-close" onclick="toggleChat()">×</button>
+  </div>
+  <div class="chat-body" id="chatBody">
+    <div class="chat-msg bot">Hi! I'm the Rebalance assistant. 🌿 Ask me about classes, prices, or booking — or tap a question below.</div>
+    <div class="chat-chips" id="chatChips">
+      <button onclick="chatQuick('What classes do you offer?')">What classes?</button>
+      <button onclick="chatQuick('How much does it cost?')">Prices</button>
+      <button onclick="chatQuick('What times are you open?')">Times</button>
+      <button onclick="chatQuick('How do I book?')">How to book</button>
+      <button onclick="chatQuick('Where are you located?')">Location</button>
+    </div>
+  </div>
+  <div class="chat-input">
+    <input id="chatInput" placeholder="Type your question…" onkeydown="if(event.key==='Enter')sendChat()">
+    <button onclick="sendChat()" aria-label="Send">→</button>
+  </div>
+</div>
+
+<!-- Privacy consent banner (shows on arrival until accepted) -->
+<div class="privacy-banner" id="privacyBanner">
+  <div class="pb-text">
+    We use your data only to manage your bookings and payments — never sold or shared. See our
+    <button class="linkbtn" onclick="openPrivacy()">Privacy Policy</button>.
+  </div>
+  <div class="pb-actions">
+    <button class="btn sm" onclick="acceptPrivacy()">Accept</button>
+  </div>
+</div>
+
+<!-- Privacy Policy modal -->
+<div class="modal" id="privacyModal"><div class="sheet privacy-sheet">
+  <h3>Privacy Policy</h3>
+  <div class="privacy-body">
+    <p class="pp-updated">Last updated: July 2026 · Draft — review with a legal advisor before publishing.</p>
+    <h4>Who we are</h4>
+    <p>Rebalance Physiotherapy &amp; Clinical Pilates, Angelou Terzaki 4, Engomi, Nicosia, Cyprus. Contact: hello@rebalance.cy · 22 035001.</p>
+    <h4>What we collect</h4>
+    <p>When you create an account and book, we collect your name, email, booking history, and payment status (paid by Viva, card, cash, or package). We do not store your card details — payments are handled by Viva Wallet.</p>
+    <h4>Why we use it</h4>
+    <p>To create and manage your account, take and confirm bookings, issue receipts, contact you about your sessions (e.g. cancellations), and keep financial records as required by Cyprus law.</p>
+    <h4>Legal basis (GDPR)</h4>
+    <p>We process your data to perform our contract with you (managing your bookings), for our legitimate interest in running the studio, and to meet legal obligations such as tax record-keeping.</p>
+    <h4>How long we keep it</h4>
+    <p>Booking and payment records are kept for the period required by Cyprus tax law (currently six years). You may ask us to delete your account data that we are not legally required to retain.</p>
+    <h4>Who has access</h4>
+    <p>Only the studio owner and authorised staff. We do not sell or share your data with third parties, except service providers who help us operate (e.g. Viva Wallet for payments, Google Calendar for scheduling), who process it only on our instructions.</p>
+    <h4>Your rights</h4>
+    <p>Under GDPR you have the right to access, correct, or delete your data, to object to or restrict processing, and to data portability. To exercise these, contact us at hello@rebalance.cy. You may also complain to the Office of the Commissioner for Personal Data Protection in Cyprus.</p>
+    <h4>Cookies</h4>
+    <p>This site stores only what is necessary for you to sign in and book. It does not use advertising or third-party tracking cookies.</p>
+    <p class="pp-note"><b>Note:</b> This is a starter template, not legal advice. Have a Cyprus legal advisor review it before you publish.</p>
+  </div>
+  <div class="row"><button class="btn" style="width:100%" onclick="closePrivacy()">Close</button></div>
+</div></div>
+
+<script>
+/* ===================== DATA ===================== */
+/* ===================== BACKEND CONNECTOR =====================
+   Set BACKEND to your Render URL to go live, e.g.
+   const BACKEND = "https://rebalance-backend.onrender.com";
+   Leave it "" to run the in-browser demo (no server).            */
+const BACKEND = "https://rebalance-backend-it62.onrender.com";
+
+/* ===================== LANGUAGE (EN / GR) =====================
+   Auto-detects the phone/browser language on first visit, then remembers
+   whatever the person picks. */
+const I18N = {
+  en:{
+    nav_book:'Book / Sign in', nav_trainer:'Trainer',
+    hero_eyebrow:'Physiotherapy · Pilates · GHS',
+    hero_cta:'Book a session', hero_cta2:'See the practice',
+    portal_customer:'Customer portal', portal_trainer:'Trainer portal',
+    home_studio:'The Studio', home_approach:'Our Approach', home_visit:'Where to find us',
+    trainer_signin:'Studio sign in', trainer_schedule:'Studio schedule',
+    book_session_h:'Book a session',
+    book_title:'Book your mat', login:'Log in', signup:'Sign up',
+    full_name:'Full name', email:'Email', password:'Password',
+    referral:'Referral code (optional)',
+    consent:'I agree to the Privacy Policy and consent to my data being used to manage my bookings.',
+    create_account:'Create account',
+    step_session:'Session', step_type:'Type', step_date:'Date', step_pay:'Pay',
+    choose_session:'Book a session', select:'Select →', from:'from',
+    class_of:'Class of', private:'Private',
+    packages:'View packages & offers', my_sessions:'My sessions',
+    for_me:'For me', as_gift:'🎁 As a gift',
+    have_voucher:'Have a gift voucher?', redeem:'Redeem',
+    promo_ph:'Promo code (optional)', apply:'Apply',
+    book_weekly:'Book this weekly', weekly_sub:'Same class, same time, every week',
+    total:'Total', pay_with:'Pay', cancel_policy:'Cancellation policy.',
+    schedule:'Schedule', clients:'Clients', earnings:'Earnings', manage:'Manage',
+    my_sessions_h:'My sessions', book_another:'+ Book another session',
+    bring_friend:'Bring a friend', share_code:'Share my code',
+    first_time:'First time here?', first_offer:'Your first class is',
+    add_calendar:'📅 Add to calendar', book_again:'↻ Book again',
+    reschedule:'Reschedule', cancel:'Cancel', confirmed:'Confirmed',
+    full_join:'Full · join list', on_waitlist:'✓ On waitlist',
+    closed:'Closed', private_booked:'Private — booked', left:'left', available:'Available', taken:'Taken',
+  },
+  el:{
+    nav_book:'Κράτηση / Σύνδεση', nav_trainer:'Γυμναστής',
+    hero_eyebrow:'Φυσιοθεραπεία · Pilates · ΓΕΣΥ',
+    hero_cta:'Κλείστε μάθημα', hero_cta2:'Δείτε το στούντιο',
+    portal_customer:'Πύλη πελατών', portal_trainer:'Πύλη γυμναστή',
+    home_studio:'Το Στούντιο', home_approach:'Η Προσέγγισή μας', home_visit:'Πού θα μας βρείτε',
+    trainer_signin:'Σύνδεση στούντιο', trainer_schedule:'Πρόγραμμα στούντιο',
+    book_session_h:'Κλείστε μάθημα',
+    book_title:'Κλείστε τη θέση σας', login:'Σύνδεση', signup:'Εγγραφή',
+    full_name:'Ονοματεπώνυμο', email:'Email', password:'Κωδικός',
+    referral:'Κωδικός σύστασης (προαιρετικό)',
+    consent:'Συμφωνώ με την Πολιτική Απορρήτου και τη χρήση των δεδομένων μου για τη διαχείριση των κρατήσεών μου.',
+    create_account:'Δημιουργία λογαριασμού',
+    step_session:'Μάθημα', step_type:'Τύπος', step_date:'Ημερομηνία', step_pay:'Πληρωμή',
+    choose_session:'Κλείστε μάθημα', select:'Επιλογή →', from:'από',
+    class_of:'Τμήμα των', private:'Ιδιαίτερο',
+    packages:'Πακέτα & προσφορές', my_sessions:'Τα μαθήματά μου',
+    for_me:'Για μένα', as_gift:'🎁 Ως δώρο',
+    have_voucher:'Έχετε δωροκάρτα;', redeem:'Εξαργύρωση',
+    promo_ph:'Κωδικός έκπτωσης (προαιρετικό)', apply:'Εφαρμογή',
+    book_weekly:'Εβδομαδιαία κράτηση', weekly_sub:'Ίδιο μάθημα, ίδια ώρα, κάθε εβδομάδα',
+    total:'Σύνολο', pay_with:'Πληρωμή', cancel_policy:'Πολιτική ακύρωσης.',
+    schedule:'Πρόγραμμα', clients:'Πελάτες', earnings:'Έσοδα', manage:'Διαχείριση',
+    my_sessions_h:'Τα μαθήματά μου', book_another:'+ Νέα κράτηση',
+    bring_friend:'Φέρτε έναν φίλο', share_code:'Μοιραστείτε τον κωδικό',
+    first_time:'Πρώτη φορά;', first_offer:'Το πρώτο σας μάθημα',
+    add_calendar:'📅 Στο ημερολόγιο', book_again:'↻ Ξανά κράτηση',
+    reschedule:'Αλλαγή ώρας', cancel:'Ακύρωση', confirmed:'Επιβεβαιωμένο',
+    full_join:'Πλήρες · λίστα αναμονής', on_waitlist:'✓ Σε λίστα αναμονής',
+    closed:'Κλειστό', private_booked:'Ιδιαίτερο — κλεισμένο', left:'ελεύθερες', available:'Διαθέσιμο', taken:'Κλεισμένο',
+  }
+};
+// auto-detect the phone's language on first visit; remember their choice after
+let LANG = (function(){
+  try{ const saved=localStorage.getItem('rb_lang'); if(saved) return saved; }catch(e){}
+  const nav=(navigator.language||navigator.userLanguage||'en').toLowerCase();
+  return nav.startsWith('el') ? 'el' : 'en';   // Greek phone → Greek site
+})();
+function t(key){ return (I18N[LANG] && I18N[LANG][key]) || I18N.en[key] || key; }
+function setLang(l){
+  LANG=l;
+  try{ localStorage.setItem('rb_lang', l); }catch(e){}
+  applyLang();
+}
+function toggleLang(){ setLang(LANG==='el'?'en':'el'); }
+// paint every element that declares data-i18n
+function applyLang(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n');
+    const v=t(k);
+    if(el.placeholder!==undefined && el.tagName==='INPUT') el.placeholder=v;
+    else el.textContent=v;
+  });
+  const btn=document.getElementById('langBtn');
+  if(btn) btn.textContent = LANG==='el' ? 'EN' : 'ΕΛ';
+  document.documentElement.lang = LANG;
+  // re-render anything dynamic
+  if(typeof renderClasses==='function' && document.getElementById('classList')) renderClasses();
+  if(typeof renderPackages==='function' && document.getElementById('pkgList')) renderPackages();
+}
+
+let authToken = null, trainerToken = null;
+async function api(path, {method="GET", body=null, token=null}={}){
+  const headers={"Content-Type":"application/json"};
+  if(token) headers["Authorization"]="Bearer "+token;
+  const res = await fetch(BACKEND+path, {method, headers, body: body?JSON.stringify(body):null});
+  if(!res.ok){ let m="Request failed"; try{m=(await res.json()).detail||m;}catch(e){} throw new Error(m); }
+  return res.json();
+}
+function isoDate(d){return d.toISOString().slice(0,10);}
+
+let CLASSES=[
+  {id:'reformer',name:'Reformer Pilates',dur:'1 hour',who:'5 reformers · spring resistance',price:35,solo:60},
+  {id:'rehab',name:'Clinical Rehab',dur:'1 hour',who:'Physio-led · GHS',price:42,solo:65},
+  {id:'mat',name:'Mat & Breath',dur:'1 hour',who:'Group mat · alignment',price:18,solo:40},
+];
+let PACKAGES=[
+  {id:'p4',  name:'Starter · 4 classes', count:4,  price:120, note:'€30 / class · use within 1 month'},
+  {id:'p8',  name:'Monthly · 8 classes', count:8,  price:220, note:'€27.50 / class · best for weekly regulars', best:true},
+  {id:'p3m', name:'3-Month · 30 classes',count:30, price:750, note:'€25 / class · prepay the season, save most'},
+];
+let CAP=5; // reformers per class (editable)
+const dow=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DAYS=[];for(let i=0;i<6;i++){const d=new Date();d.setDate(d.getDate()+i);DAYS.push(d);}
+let TIMES=['08:00','09:00','10:00','11:00','17:00','18:00','19:00'];
+let PROMOS={ 'FIRST20':{off:0.20,label:'20% off'}, 'WELCOME10':{off:0.10,label:'10% off'} };
+
+// ---- persistence: save/load all editable settings (survives refresh when hosted) ----
+let TRAINERS=[{id:'t1',name:'Aphrodite',role:'Physiotherapist · Owner'}];
+let FIRST_OFFER = { on:true, price:15 };
+function saveSettings(){
+  const data={CLASSES,PACKAGES,CAP,TIMES,PROMOS,TRAINERS,FIRST_OFFER};
+  try{ localStorage.setItem('rb_settings', JSON.stringify(data)); }catch(e){}
+  // when live, also save on the server so edits are permanent and shared
+  if(BACKEND && trainerToken){
+    api('/settings',{method:'POST',token:trainerToken,body:{data}}).catch(()=>{});
+  }
+}
+function applySettings(s){
+  if(!s) return;
+  if(s.CLASSES)CLASSES=s.CLASSES; if(s.PACKAGES)PACKAGES=s.PACKAGES; if(s.CAP)CAP=s.CAP;
+  if(s.TIMES)TIMES=s.TIMES; if(s.PROMOS)PROMOS=s.PROMOS;
+  if(s.TRAINERS)TRAINERS=s.TRAINERS; if(s.FIRST_OFFER)FIRST_OFFER=s.FIRST_OFFER;
+}
+function loadSettings(){
+  try{ applySettings(JSON.parse(localStorage.getItem('rb_settings')||'null')); }catch(e){}
+}
+// when live, the server is the source of truth — pull settings on load
+async function loadServerSettings(){
+  if(!BACKEND) return;
+  try{
+    const s=await api('/settings');
+    if(s && Object.keys(s).length){
+      applySettings(s);
+      if(document.getElementById('classList')) renderClasses();
+      if(document.getElementById('pkgList')) renderPackages();
+    }
+  }catch(e){/* fall back to local */}
+}
+// download a full backup of the database (trainer)
+async function downloadBackup(){
+  if(!BACKEND || !trainerToken){ toast('Backups are available once the site is live','Backup'); return; }
+  try{
+    const res=await fetch(BACKEND+'/backup',{headers:{Authorization:'Bearer '+trainerToken}});
+    if(!res.ok) throw new Error();
+    const blob=await res.blob();
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='rebalance-backup-'+new Date().toISOString().slice(0,10)+'.db';
+    a.click(); URL.revokeObjectURL(a.href);
+    toast('Backup downloaded — keep it somewhere safe','Backup');
+  }catch(e){ toast('Backup failed','Backup'); }
+}
+
+
+// shared store: store[dayIdx][time] = { cls, closed, spots[5] }
+//   spots[i] = null (free) | 'held' (closed by trainer) | { name, pay:'viva'|'cash'|null }
+loadSettings(); // apply any saved trainer edits before building the schedule
+const store={};
+DAYS.forEach((d,di)=>{store[di]={};TIMES.forEach((t,ti)=>{
+  const seed=(di*7+ti*11);
+  const cls=CLASSES[ti%CLASSES.length];
+  const spots=new Array(CAP).fill(null);
+  // seed some demo bookings — all paid (online=viva, walk-in=cash). Never unpaid.
+  const taken=(seed%4); // 0..3 people pre-booked
+  const names=['Eleni G.','Marios K.','Sofia P.','Andreas L.','Christina M.'];
+  const pays=['viva','cash','viva'];
+  for(let s=0;s<taken;s++){spots[s]={name:names[(di+ti+s)%names.length],pay:pays[s%pays.length]};}
+  // one class fully closed for demo variety
+  const closed=(seed%9===0);
+  store[di][t]={cls:cls.name, closed, spots};
+});});
+
+function spotsFree(cell){return cell.closed?0:cell.spots.filter(s=>s===null).length;}
+function spotsBooked(cell){return cell.spots.filter(s=>s&&typeof s==='object').length;}
+
+const state={user:null,cls:null,dayIdx:0,slot:null,trainerDay:0,bookings:[],credits:0,bookMode:'shared'};
+let custMode='login';
+let walkinTarget=null;
+
+/* ===================== VIEW NAV ===================== */
+function show(v){
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
+  document.getElementById('v-'+v).classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function jump(id){setTimeout(()=>document.getElementById(id)?.scrollIntoView({behavior:'smooth'}),60);}
+function openCustomer(){show('cust');custReset();}
+function openTrainer(){show('train');document.getElementById('t-auth').classList.add('on');document.getElementById('t-app').classList.remove('on');}
+
+/* ===================== CUSTOMER AUTH ===================== */
+function custTab(m){custMode=m;
+  document.getElementById('ct-login').classList.toggle('on',m==='login');
+  document.getElementById('ct-signup').classList.toggle('on',m==='signup');
+  document.getElementById('cf-name').style.display=m==='signup'?'block':'none';
+  document.getElementById('cf-ref').style.display=m==='signup'?'block':'none';
+  document.getElementById('cConsentWrap').style.display=m==='signup'?'flex':'none';
+  document.getElementById('cAuthBtn').textContent=m==='signup'?'Create account':'Log in';
+  document.getElementById('cAuthFine').textContent=m==='signup'?'Already a member? Switch to Log in.':'New here? Switch to Sign up.';
+}
+function custReset(){
+  if(state.user){document.getElementById('c-auth').classList.remove('on');document.getElementById('c-flow').classList.add('on');custStep('class');}
+  else{document.getElementById('c-auth').classList.add('on');document.getElementById('c-flow').classList.remove('on');}
+}
+let pendingAuth=null; // holds signup/login details until code verified
+let demoCode=null;
+async function custAuth(){
+  const email=document.getElementById('ci-email').value.trim();
+  if(!email){toast('Enter your email','Account');return;}
+  if(custMode==='signup' && !document.getElementById('ci-consent').checked){
+    toast('Please accept the Privacy Policy to create an account','Privacy');return;
+  }
+  const name=document.getElementById('ci-name').value.trim();
+  const pass=document.getElementById('ci-pass').value;
+  pendingAuth={mode:custMode,email,name:name||email.split('@')[0],pass};
+  // request a verification code
+  if(BACKEND){
+    try{
+      const r=await api('/send-code',{method:'POST',body:{email,purpose:custMode}});
+      // if the server has no email set up yet, it hands the code back for testing
+      if(r && r.test_code){
+        document.getElementById('verifyDemo').innerHTML=
+          'Email not set up yet — your code is <b>'+r.test_code+'</b><br><small>Configure SMTP on the server to email codes instead.</small>';
+      }else{
+        document.getElementById('verifyDemo').textContent='';
+      }
+    }
+    catch(e){toast(e.message,'Verify');return;}
+  }else{
+    // demo: generate a code locally and show it (real email sends once deployed)
+    demoCode=String(Math.floor(100000+Math.random()*900000));
+    document.getElementById('verifyDemo').innerHTML='Demo mode — your code is <b>'+demoCode+'</b> (a real email is sent once deployed).';
+  }
+  document.getElementById('verifyEmail').textContent=email;
+  document.getElementById('c-authcard').style.display='none';
+  document.getElementById('c-verify').style.display='block';
+  const first=document.querySelector('#codeInputs input'); if(first){first.value='';first.focus();}
+}
+async function verifyCode(){
+  const code=Array.from(document.querySelectorAll('#codeInputs input')).map(i=>i.value).join('');
+  if(code.length<6){toast('Enter the full 6-digit code','Verify');return;}
+  pendingAuth.emailCode=code;
+  if(BACKEND){
+    try{
+      await doBackendAuth(code, '');
+    }catch(e){
+      if(String(e.message).includes('2FA_REQUIRED')){
+        // they have an authenticator app set up — ask for that code next
+        document.getElementById('c-verify').style.display='none';
+        document.getElementById('c-totp').style.display='block';
+        const f=document.querySelector('#totpInputs input'); if(f){f.value='';f.focus();}
+        return;
+      }
+      toast(e.message,'Verify');return;
+    }
+  }else{
+    if(code!==demoCode){toast('Incorrect code — check and try again','Verify');return;}
+    state.user={email:pendingAuth.email,name:pendingAuth.name};
+  }
+  finishAuth();
+}
+async function doBackendAuth(emailCode, totpCode){
+  const remember=(document.getElementById('ci-remember')||{}).checked!==false;
+  const path=pendingAuth.mode==='signup'?'/signup':'/login';
+  const body=pendingAuth.mode==='signup'
+    ? {name:pendingAuth.name,email:pendingAuth.email,password:pendingAuth.pass,code:emailCode,remember}
+    : {email:pendingAuth.email,password:pendingAuth.pass,code:emailCode,totp:totpCode,remember};
+  const r=await api(path,{method:'POST',body});
+  authToken=r.token; state.user={email:r.email,name:r.name}; state.credits=r.credits||0;
+  if(remember){ try{ localStorage.setItem('rb_token', r.token); }catch(e){} }
+}
+// second step: the authenticator app code
+async function submitTotp(){
+  const totp=Array.from(document.querySelectorAll('#totpInputs input')).map(i=>i.value).join('');
+  if(totp.length<6){toast('Enter the full 6-digit code','2FA');return;}
+  try{ await doBackendAuth(pendingAuth.emailCode, totp); }
+  catch(e){ toast(e.message,'2FA'); return; }
+  document.getElementById('c-totp').style.display='none';
+  finishAuth();
+}
+/* ---------- 2FA setup (Google / Microsoft Authenticator) ---------- */
+let twofaTarget='customer';
+let twofaBusy=false;
+async function open2FASetup(who){
+  if(twofaBusy) return;             // stop double-taps hammering the server
+  twofaTarget=who||'customer';
+  if(!BACKEND){ toast('Two-factor works once the site is live','2FA'); return; }
+  let email='', pass='';
+  if(who==='trainer'){
+    // if already signed in, reuse those credentials; otherwise read the login form
+    if(trainerCreds.email && trainerCreds.pass){
+      email=trainerCreds.email; pass=trainerCreds.pass;
+    }else{
+      email=(document.getElementById('ti-email').value||'').trim();
+      pass=document.getElementById('ti-pass').value||'';
+      if(!email||!pass){ toast('Sign in first, then set up two-factor','2FA'); return; }
+    }
+  }else{
+    email = state.user ? state.user.email : '';
+    if(!email){ toast('Sign in first','2FA'); return; }
+    pass = prompt('Confirm your password to set up two-factor:')||'';
+    if(!pass){ return; }
+  }
+  twofaBusy=true;
+  toast('Setting up…','2FA');
+  try{
+    const r=await api('/2fa/setup',{method:'POST',body:{email,password:pass}});
+    document.getElementById('totpQr').src=r.qr;
+    document.getElementById('totpSecret').textContent=r.secret;
+    twofaEmail=email;
+    document.getElementById('c-2fa-setup').style.display='block';
+    document.getElementById('c-2fa-setup').scrollIntoView({behavior:'smooth',block:'center'});
+    const f=document.querySelector('#setupInputs input'); if(f){f.value='';f.focus();}
+  }catch(e){ toast(e.message,'2FA'); }
+  finally{ twofaBusy=false; }
+}
+let twofaEmail='';
+async function confirm2FA(){
+  const code=Array.from(document.querySelectorAll('#setupInputs input')).map(i=>i.value).join('');
+  if(code.length<6){toast('Enter the 6-digit code from the app','2FA');return;}
+  try{
+    await api('/2fa/confirm',{method:'POST',body:{email:twofaEmail,code}});
+    toast('Two-factor is on — your account is much safer 🛡️','Security');
+    close2FASetup();
+  }catch(e){ toast(e.message,'2FA'); }
+}
+function close2FASetup(){
+  document.getElementById('c-2fa-setup').style.display='none';
+  document.getElementById('c-authcard').style.display='block';
+  const t=document.getElementById('t-authcard'); if(t) t.style.display='block';
+}
+function finishAuth(){
+  toast(pendingAuth.mode==='signup'?'Email verified — welcome!':'Identity confirmed — welcome back!','Account');
+  // if they signed up with a friend's referral code, credit both
+  if(pendingAuth.mode==='signup'){
+    const rc=document.getElementById('ci-ref');
+    if(rc && rc.value.trim()) { applyReferral(rc.value); rc.value=''; }
+  }
+  document.getElementById('c-verify').style.display='none';
+  document.getElementById('c-authcard').style.display='block';
+  document.getElementById('c-auth').classList.remove('on');
+  document.getElementById('c-flow').classList.add('on');
+  renderClasses();custStep('class');
+}
+function resendCode(){ custAuth(); toast('New code sent','Verify'); }
+function cancelVerify(){
+  document.getElementById('c-verify').style.display='none';
+  document.getElementById('c-authcard').style.display='block';
+  pendingAuth=null;
+}
+// auto-advance between the 6 code boxes
+document.addEventListener('input',e=>{
+  if(e.target.closest('.code-inputs')){
+    e.target.value=e.target.value.replace(/[^0-9]/g,'');
+    if(e.target.value && e.target.nextElementSibling) e.target.nextElementSibling.focus();
+  }
+});
+document.addEventListener('keydown',e=>{
+  if(e.target.closest('.code-inputs') && e.key==='Backspace' && !e.target.value && e.target.previousElementSibling){
+    e.target.previousElementSibling.focus();
+  }
+});
+
+/* ===================== AI CHATBOT ===================== */
+let chatHistory=[];
+function toggleChat(){
+  const panel=document.getElementById('chatPanel');
+  const open=panel.classList.toggle('open');
+  document.getElementById('chatFab').classList.toggle('hidden',open);
+  if(open) setTimeout(()=>document.getElementById('chatInput').focus(),200);
+}
+function addChatMsg(text,who){
+  const body=document.getElementById('chatBody');
+  const d=document.createElement('div');
+  d.className='chat-msg '+who;
+  d.textContent=text;              // safe: no HTML injection
+  d.style.whiteSpace='pre-line';   // keeps our line breaks / bullet lists
+  body.appendChild(d);
+  body.scrollTop=body.scrollHeight;
+  return d;
+}
+function chatQuick(q){
+  const chips=document.getElementById('chatChips'); if(chips)chips.remove();
+  document.getElementById('chatInput').value=q;
+  sendChat();
+}
+async function sendChat(){
+  const input=document.getElementById('chatInput');
+  const q=input.value.trim();
+  if(!q) return;
+  const chips=document.getElementById('chatChips'); if(chips)chips.remove();
+  addChatMsg(q,'user');
+  input.value='';
+  chatHistory.push({role:'user',content:q});
+  const thinking=addChatMsg('','bot typing');
+  thinking.innerHTML='<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+  await new Promise(r=>setTimeout(r,420)); // natural pause
+  const answer=localAnswer(q);
+  thinking.remove();
+  addChatMsg(answer,'bot');
+  chatHistory.push({role:'assistant',content:answer});
+}
+/* ============ REBALANCE ASSISTANT — built-in bilingual engine (no API, no cost) ============
+   Scores the question against intents so it handles many phrasings, typos, EN + GR.
+   HARD LIMITS: it never books, pays, adds credits, discounts, or gives medical advice. */
+
+function isGreek(t){ return /[\u0370-\u03FF\u1F00-\u1FFF]/.test(t); }
+
+// strip accents + lowercase so "ΠΟΣΟ" / "πόσο" / "poso" all match
+function norm(t){
+  return t.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^\w\sα-ωΑ-Ω]/g,' ')
+    .replace(/\s+/g,' ').trim();
+}
+
+function money(n){ return '€'+n; }
+function cheapestPkg(){ return Math.min(...PACKAGES.map(p=>p.price)); }
+
+// ---- the knowledge base: each intent has trigger words (EN+GR) and a bilingual answer ----
+function INTENTS(){
+  const gr = t=>t; // readability
+  return [
+  {id:'greet', w:['hi','hello','hey','yia','geia','γεια','καλημερα','καλησπερα','χαιρετε','hola','sup'],
+   en:()=>'Hi! 🌿 I can help with classes, prices, times, packages, booking, or where to find us. What would you like to know?',
+   el:()=>'Γεια σας! 🌿 Μπορώ να σας βοηθήσω με μαθήματα, τιμές, ώρες, πακέτα ή κρατήσεις. Τι θα θέλατε να μάθετε;'},
+
+  {id:'price', w:['price','prices','cost','costs','how much','much','fee','fees','rate','rates','expensive','cheap','euro','money','pay','payment','ποσο','κοστος','κοστιζει','τιμη','τιμες','χρηματα','ακριβο','φθηνο','πληρωμη'],
+   en:()=>'Here are our prices:\n'+CLASSES.map(c=>`• ${c.name} — ${money(c.price)} per person (private ${money(c.solo)})`).join('\n')+`\n\nPrepaid packages start at ${money(cheapestPkg())} and work out cheaper per class. Want me to explain the packages?`,
+   el:()=>'Οι τιμές μας:\n'+CLASSES.map(c=>`• ${c.name} — ${money(c.price)} το άτομο (ιδιαίτερο ${money(c.solo)})`).join('\n')+`\n\nΤα πακέτα ξεκινούν από ${money(cheapestPkg())} και βγαίνουν φθηνότερα ανά μάθημα. Θέλετε να σας πω για τα πακέτα;`},
+
+  {id:'packages', w:['package','packages','bundle','credits','credit','membership','subscription','monthly','offer','offers','deal','πακετο','πακετα','συνδρομη','προσφορα','προσφορες','μηνιαιο'],
+   en:()=>'Our prepaid packages:\n'+PACKAGES.map(p=>`• ${p.name} — ${money(p.price)}${p.note?' ('+p.note+')':''}`).join('\n')+'\n\nYou pay once, then book classes using credits. Credits work for group classes; private sessions are always paid separately.',
+   el:()=>'Τα πακέτα μας:\n'+PACKAGES.map(p=>`• ${p.name} — ${money(p.price)}${p.note?' ('+p.note+')':''}`).join('\n')+'\n\nΠληρώνετε μία φορά και μετά κλείνετε μαθήματα με μονάδες. Οι μονάδες ισχύουν για ομαδικά· τα ιδιαίτερα πληρώνονται ξεχωριστά.'},
+
+  {id:'times', w:['time','times','hour','hours','when','schedule','open','opening','availability','available','slot','slots','ωρα','ωρες','ποτε','προγραμμα','ανοιχτα','διαθεσιμ','κενο'],
+   en:()=>`Classes run at: ${TIMES.join(', ')} — up to ${CAP} people each. When you book you'll see exactly which times are free on each day.`,
+   el:()=>`Τα μαθήματα γίνονται στις: ${TIMES.join(', ')} — έως ${CAP} άτομα το καθένα. Όταν κάνετε κράτηση θα δείτε ποιες ώρες είναι ελεύθερες.`},
+
+  {id:'location', w:['where','address','location','find','located','directions','map','parking','park','come','get there','που','διευθυνση','τοποθεσια','βρισκεστε','χαρτης','παρκινγκ','ερθω'],
+   en:()=>"We're at Angelou Terzaki 4, Engomi, Nicosia. There's a map on the homepage under 'Where to find us' — and street parking nearby.",
+   el:()=>'Βρισκόμαστε στην Αγγέλου Τερζάκη 4, Έγκωμη, Λευκωσία. Υπάρχει χάρτης στην αρχική σελίδα, και παρκάρισμα στον δρόμο.'},
+
+  {id:'private', w:['private','solo','alone','one on one','1 on 1','personal','myself','just me','ιδιαιτερο','ιδιαιτερα','μονος','μονη','προσωπικο','ατομικο'],
+   en:()=>`Yes — a Private session gives you the whole studio one-to-one. It reserves all ${CAP} spots for that time, so nobody else joins. Prices: `+CLASSES.map(c=>`${c.name} ${money(c.solo)}`).join(', ')+'. Choose "Private" after picking your class.',
+   el:()=>`Ναι — το ιδιαίτερο σας δίνει όλο το στούντιο μόνο για εσάς. Κλείνει και τις ${CAP} θέσεις εκείνη την ώρα. Τιμές: `+CLASSES.map(c=>`${c.name} ${money(c.solo)}`).join(', ')+'. Επιλέξτε «Private» αφού διαλέξετε μάθημα.'},
+
+  {id:'howbook', w:['book','booking','reserve','reservation','sign up','signup','register','join','how do i','how can i','attend','come to','κρατηση','κρατησεις','κλεισω','κλεινω','εγγραφη','πως','συμμετοχη'],
+   en:()=>'Booking takes a minute:\n1. Tap "Book / Sign in" at the top\n2. Create an account — we email you a 6-digit code to confirm it\'s you\n3. Pick a class, then Class of '+CAP+' or Private\n4. Choose a date & time (you\'ll see what\'s free)\n5. Pay securely by Viva Wallet\n\nYou can reschedule if you cancel more than 4 hours before.',
+   el:()=>'Η κράτηση παίρνει ένα λεπτό:\n1. Πατήστε «Book / Sign in» πάνω\n2. Δημιουργήστε λογαριασμό — σας στέλνουμε 6ψήφιο κωδικό στο email\n3. Διαλέξτε μάθημα, μετά ομαδικό ή ιδιαίτερο\n4. Επιλέξτε μέρα & ώρα\n5. Πληρώστε με ασφάλεια μέσω Viva Wallet\n\nΜπορείτε να αλλάξετε ώρα αν ακυρώσετε 4+ ώρες πριν.'},
+
+  {id:'cancel', w:['cancel','cancellation','reschedule','refund','change my','move my','miss','late','ακυρ','αλλαξ','επιστροφη','χασω','αργησω'],
+   en:()=>'Cancel more than 4 hours before your class and you can reschedule — your payment moves to the new time. Within 4 hours, the session is used up. We email you either way.',
+   el:()=>'Ακυρώστε πάνω από 4 ώρες πριν και μπορείτε να αλλάξετε ώρα — η πληρωμή μεταφέρεται. Κάτω από 4 ώρες, το μάθημα χάνεται. Θα λάβετε email είτε έτσι είτε αλλιώς.'},
+
+  {id:'beginner', w:['beginner','beginners','new','first time','never done','start','starting','nervous','scared','fit','unfit','shape','age','old','αρχαριος','αρχαρια','πρωτη φορα','ξεκιν','αγχος','φορμα','ηλικια'],
+   en:()=>'Absolutely — beginners are very welcome. Every session starts with a short assessment so it\'s tailored to you, and classes are small (max '+CAP+'). Mat & Breath or a Private session are gentle ways to begin.',
+   el:()=>'Φυσικά — οι αρχάριοι είναι ευπρόσδεκτοι. Κάθε συνεδρία ξεκινά με μια σύντομη αξιολόγηση ώστε να προσαρμοστεί σε εσάς, και τα τμήματα είναι μικρά (έως '+CAP+'). Το Mat & Breath ή ένα ιδιαίτερο είναι ήπιοι τρόποι να ξεκινήσετε.'},
+
+  {id:'whatisreformer', w:['reformer','machine','equipment','springs','apparatus','μηχανη','ρεφορμερ','εξοπλισμος'],
+   en:()=>`Reformer Pilates uses a spring-loaded sliding carriage — low-impact but seriously effective for strength, control and mobility. ${money(CLASSES[0].price)} in a class of ${CAP}, or ${money(CLASSES[0].solo)} private.`,
+   el:()=>`Το Reformer Pilates χρησιμοποιεί μηχάνημα με ελατήρια — ήπιο αλλά πολύ αποτελεσματικό για δύναμη, έλεγχο και κινητικότητα. ${money(CLASSES[0].price)} σε τμήμα των ${CAP}, ή ${money(CLASSES[0].solo)} ιδιαίτερο.`},
+
+  {id:'whatispilates', w:['pilates','mat','breath','what is','what are','explain','difference','types','class type','πιλατες','τι ειναι','διαφορα','ειδη','στρωμα'],
+   en:()=>'Our three sessions:\n'+CLASSES.map(c=>`• ${c.name} — ${c.who} (${money(c.price)})`).join('\n')+'\n\nAll are ' + (CLASSES[0]?CLASSES[0].dur:'1 hour') + ' and beginner-friendly.',
+   el:()=>'Τα τρία μας μαθήματα:\n'+CLASSES.map(c=>`• ${c.name} — ${c.who} (${money(c.price)})`).join('\n')+'\n\nΌλα είναι κατάλληλα και για αρχάριους.'},
+
+  {id:'ghs', w:['ghs','gesy','γεσυ','insurance','covered','cover','referral','doctor','ασφαλ','καλυπτ','παραπεμπτικο','γιατρος'],
+   en:()=>"Yes — we're a registered GHS (ΓΕΣΥ) provider. For what your physiotherapy is covered for and any referral you need, please call us on 22 035001 and we'll talk it through.",
+   el:()=>'Ναι — είμαστε εγγεγραμμένοι πάροχοι ΓΕΣΥ. Για το τι καλύπτεται και για παραπεμπτικό, τηλεφωνήστε μας στο 22 035001 και θα τα δούμε μαζί.'},
+
+  {id:'contact', w:['contact','phone','call','telephone','email','instagram','dm','message','reach','speak','talk to','human','person','επικοινων','τηλεφωνο','τηλ','καλεσω','μηνυμα','ανθρωπο','μιλησω'],
+   en:()=>'You can reach us on 22 035001 / 96 489727, or DM @rebalance_physio_pilates on Instagram. We\'re happy to help!',
+   el:()=>'Τηλεφωνήστε μας στο 22 035001 / 96 489727, ή στείλτε DM στο @rebalance_physio_pilates. Χαρά μας να βοηθήσουμε!'},
+
+  {id:'promo', w:['promo','code','discount','coupon','voucher','offer code','cheaper','deal','κωδικος','εκπτωση','κουπονι'],
+   en:()=>{const list=Object.keys(PROMOS); return list.length? 'We sometimes run promo codes — you can enter one at the payment step and the discount applies automatically. Prepaid packages are the best regular saving.' : 'Prepaid packages are our best saving — buy once, book with credits.';},
+   el:()=>{const list=Object.keys(PROMOS); return list.length? 'Κατά καιρούς έχουμε κωδικούς έκπτωσης — τον βάζετε στο βήμα πληρωμής και η έκπτωση εφαρμόζεται αυτόματα. Τα πακέτα είναι η καλύτερη σταθερή οικονομία.' : 'Τα πακέτα είναι η καλύτερη οικονομία — αγοράζετε μία φορά και κλείνετε με μονάδες.';}},
+
+  {id:'thanks', w:['thank','thanks','cheers','great','perfect','awesome','lovely','ok','okay','bye','ευχαριστ','τελεια','ωραια','ενταξει','γειασου'],
+   en:()=>'Anytime! 🌿 Tap "Book / Sign in" whenever you\'re ready — or ask me anything else.',
+   el:()=>'Παρακαλώ! 🌿 Πατήστε «Book / Sign in» όποτε είστε έτοιμοι — ή ρωτήστε με οτιδήποτε άλλο.'},
+  ];
+}
+
+// ---- things the bot must REFUSE to do ----
+function refusalCheck(n, greek){
+  // asking the bot to book / pay / give credits / discounts on their behalf
+  if(/\b(book|reserve|pay|purchase|buy|charge|add|give|credit|credits|free|discount|refund|cancel)\b.*\b(me|my|for me|us)\b/.test(n)
+     || /\b(book|pay|buy|reserve|cancel)\b.*\b(it|this|that|for me)\b/.test(n)
+     || /(add credit|give me credit|free class|make it free|do it for me|book it|pay for me|κλεισε μου|πληρωσε|δωσε μου|δωρεαν)/.test(n)){
+    return greek
+      ? 'Δεν μπορώ να κάνω κρατήσεις, πληρωμές ή να προσθέσω μονάδες — αυτά τα κάνετε μόνοι σας με ασφάλεια. Πατήστε «Book / Sign in» και θα σας καθοδηγήσω σε κάθε βήμα αν θέλετε.'
+      : "I can't make bookings, take payments, or add credits — you do those yourself, securely. Tap \"Book / Sign in\" and I'm happy to talk you through each step.";
+  }
+  // medical advice
+  if(/(pain|injur|hurt|sore|surgery|operation|slipped disc|hernia|sciatica|pregnan|diagnos|treat|therapy for|should i|is it safe|condition)/.test(n)
+     || /(πονο|πονα|τραυματ|χειρουργ|δισκο|κηλη|ισχιαλγ|εγκυ|διαγνωσ|ασφαλες)/.test(n)){
+    return greek
+      ? 'Λυπάμαι που το ακούω — αλλά δεν μπορώ να δώσω ιατρικές συμβουλές. Ο φυσιοθεραπευτής μας θα σας καθοδηγήσει σωστά: τηλεφωνήστε στο 22 035001 πριν κλείσετε, για να το συζητήσετε.'
+      : "I'm sorry to hear that — but I can't give medical advice. Our physiotherapist can guide you properly: please call 22 035001 before booking so you can talk it through.";
+  }
+  return null;
+}
+
+function localAnswer(q){
+  // answer in Greek if they wrote Greek OR the site is set to Greek
+  const greek = isGreek(q) || LANG==='el';
+  const n=norm(q);
+
+  const refusal=refusalCheck(n,greek);
+  if(refusal) return refusal;
+
+  // score every intent by how many of its trigger words appear
+  let best=null,bestScore=0;
+  for(const it of INTENTS()){
+    let score=0;
+    for(const w of it.w){
+      const wn=norm(w);
+      if(!wn) continue;
+      if(n===wn) score+=4;
+      else if(n.includes(wn)) score += wn.includes(' ')?3:2;
+    }
+    // a specific named class beats the generic "what is pilates" answer
+    if(it.id==='whatisreformer' && /reformer/.test(n)) score+=3;
+    if(score>bestScore){ bestScore=score; best=it; }
+  }
+  if(best && bestScore>=2) return greek? best.el() : best.en();
+
+  // nothing matched — be honest and useful rather than pretending
+  return greek
+    ? 'Δεν είμαι σίγουρος γι\u2019 αυτό. Μπορώ να βοηθήσω με: μαθήματα, τιμές, ώρες, πακέτα, ιδιαίτερα, κρατήσεις, ακυρώσεις και τοποθεσία. Για οτιδήποτε άλλο, καλέστε μας στο 22 035001.'
+    : "I'm not sure about that one. I can help with: classes, prices, times, packages, private sessions, booking, cancellations and where to find us. For anything else, call us on 22 035001 and someone will help.";
+}
+
+/* ===================== CUSTOMER FLOW ===================== */
+function custStep(s){
+  ['class','packages','type','slots','pay','mine','gift'].forEach(x=>document.getElementById('cs-'+x).classList.remove('on'));
+  document.getElementById('cs-'+s).classList.add('on');
+  const map={class:1,packages:0,type:2,slots:3,pay:4,mine:0};
+  document.querySelectorAll('#cSteps .s').forEach(el=>el.classList.toggle('on',+el.dataset.st<=map[s]&&map[s]>0));
+  document.getElementById('cSteps').style.display=(s==='mine'||s==='packages')?'none':'flex';
+  const titles={mine:'My sessions',packages:'Packages & offers'};
+  document.getElementById('cFlowTitle').textContent=titles[s]||'Book a session';
+  if(s==='class'){renderCreditBanner();renderClasses();}
+  if(s==='packages')renderPackages();
+  if(s==='type')renderTypeChoice();
+  if(s==='mine'){renderMine();renderReferral();}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderCreditBanner(){
+  const el=document.getElementById('creditBanner');if(!el)return;
+  el.innerHTML = state.credits>0
+    ? `<div class="credit-banner"><b>${state.credits}</b> class credit${state.credits>1?'s':''} left — your next bookings are already paid.</div>`
+    : '';
+}
+function renderPackages(){
+  document.getElementById('pkgList').innerHTML=PACKAGES.map(p=>`
+    <div class="pkg ${p.best?'best':''}">
+      ${p.best?'<span class="pkg-flag">Most popular</span>':''}
+      <h3>${p.name}</h3>
+      <div class="pkg-price">€${p.price}</div>
+      <div class="pkg-note">${p.note}</div>
+      <button class="btn ${p.best?'':'ghost'}" style="width:100%;margin-top:18px" onclick="buyPackage('${p.id}')">${giftMode?'🎁 Gift this':'Buy with Viva'}</button>
+    </div>`).join('');
+}
+async function buyPackage(id){
+  const p=PACKAGES.find(x=>x.id===id);
+  if(giftMode){
+    // buy as a gift: create a voucher code instead of adding credits to me
+    const code='GIFT-'+Math.random().toString(36).slice(2,7).toUpperCase()+Math.floor(10+Math.random()*89);
+    VOUCHERS[code]={pkg:p.id, count:p.count, name:p.name, used:false, from:state.user?state.user.name:''};
+    saveVouchers();
+    document.getElementById('vcPkg').textContent=p.name;
+    document.getElementById('vcCode').textContent=code;
+    toast('Gift paid — voucher created','Viva Wallet');
+    custStep('gift');
+    return;
+  }
+  if(BACKEND){
+    try{ const r=await api('/buy-package?pkg_id='+id,{method:'POST',token:authToken}); state.credits=r.credits; }
+    catch(e){toast(e.message,'Package');return;}
+  }else{ state.credits+=p.count; }
+  toast(`Package paid · ${p.count} credits added`,'Viva Wallet');
+  custStep('class');
+}
+
+/* ---------- referrals ---------- */
+let REFERRALS={}; // code -> {owner, uses}
+function saveRefs(){ try{ localStorage.setItem('rb_refs',JSON.stringify(REFERRALS)); }catch(e){} }
+function loadRefs(){ try{ REFERRALS=JSON.parse(localStorage.getItem('rb_refs')||'{}'); }catch(e){ REFERRALS={}; } }
+loadRefs();
+function myRefCode(){
+  if(!state.user) return '';
+  const base=(state.user.name||'FRIEND').split(' ')[0].toUpperCase().replace(/[^A-Z]/g,'').slice(0,6)||'FRIEND';
+  const code=base+'-'+(state.user.email||'x').split('@')[0].slice(0,3).toUpperCase();
+  if(!REFERRALS[code]){ REFERRALS[code]={owner:state.user.email, uses:0}; saveRefs(); }
+  return code;
+}
+function renderReferral(){
+  const el=document.getElementById('rfCode'); if(!el||!state.user) return;
+  const code=myRefCode();
+  el.textContent=code;
+  const uses=REFERRALS[code]?REFERRALS[code].uses:0;
+  document.getElementById('rfStat').textContent = uses
+    ? `${uses} friend${uses!==1?'s':''} joined — ${uses} free class${uses!==1?'es':''} earned 🌿` : '';
+}
+function shareReferral(){
+  const code=myRefCode();
+  const text=`Come train with me at Rebalance Physiotherapy & Clinical Pilates 🌿\n\nUse my code ${code} when you sign up and we both get a free class.\n\nAngelou Terzaki 4, Engomi, Nicosia`;
+  if(navigator.share){ navigator.share({title:'Rebalance',text}).catch(()=>{}); return; }
+  navigator.clipboard?.writeText(text).then(
+    ()=>toast('Referral copied — send it to a friend','Referral'),
+    ()=>toast('Your code: '+code,'Referral'));
+}
+// called at signup if they entered someone's code
+function applyReferral(code){
+  code=(code||'').trim().toUpperCase();
+  if(!code) return;
+  const r=REFERRALS[code];
+  if(!r){ toast('That referral code isn\u2019t recognised','Referral'); return; }
+  if(state.user && r.owner===state.user.email){ toast('You can\u2019t use your own code','Referral'); return; }
+  r.uses++; saveRefs();
+  state.credits += 1;              // the new person gets a free class
+  toast('Referral applied — you got a free class! 🌿','Welcome');
+}
+let giftMode=false;
+let VOUCHERS={};
+function saveVouchers(){ try{ localStorage.setItem('rb_vouchers',JSON.stringify(VOUCHERS)); }catch(e){} }
+function loadVouchers(){ try{ VOUCHERS=JSON.parse(localStorage.getItem('rb_vouchers')||'{}'); }catch(e){ VOUCHERS={}; } }
+loadVouchers();
+function pkgMode(m){
+  giftMode = m==='gift';
+  document.getElementById('pk-mine').classList.toggle('on',!giftMode);
+  document.getElementById('pk-gift').classList.toggle('on',giftMode);
+  document.getElementById('giftNote').style.display=giftMode?'block':'none';
+  renderPackages();
+}
+function redeemVoucher(){
+  const code=document.getElementById('voucherInput').value.trim().toUpperCase();
+  if(!code){toast('Enter a voucher code','Voucher');return;}
+  const v=VOUCHERS[code];
+  if(!v){ toast('That voucher code isn\u2019t valid','Voucher'); return; }
+  if(v.used){ toast('That voucher has already been used','Voucher'); return; }
+  v.used=true; saveVouchers();
+  state.credits += v.count;
+  document.getElementById('voucherInput').value='';
+  toast(`Voucher redeemed — ${v.count} classes added 🎁`,'Gift');
+  custStep('class');
+}
+function shareVoucher(){
+  const code=document.getElementById('vcCode').textContent;
+  const pkg=document.getElementById('vcPkg').textContent;
+  const text=`I've got you a gift at Rebalance Physiotherapy & Clinical Pilates 🌿\n\n${pkg}\nVoucher code: ${code}\n\nRedeem it at the studio's booking page under "Have a gift voucher?"`;
+  if(navigator.share){ navigator.share({title:'Rebalance gift voucher',text}).catch(()=>{}); return; }
+  navigator.clipboard?.writeText(text).then(
+    ()=>toast('Voucher copied — paste it to them','Gift'),
+    ()=>toast('Code: '+code,'Gift'));
+}
+function renderClasses(){
+  document.getElementById('classList').innerHTML=CLASSES.map(c=>`
+    <div class="cls" onclick="chooseClass('${c.id}')">
+      <div><h3>${c.name}</h3><div class="meta">${c.dur} · ${c.who}</div></div>
+      <div><div class="price">${t('from')} €${c.price}</div><div class="pk">${t('select')}</div></div>
+    </div>`).join('');
+}
+function chooseClass(id){
+  state.cls=CLASSES.find(c=>c.id===id);state.slot=null;state.dayIdx=0;state.bookMode=null;state.promo=null;
+  const rp=document.getElementById('rpOn'); if(rp){rp.checked=false;document.getElementById('rpWeeks').style.display='none';}
+  const pi=document.getElementById('promoInput'); if(pi)pi.value='';
+  custStep('type');
+}
+
+// Step 2: Private vs Class of 5
+function renderTypeChoice(){
+  document.getElementById('typeTitle').textContent=state.cls.name;
+  const c=state.cls;
+  const credit=state.credits>0;
+  document.getElementById('typeChoice').innerHTML=`
+    <div class="tc-card" onclick="chooseType('shared')">
+      <div class="tc-ico">👥</div>
+      <h3>Class of ${CAP}</h3>
+      <p>Join a shared reformer class — up to ${CAP} people.</p>
+      <div class="tc-price">${credit?'1 credit':'€'+c.price}</div>
+    </div>
+    <div class="tc-card" onclick="chooseType('solo')">
+      <div class="tc-ico">🌙</div>
+      <h3>Private</h3>
+      <p>The studio to yourself — one-to-one, no one else books.</p>
+      <div class="tc-price">€${c.solo}</div>
+    </div>`;
+}
+async function chooseType(mode){
+  state.bookMode=mode;
+  state.dayIdx=0;state.slot=null;
+  renderCDays();
+  await loadAvail();
+  custStep('slots');
+}
+function renderCDays(){
+  document.getElementById('daybar').innerHTML=DAYS.map((d,i)=>`
+    <div class="day ${i===state.dayIdx?'on':''}" onclick="setCDay(${i})">
+      <span class="dow">${i===0?'Today':dow[d.getDay()]}</span><span class="dn">${d.getDate()}</span></div>`).join('');
+}
+async function setCDay(i){state.dayIdx=i;state.slot=null;renderCDays();await loadAvail();}
+let availCache=null;
+async function loadAvail(){
+  if(BACKEND){
+    try{
+      const r=await api('/availability?date='+isoDate(DAYS[state.dayIdx]));
+      availCache={}; r.classes.forEach(c=>{availCache[c.hour]=c;});
+    }catch(e){availCache=null;}
+  }
+  renderCSlots();
+}
+function renderCSlots(){
+  const wantSolo=state.bookMode==='solo';
+  document.getElementById('slots').innerHTML=TIMES.map(t=>{
+    let free,booked,closed,priv;
+    if(BACKEND && availCache && availCache[t]){
+      const a=availCache[t]; free=a.free; booked=a.booked; closed=a.closed; priv=a.private;
+    }else{
+      const c=store[state.dayIdx][t]; free=spotsFree(c); booked=spotsBooked(c); closed=c.closed; priv=c.private;
+    }
+    const avail = priv ? false : (wantSolo ? (!closed && booked===0) : (!closed && free>0));
+    // a FULL (but not closed/private) group class can be joined via waitlist
+    const canWait = !wantSolo && !priv && !closed && free===0;
+    let label;
+    if(priv) label='Private — booked';
+    else if(closed) label='Closed';
+    else if(wantSolo) label = booked===0 ? 'Available' : 'Taken';
+    else label = free>0 ? free+' of '+CAP+' left' : 'Full';
+    if(canWait){
+      const on = onWaitlist(t);
+      return `<div class="slot full waitable ${on?'waiting':''}" onclick="toggleWaitlist('${t}')">
+        <div class="t">${t}</div>
+        <div class="lft">${on?'✓ On waitlist':'Full · join list'}</div></div>`;
+    }
+    return `<div class="slot ${avail?'':'full'} ${state.slot===t?'on':''}" ${avail?`onclick="pickSlot('${t}')"`:''}>
+      <div class="t">${t}</div>
+      <div class="lft">${label}</div></div>`;
+  }).join('');
+}
+/* ---------- waitlist ---------- */
+let WAITLIST=[]; // demo: {day, time}
+function onWaitlist(t){ return WAITLIST.some(w=>w.day===state.dayIdx && w.time===t); }
+async function toggleWaitlist(t){
+  const already=onWaitlist(t);
+  if(BACKEND){
+    const body={date:isoDate(DAYS[state.dayIdx]), hour:t, class_key:state.cls.id};
+    try{
+      if(already){ await api('/waitlist/leave',{method:'POST',token:authToken,body}); }
+      else{ const r=await api('/waitlist/join',{method:'POST',token:authToken,body});
+            toast(`You're #${r.position} on the waitlist — we'll email you if a spot opens`,'Waitlist'); }
+    }catch(e){ toast(e.message,'Waitlist'); return; }
+  }else{
+    if(!already) toast("You're on the waitlist — we'll email you if a spot opens 🌿",'Waitlist');
+    else toast('Removed from the waitlist','Waitlist');
+  }
+  if(already) WAITLIST=WAITLIST.filter(w=>!(w.day===state.dayIdx&&w.time===t));
+  else WAITLIST.push({day:state.dayIdx,time:t});
+  renderCSlots();
+}
+function pickSlot(t){state.slot=t;renderCSlots();setTimeout(()=>{buildReceipt();custStep('pay');},200);}
+
+// price: credit covers a CLASS spot; private is always its own price
+function applyPromo(){
+  const code=document.getElementById('promoInput').value.trim().toUpperCase();
+  if(PROMOS[code]){ state.promo=code; toast(PROMOS[code].label+' applied','Promo'); }
+  else { state.promo=null; toast('Invalid promo code','Promo'); }
+  buildReceipt();
+}
+/* ---------- first-session intro offer ---------- */
+function isFirstSession(){
+  // no confirmed bookings yet = this is their first
+  return FIRST_OFFER.on && state.user && !state.bookings.some(b=>b.status==='confirmed');
+}
+function basePrice(){
+  if(state.bookMode==='solo') return state.cls.solo;
+  if(state.credits>0) return 0;
+  if(isFirstSession()) return FIRST_OFFER.price;   // intro price for first-timers
+  return state.cls.price;
+}
+function currentPrice(){
+  let p=basePrice();
+  if(p>0 && state.promo && PROMOS[state.promo]) p=Math.round(p*(1-PROMOS[state.promo].off));
+  return p;
+}
+function repeatWeeks(){
+  const on=document.getElementById('rpOn');
+  if(!on || !on.checked) return 1;
+  return parseInt(document.getElementById('rpCount').value,10)||1;
+}
+function toggleRepeat(){
+  const on=document.getElementById('rpOn').checked;
+  document.getElementById('rpWeeks').style.display=on?'flex':'none';
+  buildReceipt();
+}
+function buildReceipt(){
+  const d=DAYS[state.dayIdx];
+  const c=store[state.dayIdx][state.slot];
+  const when=`${d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})} · ${state.slot}`;
+  const solo=state.bookMode==='solo';
+  const weeks=repeatWeeks();
+  // recurring: credits cover as many weeks as they have credits for
+  const usingCredit=!solo && state.credits>0 && weeks===1;
+  const base=basePrice(), unit=currentPrice();
+  const price=unit*weeks;
+  const promoActive = unit<base && state.promo;
+  document.getElementById('receipt').innerHTML=`
+    <div class="rr"><span class="k">Session</span><span>${state.cls.name}</span></div>
+    <div class="rr"><span class="k">Type</span><span>${solo?'Private':'Class of '+CAP}</span></div>
+    <div class="rr"><span class="k">When</span><span>${when}</span></div>
+    ${weeks>1?`<div class="rr"><span class="k">Repeats</span><span>Weekly × ${weeks}</span></div>`:''}
+    ${solo||weeks>1?'':`<div class="rr"><span class="k">Your spot</span><span>${spotsBooked(c)+1} of ${CAP}</span></div>`}
+    ${usingCredit?`<div class="rr"><span class="k">Credits</span><span>${state.credits} available</span></div>`:''}
+    ${isFirstSession()&&!solo?`<div class="rr intro"><span class="k">✦ First-session offer</span><span>€${FIRST_OFFER.price} instead of €${state.cls.price}</span></div>`:''}
+    ${promoActive?`<div class="rr"><span class="k">Promo ${state.promo}</span><span>−€${(base-unit)*weeks}.00</span></div>`:''}
+    ${weeks>1?`<div class="rr"><span class="k">Per class</span><span>€${unit}.00</span></div>`:''}
+    <div class="rr tot"><span>${usingCredit?'Use 1 credit':'Total'}</span><span>${usingCredit?'€0.00':'€'+price+'.00'}</span></div>`;
+  const btn=document.getElementById('payBtn');
+  const viva=document.getElementById('vivaRow');
+  if(usingCredit){
+    btn.classList.add('is-credit');
+    btn.innerHTML='<span class="vb-lock">✓</span><span>Confirm booking · use 1 credit</span>';
+    viva.style.display='none';
+  }else{
+    btn.classList.remove('is-credit');
+    btn.innerHTML='<span class="vb-lock">🔒</span><span>Pay €'+price+'</span><span class="vb-brand"><svg viewBox="0 0 44 44" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 11 L20 11 L15 32 Q14.5 33.5 13.5 32 L7 13 Q6.4 11 9 11 Z" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round"/><path d="M18.5 11 L29 11 Q31.6 11 31 13 L24.5 32 Q23.5 33.5 23 32 L18 13 Q17.4 11 18.5 11 Z" fill="#fff"/></svg>viva wallet</span>';
+    viva.style.display='flex';
+  }
+}
+
+async function custPay(){
+  const d=DAYS[state.dayIdx];const start=new Date(d);const[h,m]=state.slot.split(':');start.setHours(+h,+m,0,0);
+  const solo=state.bookMode==='solo';
+  if(BACKEND){
+    try{
+      const r=await api('/book',{method:'POST',token:authToken,
+        body:{class_key:state.cls.id,date:isoDate(d),hour:state.slot,private:solo}});
+      if(r.amount===0) state.credits=Math.max(0,state.credits-1);
+      await loadMyBookings();
+      showReceipt({no:r.receipt_no, cls:state.cls.name, solo, d, time:state.slot,
+                   total:r.amount, method:r.amount===0?'Package credit':'Viva Wallet'});
+    }catch(e){toast(e.message,'Booking');return;}
+    return;
+  }
+  const c=store[state.dayIdx][state.slot];
+  const idx=c.spots.findIndex(s=>s===null);
+  if(idx===-1){toast('Sorry, that just filled up','Booking');custStep('slots');renderCSlots();return;}
+  const weeks=repeatWeeks();
+  const usingCredit=!solo && state.credits>0 && weeks===1;
+  const payType = usingCredit ? 'credit' : 'viva';
+  c.spots[idx]={name:state.user.name,pay:payType,private:solo};
+  if(solo){ c.spots=c.spots.map((s,i)=> i===idx ? s : 'held'); c.private=true; }
+  const unit=currentPrice();
+  const price=unit*weeks;
+  if(usingCredit){state.credits--;}
+  // create a booking for each week
+  for(let w=0; w<weeks; w++){
+    const wd=new Date(d); wd.setDate(wd.getDate()+w*7);
+    const st=new Date(wd); st.setHours(+h,+m,0,0);
+    state.bookings.unshift({id:Date.now()+w,cls:state.cls.name+(solo?' · Private':''),price:unit,
+      dayIdx:w===0?state.dayIdx:-1,time:state.slot,spotIdx:w===0?idx:0,clsId:state.cls.id,solo,
+      when:`${wd.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})} · ${state.slot}`,
+      start:st,status:'confirmed',paidBy:usingCredit?'credit':'viva',
+      series: weeks>1 ? (w+1)+'/'+weeks : null});
+  }
+  const rno='RB-'+new Date().getFullYear()+'-'+String(Math.floor(Math.random()*900000+100000));
+  showReceipt({no:rno, cls:state.cls.name, solo, d, time:state.slot,
+               total:usingCredit?0:price, method:usingCredit?'Package credit':'Viva Wallet',
+               promo: (!usingCredit && state.promo) ? state.promo : null,
+               weeks: weeks>1 ? weeks : null});
+}
+
+/* ---- animated receipt ---- */
+function showReceipt(o){
+  const set=(id,v)=>{const el=document.getElementById(id); if(el)el.textContent=v;};
+  set('prNo', o.no);
+  set('prDate', new Date().toLocaleDateString('en-GB'));
+  set('prClass', o.cls);
+  set('prType', o.solo?'Private session':'Class of '+CAP);
+  set('prWhen', o.d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})+' · '+o.time
+      + (o.weeks? '  (+'+(o.weeks-1)+' more weekly)' : ''));
+  set('prTotal', o.total===0 ? '1 credit' : '€'+Number(o.total).toFixed(2));
+  set('prMethod', o.method);
+  const pr=document.getElementById('prPromoRow');
+  if(o.promo){ pr.style.display='flex'; set('prPromo', o.promo); } else { pr.style.display='none'; }
+  const ov=document.getElementById('receiptOverlay');
+  ov.classList.remove('show'); void ov.offsetWidth; // restart animation
+  ov.classList.add('show');
+}
+function closeReceipt(){
+  document.getElementById('receiptOverlay').classList.remove('show');
+  custStep('mine');
+}
+// Save / print the receipt — opens a clean page the browser can save as PDF or print
+function saveReceiptPDF(){
+  const g=id=>{const e=document.getElementById(id);return e?e.textContent:'';};
+  const promoRow = document.getElementById('prPromoRow').style.display!=='none'
+    ? `<tr><td>Promo</td><td class="v">${g('prPromo')}</td></tr>` : '';
+  const html=`<!doctype html><html><head><meta charset="utf-8">
+<title>Rebalance receipt ${g('prNo')}</title>
+<style>
+  @page{size:A4;margin:18mm}
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,'Segoe UI',Inter,Helvetica,Arial,sans-serif;color:#3a2f31;margin:0;padding:0}
+  .sheet{max-width:520px;margin:0 auto}
+  .top{display:flex;align-items:center;gap:12px;border-bottom:1px solid #e2d6d2;padding-bottom:16px}
+  .name{font-size:20px;font-weight:700;letter-spacing:.06em}
+  .meta{margin-left:auto;text-align:right;font-size:11px;color:#8A7A7C;line-height:1.6}
+  h1{font-size:22px;margin:22px 0 4px}
+  .sub{font-size:12px;color:#8A7A7C;margin-bottom:20px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  td{padding:9px 0;border-bottom:1px dashed #e6dad6}
+  td.v{text-align:right;font-weight:600}
+  tr.total td{border-bottom:none;border-top:2px solid #3a2f31;padding-top:14px;font-size:18px;font-weight:700}
+  tr.total td.v{color:#C16E6E}
+  .foot{margin-top:26px;font-size:11px;color:#8A7A7C;line-height:1.7;border-top:1px solid #e2d6d2;padding-top:14px}
+  .noprint{margin-top:26px;text-align:center}
+  .noprint button{background:#4A3B3E;color:#fff;border:none;border-radius:30px;padding:12px 26px;font-size:14px;cursor:pointer}
+  @media print{.noprint{display:none}}
+</style></head><body>
+<div class="sheet">
+  <div class="top">
+    <svg viewBox="0 0 40 40" width="40" height="40" fill="none">
+      <path d="M8 26C8 16 16 9 26 12C20 13 16 18 17 24C18 30 24 32 30 29C27 33 20 35 14 32C10 30 8 28 8 26Z" fill="#C77B7B"/>
+      <path d="M32 14C32 24 24 31 14 28C20 27 24 22 23 16C22 10 16 8 10 11C13 7 20 5 26 8C30 10 32 12 32 14Z" fill="#D4A8A0"/>
+    </svg>
+    <div class="name">REBALANCE</div>
+    <div class="meta">
+      Physiotherapy &amp; Clinical Pilates<br>
+      Angelou Terzaki 4, Engomi, Nicosia<br>
+      Tel 22 035001 · 96 489727
+    </div>
+  </div>
+  <h1>Receipt</h1>
+  <div class="sub">No. ${g('prNo')} &nbsp;·&nbsp; ${g('prDate')}</div>
+  <table>
+    <tr><td>Session</td><td class="v">${g('prClass')}</td></tr>
+    <tr><td>Type</td><td class="v">${g('prType')}</td></tr>
+    <tr><td>When</td><td class="v">${g('prWhen')}</td></tr>
+    ${promoRow}
+    <tr><td>Payment method</td><td class="v">${g('prMethod')}</td></tr>
+    <tr class="total"><td>TOTAL PAID</td><td class="v">${g('prTotal')}</td></tr>
+  </table>
+  <div class="foot">
+    Thank you for training with Rebalance.<br>
+    This is an official electronic receipt — please retain it for your records.<br>
+    @rebalance_physio_pilates
+  </div>
+  <div class="noprint">
+    <button onclick="window.print()">Save as PDF / Print</button>
+  </div>
+</div>
+<script>window.onload=function(){setTimeout(function(){window.print();},400);};<\/script>
+</body></html>`;
+  const w=window.open('','_blank');
+  if(!w){ toast('Allow pop-ups to save your receipt','Receipt'); return; }
+  w.document.write(html); w.document.close();
+}
+async function loadMyBookings(){
+  if(!BACKEND) return;
+  try{
+    const rows=await api('/my-bookings',{token:authToken});
+    state.bookings=rows.filter(r=>r.status==='confirmed').map(r=>{
+      const start=new Date(r.date+'T'+r.hour+':00');
+      return {id:r.id,cls:(CLASSES.find(c=>c.id===r.class_key)||{}).name+(r.private?' · Private':''),
+        price:r.amount,dayIdx:0,time:r.hour,date:r.date,spotIdx:r.spot,
+        when:start.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})+' · '+r.hour,
+        start,status:'confirmed',paidBy:r.pay};
+    });
+  }catch(e){/* ignore */}
+}
+
+/* ===================== CANCEL / RESCHEDULE (shared logic) ===================== */
+function hoursUntil(start){return (start-new Date())/36e5;}
+function renderMine(){
+  if(!state.bookings.length){document.getElementById('myList').innerHTML='<div class="empty">No sessions yet. Book your first mat above.</div>';return;}
+  document.getElementById('myList').innerHTML=state.bookings.map(b=>{
+    let pill,cd='',act='';
+    const series=b.series?`<span class="series-tag">Weekly ${b.series}</span>`:'';
+    if(b.status==='lost')pill='<span class="pill lost">Session lost</span>';
+    else if(b.status==='rescheduled')pill='<span class="pill resc">Rescheduled</span>';
+    else{
+      pill='<span class="pill ok">Confirmed</span>';
+      const can=hoursUntil(b.start)>4;
+      cd=`<div class="cd">${can?'✦ <b>Free to reschedule</b> — more than 4 hours away':'✦ <b>Within 4 hours</b> — cancelling means losing the session'}</div>`;
+      act=`<div class="bact">
+        <button onclick="addToCalendar(${b.id})">📅 Add to calendar</button>
+        <button onclick="rebook(${b.id})">↻ Book again</button>
+        ${can?`<button onclick="askCancel(${b.id},'cust')">Reschedule</button>`:''}
+        <button class="danger" onclick="askCancel(${b.id},'cust')">Cancel</button></div>`;
+    }
+    return `<div class="booking"><div class="top"><div><h3>${b.cls} ${series}</h3><div class="when">${b.when} · €${b.price}</div></div>${pill}</div>${cd}${act}</div>`;
+  }).join('');
+}
+// download an .ics file the customer can add to Google/Apple/Outlook calendar
+function addToCalendar(id){
+  const b=state.bookings.find(x=>x.id===id); if(!b)return;
+  const pad=n=>String(n).padStart(2,'0');
+  const fmt=d=>d.getUTCFullYear()+pad(d.getUTCMonth()+1)+pad(d.getUTCDate())+'T'+pad(d.getUTCHours())+pad(d.getUTCMinutes())+'00Z';
+  const start=new Date(b.start), end=new Date(b.start.getTime()+60*60*1000);
+  const ics=[
+    'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Rebalance//Booking//EN','BEGIN:VEVENT',
+    'UID:'+b.id+'@rebalance.cy',
+    'DTSTAMP:'+fmt(new Date()),
+    'DTSTART:'+fmt(start),'DTEND:'+fmt(end),
+    'SUMMARY:'+b.cls+' — Rebalance',
+    'LOCATION:Angelou Terzaki 4, Engomi, Nicosia, Cyprus',
+    'DESCRIPTION:Your session at Rebalance Physiotherapy & Clinical Pilates. Cancel more than 4 hours before to reschedule.',
+    'BEGIN:VALARM','TRIGGER:-PT2H','ACTION:DISPLAY','DESCRIPTION:Rebalance session in 2 hours','END:VALARM',
+    'END:VEVENT','END:VCALENDAR'].join('\r\n');
+  const blob=new Blob([ics],{type:'text/calendar'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download='rebalance-session.ics'; a.click();
+  URL.revokeObjectURL(a.href);
+  toast('Added to your calendar','Session');
+}
+// one-tap rebook: jump straight to the same class + time, next week
+function rebook(id){
+  const b=state.bookings.find(x=>x.id===id); if(!b)return;
+  const cls=CLASSES.find(c=>c.name===b.cls.replace(' · Private','')) || CLASSES[0];
+  state.cls=cls; state.promo=null;
+  state.bookMode = b.solo ? 'solo' : 'shared';
+  state.slot=b.time;
+  // find the same weekday next week within the shown days, else first free day
+  const target=new Date(b.start); target.setDate(target.getDate()+7);
+  let di=DAYS.findIndex(d=>d.toDateString()===target.toDateString());
+  if(di<0) di=0;
+  state.dayIdx=di;
+  renderCDays(); renderCSlots();
+  const c=store[state.dayIdx][state.slot];
+  if(!c || c.closed || c.private || spotsFree(c)===0){
+    toast('That time isn\u2019t free — pick another','Rebook');
+    custStep('slots'); return;
+  }
+  buildReceipt(); custStep('pay');
+  toast('Same class, same time — just confirm','Rebook');
+}
+function askCancel(id,origin){
+  const b=state.bookings.find(x=>x.id===id);const can=hoursUntil(b.start)>4;
+  document.getElementById('mTitle').textContent=can?'Cancel & reschedule?':'Cancel this session?';
+  document.getElementById('mBody').textContent=b.cls+' · '+b.when;
+  document.getElementById('mPolicy').innerHTML=can
+    ?'<div class="policy" style="margin-top:14px">More than 4 hours out — you can <b>reschedule</b> and the €'+b.price+' moves to the new time. A confirmation email is sent.</div>'
+    :'<div class="policy" style="margin-top:14px;background:rgba(168,73,59,.08)">Within 4 hours — the <b>session is lost</b> and the €'+b.price+' is not refunded. A confirmation email is sent.</div>';
+  const btn=document.getElementById('mConfirm');btn.textContent=can?'Reschedule':'Cancel & lose';
+  btn.onclick=()=>can?doReschedule(id):doLose(id);
+  openModal();
+}
+function freeSlot(b){
+  const c=store[b.dayIdx]&&store[b.dayIdx][b.time];
+  if(!c)return;
+  if(typeof b.spotIdx==='number' && c.spots[b.spotIdx]){c.spots[b.spotIdx]=null;}
+  else{const i=c.spots.findIndex(s=>s&&s.name===(state.user?.name));if(i>-1)c.spots[i]=null;}
+}
+function doLose(id){const b=state.bookings.find(x=>x.id===id);b.status='lost';/* slot stays booked (no-show) */closeModal();renderMine();renderTSlots();
+  toast('Email sent: “Your session was cancelled within the 4-hour window and could not be moved.”','Email · '+(state.user?.email||'client'));}
+function doReschedule(id){const b=state.bookings.find(x=>x.id===id);b.status='rescheduled';freeSlot(b);closeModal();renderMine();renderTSlots();
+  toast('Email sent: “Your session was cancelled — reschedule your credit anytime.”','Email · '+(state.user?.email||'client'));
+  if(document.getElementById('v-cust').classList.contains('on')){
+    state.cls=CLASSES.find(c=>c.name===b.cls)||state.cls;
+    setTimeout(()=>{document.getElementById('cFlowTitle').textContent='Reschedule · '+b.cls;renderCDays();renderCSlots();custStep('slots');},800);
+  }
+}
+
+/* ===================== TRAINER ===================== */
+let trainerCreds={email:'',pass:''};   // kept in memory so 2FA setup can reuse them
+async function trainAuth(){
+  if(BACKEND){
+    const email=(document.getElementById('ti-email').value||'').trim();
+    const pass=document.getElementById('ti-pass').value||'';
+    if(!email){ toast('Enter your email','Trainer'); return; }
+    if(!pass){ toast('Enter your password','Trainer'); return; }
+    const remember=(document.getElementById('ti-remember')||{}).checked!==false;
+    try{
+      const r=await api('/trainer/login',{method:'POST',body:{email,password:pass,remember}});
+      trainerToken=r.token;
+      trainerCreds={email,pass};
+      if(remember){ try{ localStorage.setItem('rb_ttoken', r.token); }catch(e){} }
+    }
+    catch(e){
+      if(String(e.message).includes('2FA_REQUIRED')){
+        document.getElementById('t-authcard').style.display='none';
+        document.getElementById('t-totp').style.display='block';
+        const f=document.querySelector('#tTotpInputs input'); if(f){f.value='';f.focus();}
+        return;
+      }
+      toast(e.message,'Trainer'); return;
+    }
+  }
+  enterTrainerPortal();
+}
+async function submitTrainerTotp(){
+  const totp=Array.from(document.querySelectorAll('#tTotpInputs input')).map(i=>i.value).join('');
+  if(totp.length<6){toast('Enter the full 6-digit code','2FA');return;}
+  const email=document.getElementById('ti-email').value||'trainer@rebalance.cy';
+  const pass=document.getElementById('ti-pass').value||'';
+  const remember=(document.getElementById('ti-remember')||{}).checked!==false;
+  try{
+    const r=await api('/trainer/login',{method:'POST',body:{email,password:pass,totp,remember}});
+    trainerToken=r.token;
+    if(remember){ try{ localStorage.setItem('rb_ttoken', r.token); }catch(e){} }
+  }catch(e){ toast(e.message,'2FA'); return; }
+  document.getElementById('t-totp').style.display='none';
+  document.getElementById('t-authcard').style.display='block';
+  enterTrainerPortal();
+}
+function cancelTrainerTotp(){
+  document.getElementById('t-totp').style.display='none';
+  document.getElementById('t-authcard').style.display='block';
+}
+function enterTrainerPortal(){
+  document.getElementById('t-auth').classList.remove('on');
+  document.getElementById('t-app').classList.add('on');
+  renderTDays();renderTSlots();renderClients();
+  toast('Welcome back, studio.','Trainer');
+}
+function trainTab(t){document.querySelectorAll('#v-train .ptabs button').forEach(b=>b.classList.toggle('on',b.dataset.tp===t));
+  document.getElementById('tp-sched').classList.toggle('on',t==='sched');
+  document.getElementById('tp-clients').classList.toggle('on',t==='clients');
+  document.getElementById('tp-earnings').classList.toggle('on',t==='earnings');
+  document.getElementById('tp-manage').classList.toggle('on',t==='manage');
+  if(t==='earnings')renderEarnings();
+  if(t==='manage')renderManage();}
+
+/* ===================== MANAGE (edit everything, no code) ===================== */
+/* ---------- multi-trainer ---------- */
+function renderMgTrainers(){
+  document.getElementById('mgTrainers').innerHTML=TRAINERS.map((tr,i)=>`
+    <div class="mg-card">
+      <div class="mg-fields">
+        <label>Name<input value="${tr.name}" onchange="editTrainer(${i},'name',this.value)"></label>
+        <label>Role<input value="${tr.role||''}" onchange="editTrainer(${i},'role',this.value)"></label>
+      </div>
+      ${TRAINERS.length>1?`<button class="mg-del" onclick="removeTrainer(${i})">Remove</button>`:''}
+    </div>`).join('');
+}
+function editTrainer(i,k,v){ TRAINERS[i][k]=v; saveSettings(); }
+function addTrainer(){ TRAINERS.push({id:'t'+Date.now(),name:'New trainer',role:'Instructor'}); saveSettings(); renderMgTrainers(); }
+function removeTrainer(i){
+  if(TRAINERS.length<=1){toast('Keep at least one trainer','Manage');return;}
+  TRAINERS.splice(i,1); saveSettings(); renderMgTrainers();
+}
+function editFirstOffer(){
+  FIRST_OFFER.on=document.getElementById('mgFirstOn').checked;
+  const p=parseInt(document.getElementById('mgFirstPrice').value,10);
+  if(!isNaN(p)) FIRST_OFFER.price=p;
+  document.getElementById('mgFirstPriceWrap').style.display=FIRST_OFFER.on?'flex':'none';
+  saveSettings();
+}
+function renderManage(){
+  renderMgClasses(); renderMgTimes();
+  document.getElementById('mgCap').textContent=CAP;
+  renderMgPackages(); renderMgPromos(); renderMgTrainers();
+  document.getElementById('mgFirstOn').checked=FIRST_OFFER.on;
+  document.getElementById('mgFirstPrice').value=FIRST_OFFER.price;
+  document.getElementById('mgFirstPriceWrap').style.display=FIRST_OFFER.on?'flex':'none';
+}
+
+function renderMgClasses(){
+  document.getElementById('mgClasses').innerHTML=CLASSES.map((c,i)=>`
+    <div class="mg-card">
+      <div class="mg-fields">
+        <label>Name<input value="${c.name}" onchange="editClass(${i},'name',this.value)"></label>
+        <div class="mg-two">
+          <label>Class €<input type="number" value="${c.price}" onchange="editClass(${i},'price',+this.value)"></label>
+          <label>Private €<input type="number" value="${c.solo}" onchange="editClass(${i},'solo',+this.value)"></label>
+        </div>
+        <label>Description<input value="${c.who}" onchange="editClass(${i},'who',this.value)"></label>
+      </div>
+      <button class="mg-del" onclick="removeClass(${i})">Remove</button>
+    </div>`).join('') || '<p class="ms-empty">No classes yet.</p>';
+}
+function editClass(i,k,v){ CLASSES[i][k]=v; saveSettings(); }
+function addClass(){
+  const id='c'+Date.now();
+  CLASSES.push({id,name:'New Class',dur:'1 hour',who:'Description',price:30,solo:55});
+  saveSettings(); renderMgClasses();
+}
+function removeClass(i){
+  if(CLASSES.length<=1){toast('Keep at least one class','Manage');return;}
+  CLASSES.splice(i,1); saveSettings(); renderMgClasses();
+}
+
+function renderMgTimes(){
+  document.getElementById('mgTimes').innerHTML=TIMES.slice().sort().map(t=>`
+    <span class="chip">${t}<button onclick="removeTime('${t}')">×</button></span>`).join('') || '<p class="ms-empty">No times set.</p>';
+  // build the dropdown of half-hour options not already added
+  const sel=document.getElementById('newTime'); if(!sel)return;
+  const opts=[];
+  for(let h=6;h<=22;h++){ for(const m of ['00','30']){ const v=String(h).padStart(2,'0')+':'+m; if(!TIMES.includes(v)) opts.push(v); } }
+  sel.innerHTML=opts.map(v=>`<option value="${v}">${v}</option>`).join('') || '<option value="">All times added</option>';
+}
+function addTime(){
+  const t=document.getElementById('newTime').value;
+  if(t && !TIMES.includes(t)){ TIMES.push(t); TIMES.sort(); saveSettings(); renderMgTimes(); toast('Added '+t,'Manage'); }
+}
+function removeTime(t){ TIMES=TIMES.filter(x=>x!==t); saveSettings(); renderMgTimes(); }
+
+function changeCap(d){
+  CAP=Math.max(1,Math.min(12,CAP+d));
+  document.getElementById('mgCap').textContent=CAP; saveSettings();
+}
+
+function renderMgPackages(){
+  document.getElementById('mgPackages').innerHTML=PACKAGES.map((p,i)=>`
+    <div class="mg-card">
+      <div class="mg-fields">
+        <label>Name<input value="${p.name}" onchange="editPkg(${i},'name',this.value)"></label>
+        <div class="mg-two">
+          <label>Classes<input type="number" value="${p.count}" onchange="editPkg(${i},'count',+this.value)"></label>
+          <label>Price €<input type="number" value="${p.price}" onchange="editPkg(${i},'price',+this.value)"></label>
+        </div>
+        <label>Note<input value="${p.note||''}" onchange="editPkg(${i},'note',this.value)"></label>
+        <label class="mg-check"><input type="checkbox" ${p.best?'checked':''} onchange="editPkg(${i},'best',this.checked)"> Mark as “Most popular”</label>
+      </div>
+      <button class="mg-del" onclick="removePkg(${i})">Remove</button>
+    </div>`).join('') || '<p class="ms-empty">No packages yet.</p>';
+}
+function editPkg(i,k,v){ if(k==='best'&&v){PACKAGES.forEach(p=>p.best=false);} PACKAGES[i][k]=v; saveSettings(); renderMgPackages(); }
+function addPackage(){ PACKAGES.push({id:'pk'+Date.now(),name:'New package',count:5,price:150,note:''}); saveSettings(); renderMgPackages(); }
+function removePkg(i){ PACKAGES.splice(i,1); saveSettings(); renderMgPackages(); }
+
+function renderMgPromos(){
+  const keys=Object.keys(PROMOS);
+  document.getElementById('mgPromos').innerHTML=keys.map(code=>`
+    <div class="mg-card promo">
+      <div class="mg-two" style="flex:1">
+        <label>Code<input value="${code}" onchange="renamePromo('${code}',this.value)"></label>
+        <label>% off<input type="number" value="${Math.round(PROMOS[code].off*100)}" onchange="editPromo('${code}',+this.value)"></label>
+      </div>
+      <button class="mg-del" onclick="removePromo('${code}')">Remove</button>
+    </div>`).join('') || '<p class="ms-empty">No promo codes.</p>';
+}
+function editPromo(code,pct){ PROMOS[code]={off:Math.max(0,Math.min(100,pct))/100,label:pct+'% off'}; saveSettings(); }
+function renamePromo(oldc,newc){ newc=newc.toUpperCase().trim(); if(!newc||newc===oldc)return; PROMOS[newc]=PROMOS[oldc]; delete PROMOS[oldc]; saveSettings(); renderMgPromos(); }
+function addPromo(){ let n=1; while(PROMOS['CODE'+n])n++; PROMOS['CODE'+n]={off:0.10,label:'10% off'}; saveSettings(); renderMgPromos(); }
+function removePromo(code){ delete PROMOS[code]; saveSettings(); renderMgPromos(); }
+
+function renderTDays(){
+  document.getElementById('tDaybar').innerHTML=DAYS.map((d,i)=>`
+    <div class="day ${i===state.trainerDay?'on':''}" onclick="setTDay(${i})">
+      <span class="dow">${i===0?'Today':dow[d.getDay()]}</span><span class="dn">${d.getDate()}</span></div>`).join('');
+}
+function setTDay(i){state.trainerDay=i;renderTDays();renderTSlots();}
+
+function paytag(pay){
+  return pay==='viva' ? '<span class="paytag viva">Viva</span>'
+    : pay==='cash' ? '<span class="paytag cash">Cash</span>'
+    : pay==='card' ? '<span class="paytag card">Card</span>'
+    : pay==='credit' ? '<span class="paytag pkg">Package</span>'
+    : '<span class="paytag viva">Paid</span>';
+}
+function renderTSlots(){
+  const di=state.trainerDay,day=store[di];
+  const d=DAYS[di];document.getElementById('tDayLabel').textContent=(di===0?'Today · ':'')+d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('tSlots').innerHTML=TIMES.map(t=>{
+    const c=day[t];
+    const free=spotsFree(c), booked=spotsBooked(c);
+    let head, spotRows='', classCtrl='';
+    if(c.private && booked>0){
+      // Private booking — whole class is held for one client.
+      const client=c.spots.find(s=>s&&typeof s==='object');
+      const si=c.spots.findIndex(s=>s&&typeof s==='object');
+      head=`<div class="cl-head"><div><span class="cl-time">${t}</span><span class="cl-name">${c.cls}</span></div><span class="cl-count private">Private · full class held</span></div>`;
+      const pHere=client.attended===true, pAbsent=client.attended===false;
+      spotRows=`<div class="spot-row taken private-row ${pHere?'is-here':''} ${pAbsent?'is-absent':''}">
+        <div class="sp-top">
+          <span class="sp-i">🌙</span>
+          <span class="sp-name">${client.name} · Private session</span>
+          ${paytag(client.pay)}
+          <button class="sp-x" title="Cancel booking" onclick="tCancelSpot(${di},'${t}',${si})">✕</button>
+        </div>
+        <div class="att-group">
+          <button class="att-btn ${pHere?'on':''}" onclick="tAttend(${di},'${t}',${si},true)">✓ Here</button>
+          <button class="att-btn no ${pAbsent?'on':''}" onclick="tAttend(${di},'${t}',${si},false)">✗ No-show</button>
+        </div>
+      </div>
+        <div class="private-note">All ${CAP} reformers are reserved for this client — no one else can book this time.</div>`;
+      classCtrl='';
+      return `<div class="classcard is-private">${head}<div class="spot-list">${spotRows}</div>${classCtrl}</div>`;
+    }
+    if(c.closed){
+      head=`<div class="cl-head"><div><span class="cl-time">${t}</span><span class="cl-name">${c.cls}</span></div><span class="cl-count closed">Class closed</span></div>`;
+      classCtrl=`<div class="cl-ctrl"><button onclick="tOpenClass(${di},'${t}')">Re-open class</button></div>`;
+    }else{
+      head=`<div class="cl-head"><div><span class="cl-time">${t}</span><span class="cl-name">${c.cls}</span></div><span class="cl-count">${booked}/${CAP} booked · ${free} free</span></div>`;
+      spotRows = c.spots.map((s,si)=>{
+        if(s===null){
+          return `<div class="spot-row free"><span class="sp-i">${si+1}</span><span class="sp-name">Free</span>
+            <span class="sp-act"><button onclick="tWalkin(${di},'${t}',${si})">+ Walk-in</button><button onclick="tHold(${di},'${t}',${si})">Hold</button></span></div>`;
+        }else if(s==='held'){
+          return `<div class="spot-row held"><span class="sp-i">${si+1}</span><span class="sp-name">Held / closed</span>
+            <span class="sp-act"><button onclick="tFree(${di},'${t}',${si})">Free up</button></span></div>`;
+        }else{
+          const here = s.attended===true, absent = s.attended===false;
+          return `<div class="spot-row taken ${here?'is-here':''} ${absent?'is-absent':''}">
+            <div class="sp-top">
+              <span class="sp-i">${si+1}</span>
+              <span class="sp-name">${s.name}</span>
+              ${paytag(s.pay)}
+              <button class="sp-x" title="Cancel booking" onclick="tCancelSpot(${di},'${t}',${si})">✕</button>
+            </div>
+            <div class="att-group">
+              <button class="att-btn ${here?'on':''}" onclick="tAttend(${di},'${t}',${si},true)">✓ Here</button>
+              <button class="att-btn no ${absent?'on':''}" onclick="tAttend(${di},'${t}',${si},false)">✗ No-show</button>
+            </div>
+          </div>`;
+        }
+      }).join('');
+      classCtrl=`<div class="cl-ctrl">
+        <button onclick="tHoldAll(${di},'${t}')">Hold all free</button>
+        <button class="danger" onclick="tCloseClass(${di},'${t}')">Close whole class</button>
+      </div>`;
+    }
+    return `<div class="classcard ${c.closed?'is-closed':''}">${head}<div class="spot-list">${spotRows}</div>${classCtrl}</div>`;
+  }).join('');
+}
+
+/* whole-class controls */
+function tCloseClass(di,t){const c=store[di][t];
+  if(spotsBooked(c)>0){toast('Cancel booked clients first, then close the class','Schedule');return;}
+  c.closed=true;c.spots=c.spots.map(()=> 'held');renderTSlots();renderClients();toast('Whole class closed · blocked on Google Calendar','Schedule');}
+function tOpenClass(di,t){const c=store[di][t];c.closed=false;c.spots=c.spots.map(()=>null);renderTSlots();renderClients();toast('Class re-opened — all '+CAP+' spots bookable','Schedule');}
+function tHoldAll(di,t){const c=store[di][t];c.spots=c.spots.map(s=>s===null?'held':s);renderTSlots();toast('Held all free spots','Schedule');}
+
+/* individual spot controls */
+function tHold(di,t,si){store[di][t].spots[si]='held';renderTSlots();toast('Spot '+(si+1)+' held for you','Schedule');}
+function tFree(di,t,si){store[di][t].spots[si]=null;renderTSlots();toast('Spot '+(si+1)+' freed — bookable again','Schedule');}
+function tMarkCash(di,t,si){const sp=store[di][t].spots[si];if(sp&&typeof sp==='object'){sp.pay='cash';renderTSlots();renderClients();toast('Cash recorded for '+sp.name,'Payment');}}
+// mark a client present / no-show (tap again to clear)
+function tAttend(di,t,si,here){
+  const s=store[di][t].spots[si];
+  if(!s || typeof s!=='object') return;
+  s.attended = (s.attended===here) ? undefined : here;
+  renderTSlots(); renderClients();
+  if(s.attended===true) toast(s.name+' marked present','Attendance');
+  else if(s.attended===false) toast(s.name+' marked no-show','Attendance');
+}
+function tCancelSpot(di,t,si){
+  const c=store[di][t];
+  const sp=c.spots[si];const who=sp&&sp.name||'client';
+  const isPrivate=c.private;
+  document.getElementById('mTitle').textContent=isPrivate?'Cancel this private booking?':'Cancel this booking?';
+  document.getElementById('mBody').textContent=`${t} · ${who} · ${c.cls}`;
+  document.getElementById('mPolicy').innerHTML='<div class="policy" style="margin-top:14px">'+
+    (isPrivate
+      ? 'The whole class reopens for normal bookings and '+who+' receives a cancellation email.'
+      : 'Spot '+(si+1)+' reopens for booking and '+who+' receives a cancellation email.')+'</div>';
+  const btn=document.getElementById('mConfirm');btn.textContent='Cancel booking';
+  btn.onclick=()=>{
+    if(isPrivate){ c.private=false; c.spots=c.spots.map(()=>null); }
+    else { c.spots[si]=null; }
+    const mb=state.bookings.find(b=>b.dayIdx===di&&b.time===t&&b.spotIdx===si&&b.status==='confirmed');if(mb)mb.status='rescheduled';
+    closeModal();renderTSlots();renderMine();renderClients();toast('Booking cancelled · email sent to '+who,'Trainer');};
+  openModal();
+}
+
+/* walk-in into a specific spot */
+function tWalkin(di,t,si){
+  walkinTarget={di,t,si};
+  document.getElementById('wiName').value='';
+  document.getElementById('wiPay').value='cash';
+  const c=store[di][t];
+  document.getElementById('wiClassLabel').textContent=c.cls+' · '+t+' · spot '+(si+1);
+  document.getElementById('walkinModal').classList.add('show');
+}
+function saveWalkin(){
+  const {di,t,si}=walkinTarget;
+  const name=document.getElementById('wiName').value.trim()||'Walk-in';
+  const pay=document.getElementById('wiPay').value; // 'cash' | 'viva'
+  store[di][t].spots[si]={name,pay};
+  document.getElementById('walkinModal').classList.remove('show');
+  renderTSlots();renderClients();
+  toast('Walk-in booked · '+pay+' recorded for '+name,'Payment');
+}
+
+function renderClients(){
+  const rows=[];
+  DAYS.forEach((d,di)=>TIMES.forEach(t=>{const c=store[di][t];c.spots.forEach((s,si)=>{if(s&&typeof s==='object')rows.push({di,t,d,si,name:s.name,pay:s.pay,cls:c.cls,attended:s.attended,priv:!!(c.private||s.private)});});}));
+  if(!rows.length){document.getElementById('tClients').innerHTML='<div class="empty">No booked clients yet.</div>';return;}
+
+  // group every booking by client name
+  const byName={};
+  rows.forEach(r=>{ (byName[r.name]=byName[r.name]||[]).push(r); });
+
+  const html=Object.keys(byName).sort().map(name=>{
+    const list=byName[name].sort((a,b)=>a.d-b.d);
+    const total=list.length;
+    const here=list.filter(x=>x.attended===true).length;
+    const noshow=list.filter(x=>x.attended===false).length;
+    const spend=list.reduce((sum,x)=>sum+priceFor(x.cls,x.priv),0);
+    const rate = (here+noshow)>0 ? Math.round(here/(here+noshow)*100) : null;
+    const warn = noshow>=2;
+    const history=list.map(x=>{
+      const badge = x.attended===true?'<i class="h-ok">✓</i>' : x.attended===false?'<i class="h-no">✗</i>' : '<i class="h-q">·</i>';
+      return `<li>${badge}<span>${x.d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})} · ${x.t}</span>
+              <span class="h-cls">${x.cls}${x.priv?' · Private':''}</span>${paytag(x.pay)}</li>`;
+    }).join('');
+    return `<div class="client-card ${warn?'warn':''}">
+      <div class="cc-head" onclick="this.parentElement.classList.toggle('open')">
+        <div>
+          <h3>${name}</h3>
+          <div class="cc-meta">${total} session${total!==1?'s':''} · €${spend} total${rate!==null?` · ${rate}% attendance`:''}</div>
+        </div>
+        <div class="cc-right">
+          ${noshow>0?`<span class="cc-noshow">${noshow} no-show${noshow!==1?'s':''}</span>`:''}
+          <span class="cc-arrow">⌄</span>
+        </div>
+      </div>
+      <ul class="cc-history">${history}</ul>
+      <div class="cc-notes">
+        <label>Private notes <span>— visible only to studio staff</span></label>
+        <textarea rows="3" placeholder="Injuries, goals, GHS referral, things to watch…"
+          onchange="saveNote('${name.replace(/'/g,"\\'")}', this.value)">${(NOTES[name]||'').replace(/</g,'&lt;')}</textarea>
+        <p class="cc-gdpr">⚠︎ Health information. Keep it minimal, factual, and only what you need for safe treatment. The client can ask to see or delete it.</p>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('tClients').innerHTML=html;
+}
+/* ---------- client notes (trainer only — special-category data, handle with care) ---------- */
+let NOTES={};
+function loadNotes(){ try{ NOTES=JSON.parse(localStorage.getItem('rb_notes')||'{}'); }catch(e){ NOTES={}; } }
+function saveNote(name,val){
+  NOTES[name]=val;
+  try{ localStorage.setItem('rb_notes',JSON.stringify(NOTES)); }catch(e){}
+  toast('Note saved','Clients');
+}
+loadNotes();
+
+/* ===================== EARNINGS (for Cyprus taxes) ===================== */
+function priceFor(clsName, isPrivate){
+  // match the stored class name to the catalogue price
+  const base = clsName.replace(' · Private','');
+  const c = CLASSES.find(x=>x.name===base) || CLASSES[0];
+  return isPrivate ? c.solo : c.price;
+}
+function collectEarnings(){
+  // gather every booked spot across all loaded days with its amount + method
+  const rows=[];
+  DAYS.forEach((d,di)=>TIMES.forEach(t=>{
+    const c=store[di][t];
+    c.spots.forEach(s=>{
+      if(s&&typeof s==='object'){
+        const isPriv=!!(c.private||s.private);
+        const amount=priceFor(c.cls,isPriv);
+        const method = s.pay==='credit' ? 'viva' : (s.pay||'viva');
+        rows.push({d,date:d,time:t,client:s.name,amount,method,cls:c.cls,private:isPriv});
+      }
+    });
+  }));
+  return rows;
+}
+let earnPeriodMode='all';
+function setEarnPeriod(m){ earnPeriodMode=m; renderEarnings(); }
+function periodRange(){
+  const now=new Date();
+  if(earnPeriodMode==='month'){
+    return {from:new Date(now.getFullYear(),now.getMonth(),1),
+            to:new Date(now.getFullYear(),now.getMonth()+1,0,23,59,59),
+            label:now.toLocaleDateString('en-GB',{month:'long',year:'numeric'})};
+  }
+  if(earnPeriodMode==='quarter'){
+    const q=Math.floor(now.getMonth()/3);
+    const from=new Date(now.getFullYear(),q*3,1);
+    const to=new Date(now.getFullYear(),q*3+3,0,23,59,59);
+    return {from,to,label:'Q'+(q+1)+' '+now.getFullYear()+' (VAT quarter)'};
+  }
+  const fmt=x=>x.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+  return {from:null,to:null,label:fmt(DAYS[0])+' – '+fmt(DAYS[DAYS.length-1])};
+}
+function renderEarnings(){
+  const range=periodRange();
+  let rows=collectEarnings();
+  if(range.from) rows=rows.filter(r=>r.date>=range.from && r.date<=range.to);
+  const totals={viva:0,card:0,cash:0,count:0};
+  rows.forEach(r=>{totals[r.method]=(totals[r.method]||0)+r.amount;totals.count++;});
+  const electronic=totals.viva+totals.card;
+  const gross=electronic+totals.cash;
+  const sessions=rows.length;
+
+  document.getElementById('earnPeriod').innerHTML=
+    `<div class="earn-head"><span class="eyebrow">Earnings</span>
+      <h3 style="font-family:'Fraunces';font-weight:300;font-size:1.6rem;margin-top:6px">${range.label}</h3>
+      <div class="earn-sub">${sessions} session${sessions!==1?'s':''} in this period</div>
+      <div class="period-tabs">
+        <button class="${earnPeriodMode==='all'?'on':''}" onclick="setEarnPeriod('all')">This week</button>
+        <button class="${earnPeriodMode==='month'?'on':''}" onclick="setEarnPeriod('month')">This month</button>
+        <button class="${earnPeriodMode==='quarter'?'on':''}" onclick="setEarnPeriod('quarter')">VAT quarter</button>
+      </div>
+     </div>`;
+
+  document.getElementById('earnSummary').innerHTML=`
+    <div class="earn-total">
+      <div class="et-label">Gross takings</div>
+      <div class="et-amount">€${gross.toFixed(2)}</div>
+    </div>`;
+
+  document.getElementById('earnBreakdown').innerHTML=`
+    <div class="earn-grid">
+      <div class="earn-card viva"><div class="ec-method"><span class="paytag viva">Viva</span></div><div class="ec-amt">€${totals.viva.toFixed(2)}</div><div class="ec-note">Online · electronic</div></div>
+      <div class="earn-card card"><div class="ec-method"><span class="paytag card">Card</span></div><div class="ec-amt">€${totals.card.toFixed(2)}</div><div class="ec-note">In studio · electronic</div></div>
+      <div class="earn-card cash"><div class="ec-method"><span class="paytag cash">Cash</span></div><div class="ec-amt">€${totals.cash.toFixed(2)}</div><div class="ec-note">In studio · cash</div></div>
+    </div>
+    <div class="earn-split">
+      <div class="es-row"><span>Electronic (traceable)</span><b>€${electronic.toFixed(2)}</b></div>
+      <div class="es-row"><span>Cash</span><b>€${totals.cash.toFixed(2)}</b></div>
+      <div class="es-row total"><span>Total to declare</span><b>€${gross.toFixed(2)}</b></div>
+    </div>
+    <button class="btn ghost" style="width:100%;margin-top:16px" onclick="exportEarningsExcel()">⤓ Export Excel for accountant</button>`;
+}
+function exportEarningsCSV(){ exportEarningsExcel(); }
+async function exportEarningsExcel(){
+  // when deployed, get the professionally-formatted Excel from the backend
+  if(BACKEND && trainerToken){
+    try{
+      const res=await fetch(BACKEND+'/trainer/earnings.xlsx',{headers:{Authorization:'Bearer '+trainerToken}});
+      if(!res.ok) throw new Error();
+      const blob=await res.blob();
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.href=url; a.download='rebalance-earnings.xlsx'; a.click();
+      URL.revokeObjectURL(url);
+      toast('Excel downloaded — ready for your accountant','Earnings');
+      return;
+    }catch(e){ /* fall back to local */ }
+  }
+  if(typeof XLSX==='undefined'){ toast('Export still loading — try again in a moment','Earnings'); return; }
+  const rows=collectEarnings();
+  const totals={viva:0,card:0,cash:0};
+  rows.forEach(r=>{ totals[r.method]=(totals[r.method]||0)+r.amount; });
+  const electronic=totals.viva+totals.card, gross=electronic+totals.cash;
+  const first=DAYS[0], last=DAYS[DAYS.length-1];
+  const fmt=d=>d.toLocaleDateString('en-GB');
+  const period=`${fmt(first)} – ${fmt(last)}`;
+
+  // build the sheet as an array-of-arrays so we control every cell
+  const aoa=[];
+  aoa.push(['Rebalance Physiotherapy & Clinical Pilates']);
+  aoa.push(['Earnings report']);
+  aoa.push(['Period', period]);
+  aoa.push(['Generated', new Date().toLocaleString('en-GB')]);
+  aoa.push([]);
+  aoa.push(['Date','Time','Class','Type','Client','Payment method','Amount (€)']);
+  const dataStart=aoa.length;
+  rows.forEach(r=>{
+    aoa.push([fmt(r.date), r.time||'', r.cls, r.private?'Private':'Class', r.client||'', (r.method||'').toUpperCase(), r.amount]);
+  });
+  const dataEnd=aoa.length;
+  aoa.push([]);
+  aoa.push(['','','','','','Viva (electronic)', totals.viva]);
+  aoa.push(['','','','','','Card (electronic)', totals.card]);
+  aoa.push(['','','','','','Cash', totals.cash]);
+  aoa.push(['','','','','','Electronic total', electronic]);
+  aoa.push(['','','','','','GROSS TOTAL', gross]);
+
+  const ws=XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols']=[{wch:12},{wch:8},{wch:20},{wch:10},{wch:18},{wch:16},{wch:12}];
+  ws['!merges']=[
+    {s:{r:0,c:0},e:{r:0,c:6}},
+    {s:{r:1,c:0},e:{r:1,c:6}},
+  ];
+  // currency format on amount column + summary amounts
+  const money='€#,##0.00';
+  for(let r=dataStart;r<dataEnd;r++){ const c=XLSX.utils.encode_cell({r,c:6}); if(ws[c])ws[c].z=money; }
+  for(let r=dataEnd+1;r<aoa.length;r++){ const c=XLSX.utils.encode_cell({r,c:6}); if(ws[c])ws[c].z=money; }
+  // basic styling (title, header row, gross)
+  const set=(addr,style)=>{ if(ws[addr]) ws[addr].s=style; };
+  set('A1',{font:{bold:true,sz:15,color:{rgb:'4A3B3E'}}});
+  set('A2',{font:{italic:true,sz:11,color:{rgb:'8A7A7C'}}});
+  ['A6','B6','C6','D6','E6','F6','G6'].forEach(a=>set(a,{font:{bold:true,color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'8A5A6A'}},alignment:{horizontal:'left'}}));
+  const grossRow=aoa.length; // 1-indexed for the last row
+  set('F'+grossRow,{font:{bold:true,sz:12}});
+  set('G'+grossRow,{font:{bold:true,sz:12,color:{rgb:'8A5A6A'}}});
+
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Earnings');
+  XLSX.writeFile(wb, `rebalance-earnings-${fmt(first).replace(/\//g,'-')}.xlsx`);
+  toast('Excel downloaded — ready for your accountant','Earnings');
+}
+
+/* ===================== MODAL / TOAST ===================== */
+function openModal(){document.getElementById('modal').classList.add('show');}
+function closeModal(){document.getElementById('modal').classList.remove('show');}
+let tT;function toast(msg,em){const t=document.getElementById('toast');t.innerHTML=(em?`<span class="em">${em}</span>`:'')+`<span>${msg}</span>`;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),4400);}
+
+/* reveal */
+const io=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target)}}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* ===================== MAP (Leaflet / OpenStreetMap, no API key) ===================== */
+(function initMap(){
+  if(typeof L==='undefined'){return;} // leaflet not loaded (offline)
+  // Approx coordinates for Angelou Terzaki, Engomi, Nicosia
+  const lat=35.1641, lng=33.3260;
+  const map=L.map('rebMap',{scrollWheelZoom:false,zoomControl:true,attributionControl:true}).setView([lat,lng],16);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    maxZoom:19, attribution:'© OpenStreetMap'
+  }).addTo(map);
+  // soft pink marker matching the brand
+  const icon=L.divIcon({className:'',html:'<div style="width:22px;height:22px;background:#C16E6E;border:3px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 3px 8px rgba(0,0,0,.35)"></div>',iconSize:[22,22],iconAnchor:[11,22]});
+  L.marker([lat,lng],{icon}).addTo(map)
+    .bindPopup('<b>Rebalance</b><br>Physiotherapy & Clinical Pilates<br>Angelou Terzaki 4, Engomi')
+    .openPopup();
+  // let users enable scroll-zoom on click, disable on leave (so page scroll isn't trapped)
+  map.on('click',()=>map.scrollWheelZoom.enable());
+  map.on('mouseout',()=>map.scrollWheelZoom.disable());
+  setTimeout(()=>map.invalidateSize(),300);
+})();
+custTab('login');
+applyLang();  // paint the site in the phone's language (or their saved choice)
+loadServerSettings();  // when live, the server's settings win
+
+/* ===================== PRIVACY / GDPR ===================== */
+function privacyAccepted(){
+  try{ return localStorage.getItem('rb_privacy_ok')==='1'; }catch(e){ return false; }
+}
+function acceptPrivacy(){
+  try{ localStorage.setItem('rb_privacy_ok','1'); }catch(e){}
+  document.getElementById('privacyBanner').classList.remove('show');
+}
+function openPrivacy(){ document.getElementById('privacyModal').classList.add('show'); }
+function closePrivacy(){ document.getElementById('privacyModal').classList.remove('show'); }
+// show the arrival banner if not yet accepted
+if(!privacyAccepted()){
+  setTimeout(()=>document.getElementById('privacyBanner').classList.add('show'), 600);
+}
+</script>
+</body>
+</html>
