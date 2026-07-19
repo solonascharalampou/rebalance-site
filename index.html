@@ -1606,7 +1606,9 @@ async function submitTotp(){
 }
 /* ---------- 2FA setup (Google / Microsoft Authenticator) ---------- */
 let twofaTarget='customer';
+let twofaBusy=false;
 async function open2FASetup(who){
+  if(twofaBusy) return;             // stop double-taps hammering the server
   twofaTarget=who||'customer';
   if(!BACKEND){ toast('Two-factor works once the site is live','2FA'); return; }
   let email='', pass='';
@@ -1625,6 +1627,8 @@ async function open2FASetup(who){
     pass = prompt('Confirm your password to set up two-factor:')||'';
     if(!pass){ return; }
   }
+  twofaBusy=true;
+  toast('Setting up…','2FA');
   try{
     const r=await api('/2fa/setup',{method:'POST',body:{email,password:pass}});
     document.getElementById('totpQr').src=r.qr;
@@ -1634,6 +1638,7 @@ async function open2FASetup(who){
     document.getElementById('c-2fa-setup').scrollIntoView({behavior:'smooth',block:'center'});
     const f=document.querySelector('#setupInputs input'); if(f){f.value='';f.focus();}
   }catch(e){ toast(e.message,'2FA'); }
+  finally{ twofaBusy=false; }
 }
 let twofaEmail='';
 async function confirm2FA(){
