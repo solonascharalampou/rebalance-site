@@ -1609,21 +1609,29 @@ let twofaTarget='customer';
 async function open2FASetup(who){
   twofaTarget=who||'customer';
   if(!BACKEND){ toast('Two-factor works once the site is live','2FA'); return; }
-  const email = who==='trainer'
-    ? (document.getElementById('ti-email').value.trim()||'trainer@rebalance.cy')
-    : (state.user?state.user.email:'');
-  const pass = who==='trainer'
-    ? document.getElementById('ti-pass').value
-    : prompt('Confirm your password to set up two-factor:')||'';
-  if(!email||!pass){ toast('Enter your email and password first','2FA'); return; }
+  let email='', pass='';
+  if(who==='trainer'){
+    // if already signed in, reuse those credentials; otherwise read the login form
+    if(trainerCreds.email && trainerCreds.pass){
+      email=trainerCreds.email; pass=trainerCreds.pass;
+    }else{
+      email=(document.getElementById('ti-email').value||'').trim();
+      pass=document.getElementById('ti-pass').value||'';
+      if(!email||!pass){ toast('Sign in first, then set up two-factor','2FA'); return; }
+    }
+  }else{
+    email = state.user ? state.user.email : '';
+    if(!email){ toast('Sign in first','2FA'); return; }
+    pass = prompt('Confirm your password to set up two-factor:')||'';
+    if(!pass){ return; }
+  }
   try{
     const r=await api('/2fa/setup',{method:'POST',body:{email,password:pass}});
     document.getElementById('totpQr').src=r.qr;
     document.getElementById('totpSecret').textContent=r.secret;
     twofaEmail=email;
-    if(who==='trainer'){ document.getElementById('t-authcard').style.display='none'; }
-    else { document.getElementById('c-authcard').style.display='none'; }
     document.getElementById('c-2fa-setup').style.display='block';
+    document.getElementById('c-2fa-setup').scrollIntoView({behavior:'smooth',block:'center'});
     const f=document.querySelector('#setupInputs input'); if(f){f.value='';f.focus();}
   }catch(e){ toast(e.message,'2FA'); }
 }
@@ -2379,14 +2387,18 @@ function doReschedule(id){const b=state.bookings.find(x=>x.id===id);b.status='re
 }
 
 /* ===================== TRAINER ===================== */
+let trainerCreds={email:'',pass:''};   // kept in memory so 2FA setup can reuse them
 async function trainAuth(){
   if(BACKEND){
-    const email=(document.getElementById('ti-email')||{}).value||'trainer@rebalance.cy';
-    const pass=(document.getElementById('ti-pass')||{}).value||'';
+    const email=(document.getElementById('ti-email').value||'').trim();
+    const pass=document.getElementById('ti-pass').value||'';
+    if(!email){ toast('Enter your email','Trainer'); return; }
+    if(!pass){ toast('Enter your password','Trainer'); return; }
     const remember=(document.getElementById('ti-remember')||{}).checked!==false;
     try{
       const r=await api('/trainer/login',{method:'POST',body:{email,password:pass,remember}});
       trainerToken=r.token;
+      trainerCreds={email,pass};
       if(remember){ try{ localStorage.setItem('rb_ttoken', r.token); }catch(e){} }
     }
     catch(e){
