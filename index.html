@@ -926,6 +926,7 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
           </label>
           <button class="btn" style="width:100%;margin-top:16px" id="cAuthBtn" onclick="custAuth()">Log in</button>
           <p class="fine" id="cAuthFine">New here? Switch to Sign up.</p>
+          <p class="fine" id="cForgotLine"><button class="linkbtn" onclick="openForgot()" data-i18n="forgot_pw">Forgot your password?</button></p>
         </div>
 
         <div id="c-verify" class="verify-card" style="display:none">
@@ -941,6 +942,31 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
         </div>
 
         <!-- authenticator code (when 2FA is on) -->
+        <!-- forgot password: ask for email -->
+        <div id="c-forgot" class="verify-card" style="display:none">
+          <div class="verify-ico">🔑</div>
+          <h2>Reset your password</h2>
+          <p class="verify-sub">Enter your email and we'll send you a 6-digit code to set a new password.</p>
+          <input id="fp-email" type="email" placeholder="you@email.com" style="text-align:center">
+          <button class="btn" style="width:100%;margin-top:16px" onclick="sendResetCode()">Send code</button>
+          <p class="fine"><button class="linkbtn" onclick="closeForgot()">Back to sign in</button></p>
+          <p class="verify-demo" id="fpDemo"></p>
+        </div>
+
+        <!-- forgot password: enter code + new password -->
+        <div id="c-reset" class="verify-card" style="display:none">
+          <div class="verify-ico">🔐</div>
+          <h2>Choose a new password</h2>
+          <p class="verify-sub">Enter the code we sent to <b id="fpEmailShown"></b>, then your new password.</p>
+          <div class="code-inputs" id="resetInputs">
+            <input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric">
+          </div>
+          <input id="fp-new" type="password" placeholder="New password (min 6 characters)" style="margin-top:16px">
+          <input id="fp-new2" type="password" placeholder="Repeat new password">
+          <button class="btn" style="width:100%;margin-top:16px" onclick="submitReset()">Set new password</button>
+          <p class="fine"><button class="linkbtn" onclick="sendResetCode()">Resend code</button> · <button class="linkbtn" onclick="closeForgot()">Cancel</button></p>
+        </div>
+
         <div id="c-totp" class="verify-card" style="display:none">
           <div class="verify-ico">🔐</div>
           <h2>Authenticator code</h2>
@@ -1473,7 +1499,7 @@ const I18N = {
     have_voucher:'Have a gift voucher?', redeem:'Redeem',
     promo_ph:'Promo code (optional)', apply:'Apply',
     book_weekly:'Book this weekly', weekly_sub:'Same class, same time, every week',
-    your_usual:'Your usual', book_usual:'Book it',
+    your_usual:'Your usual', book_usual:'Book it', forgot_pw:'Forgot your password?',
     save_usual:'Make this my usual', save_usual_sub:'Save this class and time so you can rebook it in one tap',
     total:'Total', pay_with:'Pay', cancel_policy:'Cancellation policy.',
     schedule:'Schedule', clients:'Clients', earnings:'Earnings', manage:'Manage',
@@ -1506,7 +1532,7 @@ const I18N = {
     have_voucher:'Έχετε δωροκάρτα;', redeem:'Εξαργύρωση',
     promo_ph:'Κωδικός έκπτωσης (προαιρετικό)', apply:'Εφαρμογή',
     book_weekly:'Εβδομαδιαία κράτηση', weekly_sub:'Ίδιο μάθημα, ίδια ώρα, κάθε εβδομάδα',
-    your_usual:'Το συνηθισμένο σας', book_usual:'Κράτηση',
+    your_usual:'Το συνηθισμένο σας', book_usual:'Κράτηση', forgot_pw:'Ξεχάσατε τον κωδικό σας;',
     save_usual:'Ορίστε το ως συνηθισμένο', save_usual_sub:'Αποθηκεύστε το μάθημα και την ώρα για κράτηση με ένα πάτημα',
     total:'Σύνολο', pay_with:'Πληρωμή', cancel_policy:'Πολιτική ακύρωσης.',
     schedule:'Πρόγραμμα', clients:'Πελάτες', earnings:'Έσοδα', manage:'Διαχείριση',
@@ -1686,6 +1712,7 @@ function custTab(m){custMode=m;
   document.getElementById('ct-signup').classList.toggle('on',m==='signup');
   document.getElementById('cf-name').style.display=m==='signup'?'block':'none';
   document.getElementById('cf-phone').style.display=m==='signup'?'block':'none';
+  const fl=document.getElementById('cForgotLine'); if(fl) fl.style.display=m==='signup'?'none':'block';
   document.getElementById('cf-ref').style.display=m==='signup'?'block':'none';
   document.getElementById('cConsentWrap').style.display=m==='signup'?'flex':'none';
   document.getElementById('cAuthBtn').textContent=m==='signup'?'Create account':'Log in';
@@ -1902,6 +1929,67 @@ function skipTwofaOffer(){
   toast('No problem — you can turn it on anytime from My sessions','Account');
 }
 function resendCode(){ custAuth(); toast('New code sent','Verify'); }
+/* ---------- forgotten password ---------- */
+let resetEmail='', demoResetCode=null;
+function showAuthPane(id){
+  ['c-authcard','c-verify','c-totp','c-forgot','c-reset'].forEach(x=>{
+    const el=document.getElementById(x); if(el) el.style.display = (x===id?'block':'none');
+  });
+}
+function openForgot(){
+  const typed=(document.getElementById('ci-email').value||'').trim();
+  if(typed) document.getElementById('fp-email').value=typed;
+  document.getElementById('fpDemo').textContent='';
+  showAuthPane('c-forgot');
+  document.getElementById('fp-email').focus();
+}
+function closeForgot(){ showAuthPane('c-authcard'); }
+async function sendResetCode(){
+  const email=(document.getElementById('fp-email').value||'').trim();
+  if(!email){ toast('Enter your email','Reset'); return; }
+  resetEmail=email;
+  if(BACKEND){
+    try{
+      const r=await api('/password/forgot',{method:'POST',body:{email}});
+      if(r.test_code){
+        document.getElementById('fpDemo').innerHTML='Email not set up yet — your code is <b>'+r.test_code+'</b>';
+      }
+    }catch(e){ toast(e.message,'Reset'); return; }
+  }else{
+    demoResetCode=String(Math.floor(100000+Math.random()*900000));
+    document.getElementById('fpDemo').innerHTML='Demo mode — your code is <b>'+demoResetCode+'</b>';
+  }
+  document.getElementById('fpEmailShown').textContent=email;
+  showAuthPane('c-reset');
+  // keep the demo hint visible on the next screen too
+  const hint=document.getElementById('fpDemo').innerHTML;
+  if(hint){ let d=document.getElementById('resetDemo');
+    if(!d){ d=document.createElement('p'); d.id='resetDemo'; d.className='verify-demo';
+            document.getElementById('c-reset').appendChild(d); }
+    d.innerHTML=hint; }
+  const f=document.querySelector('#resetInputs input'); if(f){f.value='';f.focus();}
+  toast('Check your email for the code','Reset');
+}
+async function submitReset(){
+  const code=Array.from(document.querySelectorAll('#resetInputs input')).map(i=>i.value).join('');
+  const p1=document.getElementById('fp-new').value;
+  const p2=document.getElementById('fp-new2').value;
+  if(code.length<6){ toast('Enter the full 6-digit code','Reset'); return; }
+  if(p1.length<6){ toast('Password must be at least 6 characters','Reset'); return; }
+  if(p1!==p2){ toast('The two passwords don\u2019t match','Reset'); return; }
+  if(BACKEND){
+    try{ await api('/password/reset',{method:'POST',body:{email:resetEmail,code,new_password:p1}}); }
+    catch(e){ toast(e.message,'Reset'); return; }
+  }else{
+    if(code!==demoResetCode){ toast('Incorrect code','Reset'); return; }
+  }
+  toast('Password changed — sign in with your new password','Reset');
+  document.getElementById('fp-new').value='';
+  document.getElementById('fp-new2').value='';
+  custTab('login');
+  document.getElementById('ci-email').value=resetEmail;
+  showAuthPane('c-authcard');
+}
 function cancelVerify(){
   document.getElementById('c-verify').style.display='none';
   document.getElementById('c-authcard').style.display='block';
