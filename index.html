@@ -1472,7 +1472,7 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
    Set BACKEND to your Render URL to go live, e.g.
    const BACKEND = "https://rebalance-backend.onrender.com";
    Leave it "" to run the in-browser demo (no server).            */
-const BACKEND = "https://rebalance-backend-it62.onrender.com";
+const BACKEND = "https://api.solonstudios.org";
 
 /* ===================== LANGUAGE (EN / GR) =====================
    Auto-detects the phone/browser language on first visit, then remembers
@@ -1738,6 +1738,18 @@ async function custAuth(){
   const name=document.getElementById('ci-name').value.trim();
   const pass=document.getElementById('ci-pass').value;
   pendingAuth={mode:custMode,email,name:name||email.split('@')[0],pass,phone};
+  // If they use an authenticator, that replaces the emailed code — go straight there.
+  if(BACKEND && custMode==='login'){
+    try{
+      const st=await api('/2fa/status?email='+encodeURIComponent(email));
+      if(st && st.enabled){
+        document.getElementById('c-authcard').style.display='none';
+        document.getElementById('c-totp').style.display='block';
+        const f=document.querySelector('#totpInputs input'); if(f){f.value='';f.focus();}
+        return;
+      }
+    }catch(e){ /* fall through to the emailed code */ }
+  }
   // request a verification code
   if(BACKEND){
     try{
@@ -1937,6 +1949,13 @@ function showAuthPane(id){
   });
 }
 function openForgot(){
+  // make sure the sign-in view is actually on screen (it's hidden once logged in)
+  const auth=document.getElementById('c-auth');
+  const flow=document.getElementById('c-flow');
+  if(auth && !auth.classList.contains('on')){
+    if(flow) flow.classList.remove('on');
+    auth.classList.add('on');
+  }
   const typed=(document.getElementById('ci-email').value||'').trim();
   if(typed) document.getElementById('fp-email').value=typed;
   document.getElementById('fpDemo').textContent='';
