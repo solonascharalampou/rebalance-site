@@ -398,6 +398,23 @@
     .uc-actions .btn{flex:1}
   }
 
+  /* GHS cover */
+  .ghs-card{margin-top:16px;background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:22px 24px}
+  .ghs-card.approved{border-color:rgba(138,154,110,.45);background:linear-gradient(165deg,#f2f5ec,#fbfaf6)}
+  .ghs-card.pending{border-color:rgba(201,138,92,.45);background:linear-gradient(165deg,#fdf6ee,#faf5ef)}
+  .ghs-card h3{font-family:'Fraunces',serif;font-weight:400;font-size:1.25rem}
+  .ghs-card p{font-size:13px;color:var(--char);line-height:1.6;margin-bottom:10px}
+  .ghs-card input{margin-top:4px}
+  .ghs-badge{flex-shrink:0;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;padding:5px 12px;border-radius:20px}
+  .ghs-badge:empty{display:none}
+  .ghs-badge.ok{background:rgba(138,154,110,.22);color:#4f5f38}
+  .ghs-badge.pending{background:rgba(201,138,92,.2);color:#9a5f2b}
+  .ghs-badge.no{background:var(--sand);color:var(--mut)}
+  .rr.ghs-line .k{color:#4f5f38!important;font-weight:600}
+  .rr.ghs-line span:last-child{color:#4f5f38}
+  .es-row.ghs{color:#4f5f38}
+  .es-row.grand{border-top:2px solid var(--ink);margin-top:6px;padding-top:10px;font-weight:600}
+
   /* remember me + two-factor */
   .field-hint{font-size:11.5px;color:var(--mut);margin:-6px 0 4px;line-height:1.4}
   .security-card{margin-top:16px;background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:22px 24px}
@@ -1136,6 +1153,14 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
           <div class="rf-stat" id="rfStat"></div>
         </div>
 
+        <div class="ghs-card none" id="ghsCard">
+          <div class="sc-head">
+            <div><h3>🏥 GHS (ΓΕΣΥ) cover</h3></div>
+            <span class="ghs-badge" id="ghsBadge"></span>
+          </div>
+          <div id="ghsBody"></div>
+        </div>
+
         <div class="security-card">
           <div class="sc-head">
             <div>
@@ -1271,6 +1296,12 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
           <div class="ms-head"><h3>Regular slots</h3><span class="reg-count" id="regCount"></span></div>
           <p class="ms-note">Clients can ask to keep a weekly slot. Approving <b>holds that spot for them every week</b> — so only approve people who reliably attend. You can revoke anytime.</p>
           <div id="mgRegulars"></div>
+        </div>
+
+        <div class="manage-sec">
+          <div class="ms-head"><h3>GHS (ΓΕΣΥ) cover</h3><span class="reg-count" id="ghsCount"></span></div>
+          <p class="ms-note">Clients whose physiotherapy is covered by GHS. Approving means their <b>private Clinical Rehab</b> sessions are free to them — the fee is recorded separately for you to claim.</p>
+          <div id="mgGhs"></div>
         </div>
 
         <div class="manage-sec">
@@ -1609,7 +1640,7 @@ function isoDate(d){return d.toISOString().slice(0,10);}
 
 let CLASSES=[
   {id:'reformer',name:'Reformer Pilates',dur:'1 hour',who:'5 reformers · spring resistance',price:35,solo:60},
-  {id:'rehab',name:'Clinical Rehab',dur:'1 hour',who:'Physio-led · GHS',price:42,solo:65},
+  {id:'rehab',name:'Clinical Rehab',dur:'1 hour',who:'Physio-led · GHS',price:42,solo:65,ghs:true},
   {id:'mat',name:'Mat & Breath',dur:'1 hour',who:'Group mat · alignment',price:18,solo:40},
 ];
 let PACKAGES=[
@@ -1674,19 +1705,11 @@ async function downloadBackup(){
 // shared store: store[dayIdx][time] = { cls, closed, spots[5] }
 //   spots[i] = null (free) | 'held' (closed by trainer) | { name, pay:'viva'|'cash'|null }
 loadSettings(); // apply any saved trainer edits before building the schedule
+
 const store={};
 DAYS.forEach((d,di)=>{store[di]={};TIMES.forEach((t,ti)=>{
-  const seed=(di*7+ti*11);
   const cls=CLASSES[ti%CLASSES.length];
-  const spots=new Array(CAP).fill(null);
-  // seed some demo bookings — all paid (online=viva, walk-in=cash). Never unpaid.
-  const taken=(seed%4); // 0..3 people pre-booked
-  const names=['Eleni G.','Marios K.','Sofia P.','Andreas L.','Christina M.'];
-  const pays=['viva','cash','viva'];
-  for(let s=0;s<taken;s++){spots[s]={name:names[(di+ti+s)%names.length],pay:pays[s%pays.length]};}
-  // one class fully closed for demo variety
-  const closed=(seed%9===0);
-  store[di][t]={cls:cls.name, closed, spots};
+  store[di][t]={cls:cls.name, closed:false, spots:new Array(CAP).fill(null)};
 });});
 
 function spotsFree(cell){return cell.closed?0:cell.spots.filter(s=>s===null).length;}
@@ -2211,7 +2234,7 @@ function custStep(s){
   if(s==='class'){renderCreditBanner();renderClasses();}
   if(s==='packages')renderPackages();
   if(s==='type')renderTypeChoice();
-  if(s==='mine'){renderMine();renderReferral();renderUsual();refreshCustomer2FA();}
+  if(s==='mine'){renderMine();renderReferral();renderUsual();refreshCustomer2FA();renderGhsCard();}
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function renderCreditBanner(){
@@ -2283,6 +2306,106 @@ function saveUsualSlot(){
   toast('Request sent — the studio will confirm your regular slot','My usual');
 }
 /* ---- the studio's list of regular-slot requests ---- */
+/* ---------- GHS (ΓΕΣΥ) coverage: customer requests, studio approves ---------- */
+function loadGhs(){
+  try{ return JSON.parse(localStorage.getItem('rb_ghs')||'[]'); }catch(e){ return []; }
+}
+function saveGhs(list){
+  try{ localStorage.setItem('rb_ghs', JSON.stringify(list)); }catch(e){}
+}
+function myGhsStatus(){
+  if(!state.user) return null;
+  const r=loadGhs().find(x=>x.email===state.user.email);
+  return r ? r.status : null;
+}
+function isGhsCovered(){ return myGhsStatus()==='approved'; }
+// GHS only covers physio-led rehab, and only as a private session
+function ghsAppliesToBooking(){
+  if(!isGhsCovered()) return false;
+  if(state.bookMode!=='solo') return false;
+  return !!(state.cls && state.cls.ghs);
+}
+function requestGhs(){
+  if(!state.user){ toast('Sign in first','GHS'); return; }
+  const ref=(document.getElementById('ghsRef')||{}).value||'';
+  const list=loadGhs();
+  const i=list.findIndex(x=>x.email===state.user.email);
+  const rec={email:state.user.email, name:state.user.name, ref:ref.trim(),
+             status:'pending', requested:new Date().toISOString()};
+  if(i>=0) list[i]={...list[i], ...rec}; else list.push(rec);
+  saveGhs(list);
+  renderGhsCard();
+  toast('Request sent — the studio will confirm your GHS cover','GHS');
+}
+function renderGhsCard(){
+  const card=document.getElementById('ghsCard');
+  if(!card||!state.user) return;
+  const st=myGhsStatus();
+  const badge=document.getElementById('ghsBadge');
+  const body=document.getElementById('ghsBody');
+  card.className='ghs-card '+(st||'none');
+  if(st==='approved'){
+    badge.textContent='Covered'; badge.className='ghs-badge ok';
+    body.innerHTML='<p>✓ Your private Clinical Rehab sessions are covered by GHS — '
+      +'you won\u2019t be charged for them.</p>';
+  }else if(st==='pending'){
+    badge.textContent='Waiting'; badge.className='ghs-badge pending';
+    body.innerHTML='<p>The studio is checking your GHS cover. We\u2019ll confirm shortly.</p>';
+  }else if(st==='declined'){
+    badge.textContent='Not covered'; badge.className='ghs-badge no';
+    body.innerHTML='<p>We couldn\u2019t confirm GHS cover for your account. '
+      +'Please call us on 22 035001 to sort it out.</p>';
+  }else{
+    badge.textContent=''; badge.className='ghs-badge';
+    body.innerHTML='<p>If your physiotherapy is covered by GHS (ΓΕΣΥ), tell us and '
+      +'we\u2019ll check it — covered private rehab sessions are free to you.</p>'
+      +'<input id="ghsRef" placeholder="GHS / referral number (optional)">'
+      +'<button class="btn ghost" style="width:100%;margin-top:10px" onclick="requestGhs()">Request GHS cover</button>';
+  }
+}
+/* ---------- GHS approvals (studio side) ---------- */
+function renderMgGhs(){
+  const box=document.getElementById('mgGhs');
+  if(!box) return;
+  const list=loadGhs();
+  const pending=list.filter(r=>r.status==='pending').length;
+  const cnt=document.getElementById('ghsCount');
+  if(cnt) cnt.textContent = pending ? pending+' waiting' : '';
+  if(!list.length){ box.innerHTML='<p class="ms-empty">No GHS requests yet.</p>'; return; }
+  const order={pending:0,approved:1,declined:2};
+  box.innerHTML=list.sort((a,b)=>(order[a.status]??3)-(order[b.status]??3)).map((r,i)=>{
+    let actions,badge;
+    if(r.status==='pending'){
+      badge='<span class="reg-badge pending">Waiting</span>';
+      actions=`<button class="btn sm" onclick="approveGhs(${i})">Approve</button>
+               <button class="mg-del" onclick="declineGhs(${i})">Decline</button>`;
+    }else if(r.status==='approved'){
+      badge='<span class="reg-badge ok">Covered</span>';
+      actions=`<button class="mg-del" onclick="revokeGhs(${i})">Remove cover</button>`;
+    }else{
+      badge='<span class="reg-badge no">Declined</span>';
+      actions=`<button class="btn ghost sm" onclick="approveGhs(${i})">Approve after all</button>`;
+    }
+    return `<div class="reg-card ${r.status}">
+      <div class="reg-info">
+        <div class="reg-name">${r.name||r.email}${badge}</div>
+        <div class="reg-when">${r.ref? 'Ref: '+r.ref : 'No reference given'}</div>
+      </div>
+      <div class="reg-actions">${actions}</div>
+    </div>`;
+  }).join('');
+}
+function setGhsStatus(i,status,msg){
+  const list=loadGhs();
+  if(!list[i]) return;
+  list[i].status=status;
+  saveGhs(list);
+  renderMgGhs();
+  toast(msg,'GHS');
+}
+function approveGhs(i){ setGhsStatus(i,'approved','GHS cover approved — their private rehab is now free'); }
+function declineGhs(i){ setGhsStatus(i,'declined','GHS request declined'); }
+function revokeGhs(i){ setGhsStatus(i,'declined','GHS cover removed'); }
 function loadRegulars(){
   try{ return JSON.parse(localStorage.getItem('rb_regulars')||'[]'); }catch(e){ return []; }
 }
@@ -2630,6 +2753,8 @@ function basePrice(){
   return state.cls.price;
 }
 function currentPrice(){
+  // GHS pays the studio directly — the customer is charged nothing
+  if(ghsAppliesToBooking()) return 0;
   let p=basePrice();
   if(p>0 && state.promo && PROMOS[state.promo]) p=Math.round(p*(1-PROMOS[state.promo].off));
   return p;
@@ -2662,7 +2787,8 @@ function buildReceipt(){
     ${weeks>1?`<div class="rr"><span class="k">Repeats</span><span>Weekly × ${weeks}</span></div>`:''}
     ${solo||weeks>1?'':`<div class="rr"><span class="k">Your spot</span><span>${spotsBooked(c)+1} of ${CAP}</span></div>`}
     ${usingCredit?`<div class="rr"><span class="k">Credits</span><span>${state.credits} available</span></div>`:''}
-    ${isFirstSession()&&!solo?`<div class="rr intro"><span class="k">✦ First-session offer</span><span>€${FIRST_OFFER.price} instead of €${state.cls.price}</span></div>`:''}
+    ${ghsAppliesToBooking()?`<div class="rr ghs-line"><span class="k">🏥 GHS (ΓΕΣΥ) covered</span><span>Paid by GHS · €${state.cls.solo} claimed</span></div>`:''}
+    ${isFirstSession()&&!solo&&!ghsAppliesToBooking()?`<div class="rr intro"><span class="k">✦ First-session offer</span><span>€${FIRST_OFFER.price} instead of €${state.cls.price}</span></div>`:''}
     ${promoActive?`<div class="rr"><span class="k">Promo ${state.promo}</span><span>−€${(base-unit)*weeks}.00</span></div>`:''}
     ${weeks>1?`<div class="rr"><span class="k">Per class</span><span>€${unit}.00</span></div>`:''}
     <div class="rr tot"><span>${usingCredit?'Use 1 credit':'Total'}</span><span>${usingCredit?'€0.00':'€'+price+'.00'}</span></div>`;
@@ -2700,9 +2826,11 @@ async function custPay(){
   const idx=c.spots.findIndex(s=>s===null);
   if(idx===-1){toast('Sorry, that just filled up','Booking');custStep('slots');renderCSlots();return;}
   const weeks=repeatWeeks();
-  const usingCredit=!solo && state.credits>0 && weeks===1;
-  const payType = usingCredit ? 'credit' : 'viva';
-  c.spots[idx]={name:state.user.name,pay:payType,private:solo};
+  const isGhs=ghsAppliesToBooking();
+  const usingCredit=!isGhs && !solo && state.credits>0 && weeks===1;
+  const payType = isGhs ? 'ghs' : (usingCredit ? 'credit' : 'viva');
+  c.spots[idx]={name:state.user.name,pay:payType,private:solo,
+                ghsValue: isGhs ? state.cls.solo : 0};
   if(solo){ c.spots=c.spots.map((s,i)=> i===idx ? s : 'held'); c.private=true; }
   const unit=currentPrice();
   const price=unit*weeks;
@@ -2719,7 +2847,8 @@ async function custPay(){
   }
   const rno='RB-'+new Date().getFullYear()+'-'+String(Math.floor(Math.random()*900000+100000));
   showReceipt({no:rno, cls:state.cls.name, solo, d, time:state.slot,
-               total:usingCredit?0:price, method:usingCredit?'Package credit':'Viva Wallet',
+               total:isGhs?0:(usingCredit?0:price),
+               method:isGhs?'GHS (ΓΕΣΥ)':(usingCredit?'Package credit':'Viva Wallet'),
                promo: (!usingCredit && state.promo) ? state.promo : null,
                weeks: weeks>1 ? weeks : null});
 }
@@ -3004,7 +3133,7 @@ function editFirstOffer(){
 function renderManage(){
   renderMgClasses(); renderMgTimes();
   document.getElementById('mgCap').textContent=CAP;
-  renderMgPackages(); renderMgPromos(); renderMgTrainers(); renderMgRegulars();
+  renderMgPackages(); renderMgPromos(); renderMgTrainers(); renderMgRegulars(); renderMgGhs();
   document.getElementById('mgFirstOn').checked=FIRST_OFFER.on;
   document.getElementById('mgFirstPrice').value=FIRST_OFFER.price;
   document.getElementById('mgFirstPriceWrap').style.display=FIRST_OFFER.on?'flex':'none';
@@ -3298,9 +3427,11 @@ function collectEarnings(){
     c.spots.forEach(s=>{
       if(s&&typeof s==='object'){
         const isPriv=!!(c.private||s.private);
-        const amount=priceFor(c.cls,isPriv);
-        const method = s.pay==='credit' ? 'viva' : (s.pay||'viva');
-        rows.push({d,date:d,time:t,client:s.name,amount,method,cls:c.cls,private:isPriv});
+        // GHS sessions: the customer pays nothing, but GHS owes the studio the full fee
+        const isGhs = s.pay==='ghs';
+        const amount = isGhs ? (s.ghsValue || priceFor(c.cls,true)) : priceFor(c.cls,isPriv);
+        const method = isGhs ? 'ghs' : (s.pay==='credit' ? 'viva' : (s.pay||'viva'));
+        rows.push({d,date:d,time:t,client:s.name,amount,method,cls:c.cls,private:isPriv,ghs:isGhs});
       }
     });
   }));
@@ -3328,9 +3459,10 @@ function renderEarnings(){
   const range=periodRange();
   let rows=collectEarnings();
   if(range.from) rows=rows.filter(r=>r.date>=range.from && r.date<=range.to);
-  const totals={viva:0,card:0,cash:0,count:0};
+  const totals={viva:0,card:0,cash:0,ghs:0,count:0};
   rows.forEach(r=>{totals[r.method]=(totals[r.method]||0)+r.amount;totals.count++;});
   const electronic=totals.viva+totals.card;
+  // GHS is claimed from the health system, not taken at the studio — keep it separate
   const gross=electronic+totals.cash;
   const sessions=rows.length;
 
@@ -3360,7 +3492,9 @@ function renderEarnings(){
     <div class="earn-split">
       <div class="es-row"><span>Electronic (traceable)</span><b>€${electronic.toFixed(2)}</b></div>
       <div class="es-row"><span>Cash</span><b>€${totals.cash.toFixed(2)}</b></div>
-      <div class="es-row total"><span>Total to declare</span><b>€${gross.toFixed(2)}</b></div>
+      <div class="es-row total"><span>Taken at the studio</span><b>€${gross.toFixed(2)}</b></div>
+      ${totals.ghs>0?`<div class="es-row ghs"><span>🏥 To claim from GHS (ΓΕΣΥ)</span><b>€${totals.ghs.toFixed(2)}</b></div>
+      <div class="es-row grand"><span>Total earned</span><b>€${(gross+totals.ghs).toFixed(2)}</b></div>`:''}
     </div>
     <button class="btn ghost" style="width:100%;margin-top:16px" onclick="exportEarningsExcel()">⤓ Export Excel for accountant</button>`;
 }
