@@ -415,6 +415,13 @@
   .es-row.ghs{color:#4f5f38}
   .es-row.grand{border-top:2px solid var(--ink);margin-top:6px;padding-top:10px;font-weight:600}
 
+  /* password show/hide */
+  .pw-wrap{position:relative;display:flex;align-items:center}
+  .pw-wrap input{flex:1;padding-right:44px}
+  .pw-eye{position:absolute;right:6px;background:none;border:none;font-size:16px;cursor:pointer;
+    padding:8px;line-height:1;opacity:.6}
+  .pw-eye:hover{opacity:1}
+
   /* remember me + two-factor */
   .field-hint{font-size:11.5px;color:var(--mut);margin:-6px 0 4px;line-height:1.4}
   .security-card{margin-top:16px;background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:22px 24px}
@@ -930,7 +937,7 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
           </div>
           <div id="cf-name" style="display:none"><label>Full name</label><input id="ci-name" placeholder="Eleni Georgiou"></div>
           <label>Email</label><input id="ci-email" type="email" placeholder="you@email.com">
-          <label>Password</label><input id="ci-pass" type="password" placeholder="••••••••">
+          <label>Password</label><div class="pw-wrap"><input id="ci-pass" type="password" placeholder="••••••••"><button type="button" class="pw-eye" onclick="togglePw('ci-pass',this)" aria-label="Show password">👁</button></div>
           <div id="cf-phone" style="display:none"><label>Mobile number</label><input id="ci-phone" type="tel" inputmode="tel" placeholder="99 123456" autocomplete="tel"><p class="field-hint">So we can reach you quickly if a class changes.</p></div>
           <div id="cf-ref" style="display:none"><label>Referral code (optional)</label><input id="ci-ref" placeholder="FRIEND-ABC" oninput="this.value=this.value.toUpperCase()"></div>
           <label class="consent-check" id="cConsentWrap" style="display:none">
@@ -978,7 +985,7 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
           <div class="code-inputs" id="resetInputs">
             <input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric">
           </div>
-          <input id="fp-new" type="password" placeholder="New password (min 6 characters)" style="margin-top:16px">
+          <div class="pw-wrap" style="margin-top:16px"><input id="fp-new" type="password" placeholder="New password (min 6 characters)"><button type="button" class="pw-eye" onclick="togglePw('fp-new',this)" aria-label="Show password">👁</button></div>
           <input id="fp-new2" type="password" placeholder="Repeat new password">
           <button class="btn" style="width:100%;margin-top:16px" onclick="submitReset()">Set new password</button>
           <p class="fine"><button class="linkbtn" onclick="sendResetCode()">Resend code</button> · <button class="linkbtn" onclick="closeForgot()">Cancel</button></p>
@@ -1187,7 +1194,7 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
       <div class="authwrap"><div class="card" id="t-authcard">
         <div class="phead center" style="padding-top:0"><span class="eyebrow" data-i18n="portal_trainer">Trainer portal</span><h1 style="margin-top:8px" data-i18n="trainer_signin">Studio sign in</h1></div>
         <label style="margin-top:24px">Email</label><input id="ti-email" type="email" placeholder="trainer@rebalance.cy">
-        <label>Password</label><input id="ti-pass" type="password" placeholder="••••••••">
+        <label>Password</label><div class="pw-wrap"><input id="ti-pass" type="password" placeholder="••••••••"><button type="button" class="pw-eye" onclick="togglePw('ti-pass',this)" aria-label="Show password">👁</button></div>
         <label class="remember-check">
           <input type="checkbox" id="ti-remember" checked>
           <span>Keep me signed in on this device</span>
@@ -1393,8 +1400,9 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
 <div class="modal" id="twofaModal"><div class="sheet twofa-sheet">
   <div class="verify-ico">🛡️</div>
   <h3>Set up two-factor</h3>
-  <p class="verify-sub">Scan this with <b>Google Authenticator</b> or <b>Microsoft Authenticator</b>, then enter the 6-digit code it shows.</p>
+  <p class="verify-sub">Scan this with <b>Google Authenticator</b> or <b>Microsoft Authenticator</b> — or tap the button below to add it directly.</p>
   <img id="totpQr" class="totp-qr" alt="QR code">
+  <a id="totpAddLink" class="btn ghost" style="width:100%;display:block;text-align:center;margin-bottom:14px" href="#">📲 Open in my authenticator app</a>
   <details class="totp-manual">
     <summary>Can't scan? Enter this key manually</summary>
     <code id="totpSecret"></code>
@@ -1761,17 +1769,19 @@ async function custAuth(){
   const name=document.getElementById('ci-name').value.trim();
   const pass=document.getElementById('ci-pass').value;
   pendingAuth={mode:custMode,email,name:name||email.split('@')[0],pass,phone};
-  // If they use an authenticator, that replaces the emailed code — go straight there.
+  // For login, check the password up front so problems surface immediately —
+  // not after the person has typed an email code.
   if(BACKEND && custMode==='login'){
     try{
       const st=await api('/2fa/status?email='+encodeURIComponent(email));
       if(st && st.enabled){
+        // 2FA account: password is verified together with the app code
         document.getElementById('c-authcard').style.display='none';
         document.getElementById('c-totp').style.display='block';
         const f=document.querySelector('#totpInputs input'); if(f){f.value='';f.focus();}
         return;
       }
-    }catch(e){ /* fall through to the emailed code */ }
+    }catch(e){ /* status check failed — fall through */ }
   }
   // request a verification code
   if(BACKEND){
@@ -1785,7 +1795,7 @@ async function custAuth(){
         document.getElementById('verifyDemo').textContent='';
       }
     }
-    catch(e){toast(e.message,'Verify');return;}
+    catch(e){toast(friendlyAuthError(e.message),'Verify');return;}
   }else{
     // demo: generate a code locally and show it (real email sends once deployed)
     demoCode=String(Math.floor(100000+Math.random()*900000));
@@ -1826,16 +1836,40 @@ async function doBackendAuth(emailCode, totpCode){
     ? {name:pendingAuth.name,email:pendingAuth.email,password:pendingAuth.pass,
        phone:pendingAuth.phone||'',code:emailCode,remember}
     : {email:pendingAuth.email,password:pendingAuth.pass,code:emailCode,totp:totpCode,remember};
-  const r=await api(path,{method:'POST',body});
+  let r;
+  try{
+    r=await api(path,{method:'POST',body});
+  }catch(e){
+    throw new Error(friendlyAuthError(e.message));
+  }
   authToken=r.token; state.user={email:r.email,name:r.name,phone:pendingAuth.phone||''}; state.credits=r.credits||0;
   if(remember){ try{ localStorage.setItem('rb_token', r.token); }catch(e){} }
+}
+function togglePw(id, btn){
+  const el=document.getElementById(id);
+  if(!el) return;
+  const show = el.type==='password';
+  el.type = show ? 'text' : 'password';
+  btn.textContent = show ? '🙈' : '👁';
+  btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+}
+// turn raw server codes into something a person understands
+function friendlyAuthError(msg){
+  const m=String(msg||'');
+  if(m.includes('NO_ACCOUNT'))
+    return 'No account found with that email. Tap “Sign up” to create one.';
+  if(m.includes('WRONG_PASSWORD'))
+    return 'That password isn’t right. Tap “Forgot your password?” to reset it.';
+  if(m.includes('2FA_REQUIRED'))
+    return 'Enter the code from your authenticator app.';
+  return m;
 }
 // second step: the authenticator app code
 async function submitTotp(){
   const totp=Array.from(document.querySelectorAll('#totpInputs input')).map(i=>i.value).join('');
   if(totp.length<6){toast('Enter the full 6-digit code','2FA');return;}
   try{ await doBackendAuth(pendingAuth.emailCode, totp); }
-  catch(e){ toast(e.message,'2FA'); return; }
+  catch(e){ toast(friendlyAuthError(e.message),'2FA'); return; }
   document.getElementById('c-totp').style.display='none';
   finishAuth();
 }
@@ -1875,6 +1909,13 @@ async function open2FASetup(who){
     const qr=document.getElementById('totpQr');
     if(r.qr){ qr.src=r.qr; qr.style.display='block'; } else { qr.style.display='none'; }
     document.getElementById('totpSecret').textContent=r.secret;
+    // tap-to-add link: opens the authenticator app with the account pre-filled
+    const link=document.getElementById('totpAddLink');
+    if(link){
+      const uri = r.uri || ('otpauth://totp/Rebalance%20Studio:'+encodeURIComponent(email)
+                  +'?secret='+r.secret+'&issuer=Rebalance%20Studio');
+      link.href=uri;
+    }
     twofaEmail=email;
     document.getElementById('twofaModal').classList.add('show');
     const f=document.querySelector('#setupInputs input'); if(f){f.value='';f.focus();}
