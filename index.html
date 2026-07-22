@@ -924,7 +924,7 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
 <!-- ============ CUSTOMER PORTAL ============ -->
 <div class="view" id="v-cust">
   <div class="portal wrap">
-    <button class="back" onclick="show('home')">← Back to site</button>
+    <button class="back" id="custBack" onclick="show('home')">← Back to site</button>
 
     <!-- auth -->
     <div class="flow on" id="c-auth">
@@ -935,11 +935,11 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
             <button class="on" id="ct-login" onclick="custTab('login')" data-i18n="login">Log in</button>
             <button id="ct-signup" onclick="custTab('signup')" data-i18n="signup">Sign up</button>
           </div>
-          <div id="cf-name" style="display:none"><label>Full name</label><input id="ci-name" placeholder="Eleni Georgiou"></div>
+          <div id="cf-name" style="display:none"><label>Full name</label><input id="ci-name" placeholder="Your full name"></div>
           <label>Email</label><input id="ci-email" type="email" placeholder="you@email.com">
           <label>Password</label><div class="pw-wrap"><input id="ci-pass" type="password" placeholder="••••••••"><button type="button" class="pw-eye" onclick="togglePw('ci-pass',this)" aria-label="Show password">👁</button></div>
-          <div id="cf-phone" style="display:none"><label>Mobile number</label><input id="ci-phone" type="tel" inputmode="tel" placeholder="99 123456" autocomplete="tel"><p class="field-hint">So we can reach you quickly if a class changes.</p></div>
-          <div id="cf-ref" style="display:none"><label>Referral code (optional)</label><input id="ci-ref" placeholder="FRIEND-ABC" oninput="this.value=this.value.toUpperCase()"></div>
+          <div id="cf-phone" style="display:none"><label>Mobile number</label><input id="ci-phone" type="tel" inputmode="tel" placeholder="Your mobile number" autocomplete="tel"><p class="field-hint">So we can reach you quickly if a class changes.</p></div>
+          <div id="cf-ref" style="display:none"><label>Referral code (optional)</label><input id="ci-ref" placeholder="Enter code" oninput="this.value=this.value.toUpperCase()"></div>
           <label class="consent-check" id="cConsentWrap" style="display:none">
             <input type="checkbox" id="ci-consent">
             <span>I agree to the <button type="button" class="linkbtn" onclick="openPrivacy()">Privacy Policy</button> and consent to my data being used to manage my bookings.</span>
@@ -1188,12 +1188,12 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
 <!-- ============ TRAINER PORTAL ============ -->
 <div class="view" id="v-train">
   <div class="portal wrap">
-    <button class="back" onclick="show('home')">← Back to site</button>
+    <button class="back" id="trainerBack" onclick="trainerBackAction()">← Back to site</button>
 
     <div class="flow on" id="t-auth">
       <div class="authwrap"><div class="card" id="t-authcard">
         <div class="phead center" style="padding-top:0"><span class="eyebrow" data-i18n="portal_trainer">Trainer portal</span><h1 style="margin-top:8px" data-i18n="trainer_signin">Studio sign in</h1></div>
-        <label style="margin-top:24px">Email</label><input id="ti-email" type="email" placeholder="trainer@rebalance.cy">
+        <label style="margin-top:24px">Email</label><input id="ti-email" type="email" placeholder="Your email">
         <label>Password</label><div class="pw-wrap"><input id="ti-pass" type="password" placeholder="••••••••"><button type="button" class="pw-eye" onclick="togglePw('ti-pass',this)" aria-label="Show password">👁</button></div>
         <label class="remember-check">
           <input type="checkbox" id="ti-remember" checked>
@@ -1978,7 +1978,43 @@ async function toggleCustomer2FA(){
   }
   open2FASetup('customer');
 }
+// switch the top button to "Sign out" once someone's logged in
+function updateCustBack(){
+  const btn=document.getElementById('custBack');
+  if(!btn) return;
+  if(state.user){
+    btn.textContent='← Sign out';
+    btn.onclick=custLogout;
+  }else{
+    btn.textContent='← Back to site';
+    btn.onclick=()=>show('home');
+  }
+}
+async function custLogout(){
+  if(BACKEND && authToken){ try{ await api('/logout',{method:'POST',token:authToken}); }catch(e){} }
+  authToken=null; state.user=null; state.credits=0; custTwofaOn=false;
+  try{ localStorage.removeItem('rb_token'); }catch(e){}
+  // reset the login form back to a clean state
+  document.getElementById('c-flow').classList.remove('on');
+  document.getElementById('c-auth').classList.add('on');
+  showAuthPane('c-authcard');
+  custTab('login');
+  updateCustBack();
+  show('home');
+  toast('Signed out','Account');
+}
+function trainerLogout(){
+  if(BACKEND && trainerToken){ try{ api('/logout',{method:'POST',token:trainerToken}); }catch(e){} }
+  trainerToken=null; trainerCreds={email:'',pass:''};
+  try{ localStorage.removeItem('rb_ttoken'); }catch(e){}
+  document.getElementById('t-app').classList.remove('on');
+  document.getElementById('t-auth').classList.add('on');
+  const tp=document.getElementById('ti-pass'); if(tp) tp.value='';
+  show('home');
+  toast('Signed out','Trainer');
+}
 function finishAuth(){
+  updateCustBack();
   const wasSignup = pendingAuth.mode==='signup';
   toast(wasSignup?'Email verified — welcome!':'Identity confirmed — welcome back!','Account');
   // if they signed up with a friend's referral code, credit both
@@ -3132,9 +3168,18 @@ function cancelTrainerTotp(){
   document.getElementById('t-totp').style.display='none';
   document.getElementById('t-authcard').style.display='block';
 }
+function trainerBackAction(){
+  // if signed into the portal, this button signs out; otherwise back to site
+  if(trainerToken && document.getElementById('t-app').classList.contains('on')){
+    trainerLogout();
+  }else{
+    show('home');
+  }
+}
 function enterTrainerPortal(){
   document.getElementById('t-auth').classList.remove('on');
   document.getElementById('t-app').classList.add('on');
+  const tb=document.getElementById('trainerBack'); if(tb) tb.textContent='← Sign out';
   renderTDays();renderTSlots();renderClients();
   toast('Welcome back, studio.','Trainer');
 }
@@ -3639,6 +3684,41 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 custTab('login');
 applyLang();  // paint the site in the phone's language (or their saved choice)
 loadServerSettings();  // when live, the server's settings win
+restoreSession();      // "remember me" — sign back in if we have a saved token
+
+// If "remember me" saved a token last time, validate it and sign the person
+// straight back in, so they don't have to log in on every visit.
+async function restoreSession(){
+  if(!BACKEND) return;
+  let tok=null;
+  try{ tok=localStorage.getItem('rb_token'); }catch(e){}
+  if(tok){
+    try{
+      const r=await api('/me',{token:tok});
+      if(r && r.ok){
+        authToken=tok;
+        state.user={email:r.email,name:r.name};
+        state.credits=r.credits||0;
+        custTwofaOn=!!r.twofa;
+        updateCustBack();
+      }
+    }catch(e){
+      // token expired or invalid — clear it so we don't keep trying
+      try{ localStorage.removeItem('rb_token'); }catch(e2){}
+    }
+  }
+  // trainer token
+  let ttok=null;
+  try{ ttok=localStorage.getItem('rb_ttoken'); }catch(e){}
+  if(ttok){
+    try{
+      const r=await api('/trainer/schedule?date='+isoDate(new Date()),{token:ttok});
+      if(r){ trainerToken=ttok; }
+    }catch(e){
+      try{ localStorage.removeItem('rb_ttoken'); }catch(e2){}
+    }
+  }
+}
 
 /* ===================== PRIVACY / GDPR ===================== */
 function privacyAccepted(){
