@@ -1771,17 +1771,24 @@ async function custAuth(){
   pendingAuth={mode:custMode,email,name:name||email.split('@')[0],pass,phone};
   // For login, check the password up front so problems surface immediately —
   // not after the person has typed an email code.
+  // For login: verify email + password FIRST, so wrong credentials show
+  // immediately — not after the person has entered a verification code.
   if(BACKEND && custMode==='login'){
+    let pre;
     try{
-      const st=await api('/2fa/status?email='+encodeURIComponent(email));
-      if(st && st.enabled){
-        // 2FA account: password is verified together with the app code
-        document.getElementById('c-authcard').style.display='none';
-        document.getElementById('c-totp').style.display='block';
-        const f=document.querySelector('#totpInputs input'); if(f){f.value='';f.focus();}
-        return;
-      }
-    }catch(e){ /* status check failed — fall through */ }
+      pre=await api('/precheck',{method:'POST',body:{email,password:pass}});
+    }catch(e){
+      toast(friendlyAuthError(e.message),'Sign in');
+      return;
+    }
+    if(pre && pre.twofa){
+      // 2FA account: password is confirmed, now ask for the authenticator code
+      document.getElementById('c-authcard').style.display='none';
+      document.getElementById('c-totp').style.display='block';
+      const f=document.querySelector('#totpInputs input'); if(f){f.value='';f.focus();}
+      return;
+    }
+    // password is right and no 2FA — fall through to the emailed code
   }
   // request a verification code
   if(BACKEND){
@@ -3700,6 +3707,13 @@ async function restoreSession(){
         state.user={email:r.email,name:r.name};
         state.credits=r.credits||0;
         custTwofaOn=!!r.twofa;
+        // skip the login screen — they're already signed in
+        const auth=document.getElementById('c-auth'), flow=document.getElementById('c-flow');
+        if(auth && flow){
+          auth.classList.remove('on');
+          flow.classList.add('on');
+          renderClasses(); custStep('class');
+        }
         updateCustBack();
       }
     }catch(e){
@@ -3707,13 +3721,21 @@ async function restoreSession(){
       try{ localStorage.removeItem('rb_token'); }catch(e2){}
     }
   }
-  // trainer token
+  // trainer token — if it's still valid, skip the login screen entirely
   let ttok=null;
   try{ ttok=localStorage.getItem('rb_ttoken'); }catch(e){}
   if(ttok){
     try{
-      const r=await api('/trainer/schedule?date='+isoDate(new Date()),{token:ttok});
-      if(r){ trainerToken=ttok; }
+      await api('/trainer/schedule?date='+isoDate(new Date()),{token:ttok});
+      trainerToken=ttok;
+      // mark the login view as already done so opening the portal goes straight in
+      const auth=document.getElementById('t-auth'), app=document.getElementById('t-app');
+      if(auth && app){
+        auth.classList.remove('on');
+        app.classList.add('on');
+        const tb=document.getElementById('trainerBack'); if(tb) tb.textContent='← Sign out';
+        renderTDays(); renderTSlots(); renderClients();
+      }
     }catch(e){
       try{ localStorage.removeItem('rb_ttoken'); }catch(e2){}
     }
