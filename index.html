@@ -415,6 +415,49 @@
   .es-row.ghs{color:#4f5f38}
   .es-row.grand{border-top:2px solid var(--ink);margin-top:6px;padding-top:10px;font-weight:600}
 
+  .refresh-btn{background:none;border:1px solid var(--line);border-radius:20px;padding:6px 14px;
+    font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);cursor:pointer}
+  .refresh-btn:hover{border-color:var(--olive);color:var(--olive)}
+  .refresh-btn:disabled{opacity:.5;cursor:default}
+
+  .or-divider{display:flex;align-items:center;gap:14px;margin:18px 0 14px;
+    font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+  .or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--line)}
+  #googleBtnHolder{display:flex;justify-content:center}
+
+  /* closing times off */
+  .closure-sheet{max-width:440px}
+  .closure-sheet h3{font-family:'Fraunces',serif;font-weight:400;font-size:1.4rem;margin-bottom:4px}
+  .cl-sub{font-size:13px;color:var(--mut);margin-bottom:18px}
+  .cl-hint{font-size:11.5px;color:var(--mut);margin:6px 0 0;line-height:1.5}
+  .cl-choice{display:flex;gap:8px;background:var(--sand);padding:4px;border-radius:22px}
+  .cl-opt{flex:1;border:none;background:none;padding:10px;border-radius:18px;font-size:12.5px;
+    color:var(--mut);cursor:pointer;transition:all .2s}
+  .cl-opt.on{background:#fff;color:var(--ink);box-shadow:0 2px 8px -2px rgba(74,59,62,.2)}
+  .cl-days,.cl-times{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+  .cl-days button,.cl-times button{border:1px solid var(--line);background:#fff;border-radius:20px;
+    padding:8px 14px;font-size:12.5px;color:var(--char);cursor:pointer;transition:all .18s}
+  .cl-days button.on,.cl-times button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .cl-preview{margin-top:16px;padding:12px 14px;background:var(--sand);border-radius:12px;
+    font-size:12.5px;color:var(--char);line-height:1.5;min-height:20px}
+  .cl-preview:empty{display:none}
+
+  .co-paid{font-size:13px;color:var(--rust);margin:-8px 0 4px;font-weight:600}
+  .co-times{display:flex;flex-direction:column;gap:6px;margin-top:8px;max-height:180px;overflow-y:auto}
+  .co-time{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--char);
+    padding:9px 12px;border:1px solid var(--line);border-radius:12px;cursor:pointer;
+    text-transform:none;letter-spacing:0;font-weight:400;background:#fff}
+  .co-time input{width:auto;margin:0;accent-color:var(--olive)}
+  .co-actions{display:flex;flex-direction:column;gap:9px;margin-top:18px}
+  .co-actions .btn{width:100%;display:flex;flex-direction:column;align-items:center;
+    gap:3px;padding:14px;line-height:1.3;height:auto}
+  .co-actions .btn small{font-size:11px;opacity:.75;text-transform:none;letter-spacing:0;font-weight:400}
+
+  /* button cooldowns */
+  button.cooling{opacity:.5;cursor:not-allowed}
+  .linkbtn.cooling{text-decoration:none;color:var(--mut)}
+  .btn.cooling{filter:grayscale(.3)}
+
   /* password show/hide */
   .pw-wrap{position:relative;display:flex;align-items:center}
   .pw-wrap input{flex:1;padding-right:44px}
@@ -452,12 +495,84 @@
   .verify-card h2{font-family:'Fraunces',serif;font-weight:300;font-size:1.7rem;margin-bottom:8px}
   .verify-sub{font-size:13.5px;color:var(--mut);line-height:1.5;margin-bottom:22px}
   .verify-sub b{color:var(--ink)}
-  .code-inputs{display:flex;gap:8px;justify-content:center}
-  .code-inputs input{width:44px;height:54px;text-align:center;font-size:1.5rem;font-family:'Fraunces',serif;border:1px solid var(--line);border-radius:12px;background:#fff;padding:0}
-  .code-inputs input:focus{border-color:var(--olive);outline:none}
+  .code-inputs{display:flex;gap:10px;justify-content:center}
+  .code-inputs input{width:48px;height:60px;text-align:center;font-size:1.6rem;
+    font-family:'Fraunces',serif;color:var(--ink);
+    border:1.5px solid var(--line);border-radius:14px;background:#fff;padding:0;
+    transition:border-color .25s, box-shadow .25s, transform .25s;
+    caret-color:var(--rust)}
+  /* the box you're typing in glows, like a cursor resting there */
+  .code-inputs input:focus{
+    border-color:var(--rust);outline:none;transform:translateY(-2px);
+    box-shadow:0 0 0 4px rgba(199,123,123,.16), 0 6px 18px -8px rgba(199,123,123,.55)}
+  /* a filled digit settles in with a soft pop */
+  .code-inputs input.filled{
+    border-color:rgba(138,154,110,.75);background:#fbfcf8;
+    animation:digitIn .32s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes digitIn{
+    0%{transform:scale(.82) rotate(-7deg);opacity:.4}
+    60%{transform:scale(1.06) rotate(2deg)}
+    100%{transform:scale(1) rotate(0);opacity:1}}
+  /* wrong code — a brief shake, then reset */
+  .code-inputs.shake{animation:codeShake .45s}
+  @keyframes codeShake{
+    0%,100%{transform:translateX(0)}
+    20%{transform:translateX(-9px)} 40%{transform:translateX(8px)}
+    60%{transform:translateX(-5px)} 80%{transform:translateX(3px)}}
+  .code-inputs.shake input{border-color:var(--bad)}
+
+  /* merge-to-circle: boxes slide together, fade, and a circle takes their place */
+  .code-inputs{position:relative}
+  .code-inputs input{transition:border-color .25s, box-shadow .25s, transform .25s}
+  .code-inputs.merging{pointer-events:none}
+  .code-inputs.merging input{
+    transition:transform .5s cubic-bezier(.6,-0.15,.3,1.2), opacity .38s ease-in .12s,
+               border-color .3s, box-shadow .3s;
+    border-color:transparent!important;box-shadow:none!important;
+    background:transparent!important;color:transparent!important;opacity:0}
+  .merge-circle{
+    position:absolute;left:50%;top:50%;width:66px;height:66px;margin:-33px 0 0 -33px;
+    border-radius:50%;border:2.5px solid var(--olive);
+    background:rgba(138,154,110,.10);
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;transform:scale(.2);z-index:5;pointer-events:none}
+  .merge-circle.on{
+    animation:circleIn .52s .34s cubic-bezier(.34,1.56,.64,1) forwards}
+  @keyframes circleIn{
+    0%{opacity:0;transform:scale(.2)}
+    55%{opacity:1;transform:scale(1.12)}
+    100%{opacity:1;transform:scale(1)}}
+  .merge-circle svg{width:32px;height:32px}
+  .merge-circle path{stroke:var(--olive);stroke-width:3.4;fill:none;
+    stroke-linecap:round;stroke-linejoin:round;
+    stroke-dasharray:34;stroke-dashoffset:34}
+  .merge-circle.on path{animation:drawTick .42s .68s ease-out forwards}
+  /* the ring pulses outward once the tick lands */
+  .merge-circle.on::after{
+    content:'';position:absolute;inset:-2.5px;border-radius:50%;
+    border:2.5px solid var(--olive);opacity:0;
+    animation:ringPulse .7s .95s ease-out forwards}
+  @keyframes ringPulse{
+    0%{opacity:.55;transform:scale(1)}
+    100%{opacity:0;transform:scale(1.55)}}
+
+  /* success state after a correct code */
+  .verify-success{text-align:center;padding:14px 0 4px}
+  .vs-mark{width:74px;height:74px;margin:0 auto 16px;border-radius:22px;
+    border:2px solid var(--olive);display:flex;align-items:center;justify-content:center;
+    background:rgba(138,154,110,.09);animation:markPop .5s cubic-bezier(.34,1.56,.64,1)}
+  .vs-mark svg{width:34px;height:34px}
+  .vs-mark path{stroke:var(--olive);stroke-width:3.2;fill:none;
+    stroke-linecap:round;stroke-linejoin:round;
+    stroke-dasharray:34;stroke-dashoffset:34;
+    animation:drawTick .45s .18s ease-out forwards}
+  @keyframes markPop{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
+  @keyframes drawTick{to{stroke-dashoffset:0}}
+  .vs-title{font-family:'Fraunces',serif;font-size:1.3rem;color:var(--ink);margin-bottom:5px}
+  .vs-sub{font-size:13px;color:var(--olive);letter-spacing:.03em}
   .verify-demo{font-size:12px;color:var(--rust);margin-top:14px;background:rgba(201,123,123,.1);border-radius:8px;padding:8px 10px}
   .verify-demo:empty{display:none}
-  @media(max-width:560px){.code-inputs input{width:40px;height:50px;font-size:1.3rem}}
+  @media(max-width:560px){.code-inputs input{width:44px;height:56px;font-size:1.45rem}.code-inputs{gap:8px}}
   label{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:15px 0 7px}
   input,select{width:100%;padding:13px 15px;background:#fff;border:1px solid var(--line);border-radius:10px;font-size:15px;color:var(--ink);color-scheme:light;-webkit-text-fill-color:var(--ink)}
   input:focus,select:focus{outline:none;border-color:var(--olive)}
@@ -949,6 +1064,11 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
             <span>Keep me signed in on this device</span>
           </label>
           <button class="btn" style="width:100%;margin-top:16px" id="cAuthBtn" onclick="custAuth()">Log in</button>
+
+          <div class="or-divider" id="googleDivider" style="display:none"><span>or</span></div>
+          <div id="googleBtnHolder" style="display:none">
+            <div id="googleBtn"></div>
+          </div>
           <p class="fine" id="cAuthFine">New here? Switch to Sign up.</p>
           <p class="fine" id="cForgotLine"><button class="linkbtn" onclick="openForgot()" data-i18n="forgot_pw">Forgot your password?</button></p>
         </div>
@@ -961,8 +1081,11 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
             <input maxlength="1" inputmode="numeric" pattern="[0-9]"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric">
           </div>
           <button class="btn" style="width:100%;margin-top:20px" onclick="verifyCode()">Verify</button>
-          <p class="fine"><button class="linkbtn" onclick="resendCode()">Resend code</button> · <button class="linkbtn" onclick="cancelVerify()">Use a different email</button></p>
+          <p class="fine"><button class="linkbtn" id="btnResend" onclick="resendCode()">Resend code</button> · <button class="linkbtn" onclick="cancelVerify()">Use a different email</button></p>
           <p class="verify-demo" id="verifyDemo"></p>
+          <div class="verify-success" id="verifySuccess" style="display:none">
+            <div class="vs-sub">🔒 Verified &amp; secured</div>
+          </div>
         </div>
 
         <!-- authenticator code (when 2FA is on) -->
@@ -972,7 +1095,7 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
           <h2>Reset your password</h2>
           <p class="verify-sub">Enter your email and we'll send you a 6-digit code to set a new password.</p>
           <input id="fp-email" type="email" placeholder="you@email.com" style="text-align:center">
-          <button class="btn" style="width:100%;margin-top:16px" onclick="sendResetCode()">Send code</button>
+          <button class="btn" id="btnSendReset" style="width:100%;margin-top:16px" onclick="sendResetCode()">Send code</button>
           <p class="fine"><button class="linkbtn" onclick="closeForgot()">Back to sign in</button></p>
           <p class="verify-demo" id="fpDemo"></p>
         </div>
@@ -988,7 +1111,7 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
           <div class="pw-wrap" style="margin-top:16px"><input id="fp-new" type="password" placeholder="New password (min 6 characters)"><button type="button" class="pw-eye" onclick="togglePw('fp-new',this)" aria-label="Show password">👁</button></div>
           <input id="fp-new2" type="password" placeholder="Repeat new password">
           <button class="btn" style="width:100%;margin-top:16px" onclick="submitReset()">Set new password</button>
-          <p class="fine"><button class="linkbtn" onclick="sendResetCode()">Resend code</button> · <button class="linkbtn" onclick="closeForgot()">Cancel</button></p>
+          <p class="fine"><button class="linkbtn" id="btnResendReset" onclick="sendResetCode()">Resend code</button> · <button class="linkbtn" onclick="closeForgot()">Cancel</button></p>
         </div>
 
         <div id="c-totp" class="verify-card" style="display:none">
@@ -1230,6 +1353,7 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
         <div class="daybar" id="tDaybar" style="max-width:none"></div>
         <div class="tgrid-head" style="margin-top:18px">
           <h3 id="tDayLabel">Today</h3>
+          <button class="refresh-btn" id="tRefresh" onclick="refreshSchedule()" title="Check for new bookings">↻ Refresh</button>
           <div class="legend">
             <span><i style="background:linear-gradient(165deg,#fbeae6,#f3ddd6)"></i> Booked spot</span>
             <span><i style="background:#fff;border:1px dashed var(--mut)"></i> Free</span>
@@ -1303,6 +1427,19 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
           <div class="ms-head"><h3>Regular slots</h3><span class="reg-count" id="regCount"></span></div>
           <p class="ms-note">Clients can ask to keep a weekly slot. Approving <b>holds that spot for them every week</b> — so only approve people who reliably attend. You can revoke anytime.</p>
           <div id="mgRegulars"></div>
+        </div>
+
+        <div class="manage-sec">
+          <div class="ms-head"><h3>Refunds</h3><span class="reg-count" id="vivaBadge"></span></div>
+          <p class="ms-note" id="vivaNote">Checking payment setup…</p>
+          <div id="mgRefunds"></div>
+        </div>
+
+        <div class="manage-sec">
+          <div class="ms-head"><h3>Close times off</h3><span class="reg-count" id="closureCount"></span></div>
+          <p class="ms-note">Block out holidays, a regular day off, or a single afternoon. Anything you close here can't be booked by customers.</p>
+          <button class="btn ghost" style="width:100%" onclick="openClosureModal()">📅 Close times off</button>
+          <div id="mgClosures" style="margin-top:14px"></div>
         </div>
 
         <div class="manage-sec">
@@ -1389,6 +1526,75 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
 
 <!-- Two-factor setup (works from any portal) -->
 <!-- Offered right after signup: link an authenticator, or skip -->
+<!-- Close times off: a day, specific hours, or every week for a while -->
+<!-- What happens when the studio cancels someone's booking -->
+<div class="modal" id="cancelOutcomeModal"><div class="sheet closure-sheet">
+  <h3>Cancel this booking</h3>
+  <p class="cl-sub" id="coWho"></p>
+  <p class="co-paid" id="coPaid"></p>
+
+  <label style="margin-top:14px">Reason (they'll see this)</label>
+  <input id="coReason" placeholder="Trainer unwell, studio closed…">
+
+  <label style="margin-top:14px">Times to offer them</label>
+  <div id="coTimes" class="co-times"></div>
+
+  <div class="co-actions">
+    <button class="btn" onclick="doCancelOutcome('reschedule')">
+      📅 Offer another time<small>Nothing refunded yet — they pick a new slot</small></button>
+    <button class="btn ghost co-money" onclick="doCancelOutcome('credit')">
+      🎟️ Give a class credit<small>They rebook free, whenever suits</small></button>
+    <button class="btn ghost co-money" onclick="doCancelOutcome('refund')">
+      💶 Refund their money<small>Money goes back to them</small></button>
+    <button class="btn ghost" onclick="doCancelOutcome('none')">
+      Just cancel<small>You'll sort the rest yourself</small></button>
+  </div>
+  <p class="fine"><button class="linkbtn" onclick="closeCancelOutcome()">Keep the booking</button></p>
+</div></div>
+
+<div class="modal" id="closureModal"><div class="sheet closure-sheet">
+  <h3>Close times off</h3>
+  <p class="cl-sub">Block times so customers can't book them.</p>
+
+  <label>What are you closing?</label>
+  <div class="cl-choice">
+    <button class="cl-opt on" data-clmode="day" onclick="setClosureMode('day')">Whole day</button>
+    <button class="cl-opt" data-clmode="times" onclick="setClosureMode('times')">Certain times</button>
+  </div>
+
+  <label style="margin-top:16px">From</label>
+  <input type="date" id="clFrom">
+  <label>Until</label>
+  <input type="date" id="clUntil">
+  <p class="cl-hint">For a single day, put the same date in both.</p>
+
+  <div id="clRepeatWrap">
+    <label style="margin-top:14px">Repeat on</label>
+    <div class="cl-days" id="clDays">
+      <button data-dow="1" onclick="toggleClDay(1)">Mon</button>
+      <button data-dow="2" onclick="toggleClDay(2)">Tue</button>
+      <button data-dow="3" onclick="toggleClDay(3)">Wed</button>
+      <button data-dow="4" onclick="toggleClDay(4)">Thu</button>
+      <button data-dow="5" onclick="toggleClDay(5)">Fri</button>
+      <button data-dow="6" onclick="toggleClDay(6)">Sat</button>
+      <button data-dow="0" onclick="toggleClDay(0)">Sun</button>
+    </div>
+    <p class="cl-hint">Leave all unselected to close every day in the range.</p>
+  </div>
+
+  <div id="clTimesWrap" style="display:none">
+    <label style="margin-top:14px">Which times?</label>
+    <div class="cl-times" id="clTimes"></div>
+  </div>
+
+  <label style="margin-top:14px">Reason (optional)</label>
+  <input id="clReason" placeholder="Holiday, training day…">
+
+  <p class="cl-preview" id="clPreview"></p>
+  <button class="btn" style="width:100%;margin-top:16px" onclick="applyClosure()">Close these times</button>
+  <p class="fine"><button class="linkbtn" onclick="closeClosureModal()">Cancel</button></p>
+</div></div>
+
 <div class="modal" id="twofaOfferModal"><div class="sheet twofa-sheet">
   <div class="verify-ico">🛡️</div>
   <h3>Protect your account?</h3>
@@ -1614,6 +1820,7 @@ function applyLang(){
 }
 
 let authToken = null, trainerToken = null;
+let VIVA_LIVE = false;   // true only when Viva is configured and not in demo
 async function api(path, {method="GET", body=null, token=null, _retry=0}={}){
   const headers={"Content-Type":"application/json"};
   if(token) headers["Authorization"]="Bearer "+token;
@@ -1755,7 +1962,9 @@ function custReset(){
 }
 let pendingAuth=null; // holds signup/login details until code verified
 let demoCode=null;
+let authBusy=false;
 async function custAuth(){
+  if(authBusy) return;                    // stop double-taps sending two codes
   const email=document.getElementById('ci-email').value.trim();
   if(!email){toast('Enter your email','Account');return;}
   const phone=(document.getElementById('ci-phone').value||'').trim();
@@ -1769,8 +1978,8 @@ async function custAuth(){
   const name=document.getElementById('ci-name').value.trim();
   const pass=document.getElementById('ci-pass').value;
   pendingAuth={mode:custMode,email,name:name||email.split('@')[0],pass,phone};
-  // For login, check the password up front so problems surface immediately —
-  // not after the person has typed an email code.
+  authBusy=true;
+  try{
   // For login: verify email + password FIRST, so wrong credentials show
   // immediately — not after the person has entered a verification code.
   if(BACKEND && custMode==='login'){
@@ -1794,6 +2003,8 @@ async function custAuth(){
   if(BACKEND){
     try{
       const r=await api('/send-code',{method:'POST',body:{email,purpose:custMode}});
+      lastResend=Date.now();
+      startCooldown('btnResend', 60, 'Resend code');
       // if the server has no email set up yet, it hands the code back for testing
       if(r && r.test_code){
         document.getElementById('verifyDemo').innerHTML=
@@ -1809,9 +2020,11 @@ async function custAuth(){
     document.getElementById('verifyDemo').innerHTML='Demo mode — your code is <b>'+demoCode+'</b> (a real email is sent once deployed).';
   }
   document.getElementById('verifyEmail').textContent=email;
+  startCooldown('btnResend', 60, 'Resend code');
   document.getElementById('c-authcard').style.display='none';
   document.getElementById('c-verify').style.display='block';
   const first=document.querySelector('#codeInputs input'); if(first){first.value='';first.focus();}
+  }finally{ authBusy=false; }
 }
 async function verifyCode(){
   const code=Array.from(document.querySelectorAll('#codeInputs input')).map(i=>i.value).join('');
@@ -1828,13 +2041,76 @@ async function verifyCode(){
         const f=document.querySelector('#totpInputs input'); if(f){f.value='';f.focus();}
         return;
       }
-      toast(e.message,'Verify');return;
+      toast(friendlyAuthError(e.message),'Verify');shakeCode('codeInputs');return;
     }
   }else{
-    if(code!==demoCode){toast('Incorrect code — check and try again','Verify');return;}
+    if(code!==demoCode){toast('Incorrect code — check and try again','Verify');shakeCode('codeInputs');return;}
     state.user={email:pendingAuth.email,name:pendingAuth.name};
   }
-  finishAuth();
+  showVerifySuccess(()=>finishAuth());
+}
+// Slide the six boxes into the centre, fade them out, and grow a circle with a
+// tick in their place. Purely visual — it runs only after the code is accepted.
+function mergeCodeBoxes(boxId, then){
+  const box=document.getElementById(boxId);
+  if(!box){ then && then(); return; }
+  const inputs=[...box.querySelectorAll('input')];
+  if(!inputs.length){ then && then(); return; }
+
+  // work out how far each box must move so they all land on the centre
+  const boxRect=box.getBoundingClientRect();
+  const centreX=boxRect.left+boxRect.width/2;
+  inputs.forEach(inp=>{
+    const r=inp.getBoundingClientRect();
+    const dx=centreX-(r.left+r.width/2);
+    inp.style.transform=`translateX(${dx}px) scale(.55)`;
+  });
+
+  // drop in the circle
+  let circle=box.querySelector('.merge-circle');
+  if(!circle){
+    circle=document.createElement('div');
+    circle.className='merge-circle';
+    circle.innerHTML='<svg viewBox="0 0 36 36"><path d="M8 18.5 L15 25.5 L28 11"/></svg>';
+    box.appendChild(circle);
+  }
+  box.classList.add('merging');
+  requestAnimationFrame(()=>circle.classList.add('on'));
+
+  setTimeout(()=>{ then && then(); }, 1750);
+}
+// put the boxes back so the screen can be reused
+function resetCodeBoxes(boxId){
+  const box=document.getElementById(boxId);
+  if(!box) return;
+  box.classList.remove('merging');
+  const circle=box.querySelector('.merge-circle');
+  if(circle) circle.remove();
+  box.querySelectorAll('input').forEach(i=>{
+    i.style.transform=''; i.value=''; i.classList.remove('filled');
+  });
+}
+// brief confirmation tick before dropping them into the app
+function showVerifySuccess(then){
+  const card=document.getElementById('c-verify');
+  if(!card){ then(); return; }
+  // hide everything except the boxes, which are about to merge
+  const hide=[...card.querySelectorAll('.btn, .fine, .verify-sub, .verify-demo, .verify-ico')];
+  hide.forEach(el=>el.style.display='none');
+  const title=card.querySelector('h2');
+  if(title) title.textContent='Verified';
+  const note=document.getElementById('verifySuccess');
+  mergeCodeBoxes('codeInputs', ()=>{
+    if(note){ note.style.display='block'; }
+    setTimeout(()=>{
+      // put the screen back the way it was for next time
+      hide.forEach(el=>el.style.display='');
+      if(title) title.textContent='Check your email';
+      if(note) note.style.display='none';
+      resetCodeBoxes('codeInputs');
+      then();
+    }, 850);
+  });
 }
 async function doBackendAuth(emailCode, totpCode){
   const remember=(document.getElementById('ci-remember')||{}).checked!==false;
@@ -1876,7 +2152,7 @@ async function submitTotp(){
   const totp=Array.from(document.querySelectorAll('#totpInputs input')).map(i=>i.value).join('');
   if(totp.length<6){toast('Enter the full 6-digit code','2FA');return;}
   try{ await doBackendAuth(pendingAuth.emailCode, totp); }
-  catch(e){ toast(friendlyAuthError(e.message),'2FA'); return; }
+  catch(e){ toast(friendlyAuthError(e.message),'2FA'); shakeCode('totpInputs'); return; }
   document.getElementById('c-totp').style.display='none';
   finishAuth();
 }
@@ -1941,7 +2217,7 @@ async function confirm2FA(){
     await api('/2fa/confirm',{method:'POST',body:{email:twofaEmail,code}});
     toast('Two-factor is on — your account is much safer 🛡️','Security');
     close2FASetup();
-  }catch(e){ toast(e.message,'2FA'); }
+  }catch(e){ toast(e.message,'2FA'); shakeCode('setupInputs'); }
 }
 function close2FASetup(){
   document.getElementById('twofaModal').classList.remove('show');
@@ -2011,6 +2287,7 @@ async function custLogout(){
   toast('Signed out','Account');
 }
 function trainerLogout(){
+  stopSchedulePolling();
   if(BACKEND && trainerToken){ try{ api('/logout',{method:'POST',token:trainerToken}); }catch(e){} }
   trainerToken=null; trainerCreds={email:'',pass:''};
   try{ localStorage.removeItem('rb_ttoken'); }catch(e){}
@@ -2047,7 +2324,78 @@ function skipTwofaOffer(){
   document.getElementById('twofaOfferModal').classList.remove('show');
   toast('No problem — you can turn it on anytime from My sessions','Account');
 }
-function resendCode(){ custAuth(); toast('New code sent','Verify'); }
+/* ---------- reusable button cooldowns ----------
+   Disables a button for N seconds and counts down on the label, so people can
+   see when it's ready instead of getting an error for pressing too soon. */
+const COOLDOWNS={};
+function startCooldown(btnId, seconds, labelIdle){
+  const btn=document.getElementById(btnId);
+  if(!btn) return;
+  const idle=labelIdle || btn.dataset.idleLabel || btn.textContent.trim();
+  btn.dataset.idleLabel=idle;
+  let left=seconds;
+  btn.disabled=true;
+  btn.classList.add('cooling');
+  btn.textContent=`${idle} (${left}s)`;
+  clearInterval(COOLDOWNS[btnId]);
+  COOLDOWNS[btnId]=setInterval(()=>{
+    left--;
+    if(left<=0){
+      clearInterval(COOLDOWNS[btnId]); delete COOLDOWNS[btnId];
+      btn.disabled=false; btn.classList.remove('cooling');
+      btn.textContent=idle;
+    }else{
+      btn.textContent=`${idle} (${left}s)`;
+    }
+  }, 1000);
+}
+function cooldownLeft(btnId){
+  const btn=document.getElementById(btnId);
+  if(!btn || !btn.disabled) return 0;
+  const m=btn.textContent.match(/\((\d+)s\)/);
+  return m ? parseInt(m[1],10) : 0;
+}
+function clearCooldown(btnId){
+  const btn=document.getElementById(btnId);
+  clearInterval(COOLDOWNS[btnId]); delete COOLDOWNS[btnId];
+  if(btn){
+    btn.disabled=false; btn.classList.remove('cooling');
+    if(btn.dataset.idleLabel) btn.textContent=btn.dataset.idleLabel;
+  }
+}
+
+let resendBusy=false, lastResend=0;
+async function resendCode(){
+  if(resendBusy) return;                       // already sending
+  const wait=cooldownLeft('btnResend');
+  if(wait>0){
+    toast(`Please wait ${wait} more second${wait===1?'':'s'} before asking for another code`,'Verify');
+    return;
+  }
+  if(!pendingAuth || !pendingAuth.email){ custAuth(); return; }
+  resendBusy=true;
+  try{
+    if(BACKEND){
+      const r=await api('/send-code',{method:'POST',body:{email:pendingAuth.email,purpose:pendingAuth.mode}});
+      if(r && r.test_code){
+        document.getElementById('verifyDemo').innerHTML=
+          'Email not set up yet — your code is <b>'+r.test_code+'</b>';
+      }
+    }else{
+      demoCode=String(Math.floor(100000+Math.random()*900000));
+      document.getElementById('verifyDemo').innerHTML='Demo mode — your code is <b>'+demoCode+'</b>';
+    }
+    lastResend=Date.now();
+    startCooldown('btnResend', 60, 'Resend code');
+    document.querySelectorAll('#codeInputs input').forEach(i=>{i.value='';i.classList.remove('filled');});
+    const f=document.querySelector('#codeInputs input'); if(f) f.focus();
+    toast('New code sent','Verify');
+  }catch(e){
+    toast(friendlyAuthError(e.message),'Verify');
+  }finally{
+    resendBusy=false;
+  }
+}
 /* ---------- forgotten password ---------- */
 let resetEmail='', demoResetCode=null;
 function showAuthPane(id){
@@ -2069,22 +2417,37 @@ function openForgot(){
   showAuthPane('c-forgot');
   document.getElementById('fp-email').focus();
 }
-function closeForgot(){ showAuthPane('c-authcard'); }
+function closeForgot(){
+  clearCooldown('btnSendReset'); clearCooldown('btnResendReset');
+  resetBusy=false;
+  showAuthPane('c-authcard');
+}
+let resetBusy=false;
 async function sendResetCode(){
+  if(resetBusy) return;
+  const wait=Math.max(cooldownLeft('btnSendReset'), cooldownLeft('btnResendReset'));
+  if(wait>0){
+    toast(`Please wait ${wait} more second${wait===1?'':'s'} before asking for another code`,'Reset');
+    return;
+  }
   const email=(document.getElementById('fp-email').value||'').trim();
   if(!email){ toast('Enter your email','Reset'); return; }
   resetEmail=email;
+  resetBusy=true;
   if(BACKEND){
     try{
       const r=await api('/password/forgot',{method:'POST',body:{email}});
       if(r.test_code){
         document.getElementById('fpDemo').innerHTML='Email not set up yet — your code is <b>'+r.test_code+'</b>';
       }
-    }catch(e){ toast(e.message,'Reset'); return; }
+    }catch(e){ resetBusy=false; toast(friendlyAuthError(e.message),'Reset'); return; }
   }else{
     demoResetCode=String(Math.floor(100000+Math.random()*900000));
     document.getElementById('fpDemo').innerHTML='Demo mode — your code is <b>'+demoResetCode+'</b>';
   }
+  resetBusy=false;
+  startCooldown('btnSendReset', 60, 'Send code');
+  startCooldown('btnResendReset', 60, 'Resend code');
   document.getElementById('fpEmailShown').textContent=email;
   showAuthPane('c-reset');
   // keep the demo hint visible on the next screen too
@@ -2105,9 +2468,9 @@ async function submitReset(){
   if(p1!==p2){ toast('The two passwords don\u2019t match','Reset'); return; }
   if(BACKEND){
     try{ await api('/password/reset',{method:'POST',body:{email:resetEmail,code,new_password:p1}}); }
-    catch(e){ toast(e.message,'Reset'); return; }
+    catch(e){ toast(e.message,'Reset'); shakeCode('resetInputs'); return; }
   }else{
-    if(code!==demoResetCode){ toast('Incorrect code','Reset'); return; }
+    if(code!==demoResetCode){ toast('Incorrect code','Reset'); shakeCode('resetInputs'); return; }
   }
   toast('Password changed — sign in with your new password','Reset');
   document.getElementById('fp-new').value='';
@@ -2117,22 +2480,72 @@ async function submitReset(){
   showAuthPane('c-authcard');
 }
 function cancelVerify(){
+  clearCooldown('btnResend');
   document.getElementById('c-verify').style.display='none';
   document.getElementById('c-authcard').style.display='block';
   pendingAuth=null;
 }
 // auto-advance between the 6 code boxes
 document.addEventListener('input',e=>{
-  if(e.target.closest('.code-inputs')){
+  const box=e.target.closest('.code-inputs');
+  if(box){
     e.target.value=e.target.value.replace(/[^0-9]/g,'');
+    e.target.classList.toggle('filled', !!e.target.value);
     if(e.target.value && e.target.nextElementSibling) e.target.nextElementSibling.focus();
+    maybeAutoVerify(box);
   }
 });
 document.addEventListener('keydown',e=>{
-  if(e.target.closest('.code-inputs') && e.key==='Backspace' && !e.target.value && e.target.previousElementSibling){
+  const box=e.target.closest('.code-inputs');
+  if(box && e.key==='Backspace' && !e.target.value && e.target.previousElementSibling){
     e.target.previousElementSibling.focus();
+    e.target.previousElementSibling.value='';
+    e.target.previousElementSibling.classList.remove('filled');
   }
 });
+// pasting a whole code fills every box at once
+document.addEventListener('paste',e=>{
+  const box=e.target.closest && e.target.closest('.code-inputs');
+  if(!box) return;
+  const digits=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'');
+  if(!digits) return;
+  e.preventDefault();
+  const inputs=[...box.querySelectorAll('input')];
+  inputs.forEach((inp,i)=>{
+    inp.value=digits[i]||'';
+    inp.classList.toggle('filled', !!inp.value);
+  });
+  const next=inputs.find(i=>!i.value) || inputs[inputs.length-1];
+  next.focus();
+  maybeAutoVerify(box);
+});
+// once all six are in, submit automatically — no button press needed
+function maybeAutoVerify(box){
+  const inputs=[...box.querySelectorAll('input')];
+  if(inputs.some(i=>!i.value)) return;
+  setTimeout(()=>{
+    if(box.id==='codeInputs') verifyCode();
+    else if(box.id==='totpInputs') submitTotp();
+    else if(box.id==='tTotpInputs') submitTrainerTotp();
+    else if(box.id==='setupInputs') confirm2FA();
+    else if(box.id==='resetInputs') submitReset();
+  }, 180);
+}
+// shake the boxes when a code is rejected, and clear them for another go
+function shakeCode(boxId){
+  const box=document.getElementById(boxId);
+  if(!box) return;
+  // clear any leftover merge state before shaking
+  box.classList.remove('merging');
+  const c=box.querySelector('.merge-circle'); if(c) c.remove();
+  box.querySelectorAll('input').forEach(i=>i.style.transform='');
+  box.classList.add('shake');
+  setTimeout(()=>{
+    box.classList.remove('shake');
+    box.querySelectorAll('input').forEach(i=>{i.value='';i.classList.remove('filled');});
+    const f=box.querySelector('input'); if(f) f.focus();
+  }, 460);
+}
 
 /* ===================== AI CHATBOT ===================== */
 let chatHistory=[];
@@ -2318,7 +2731,10 @@ function custStep(s){
   if(s==='class'){renderCreditBanner();renderClasses();}
   if(s==='packages')renderPackages();
   if(s==='type')renderTypeChoice();
-  if(s==='mine'){renderMine();renderReferral();renderUsual();refreshCustomer2FA();renderGhsCard();}
+  if(s==='mine'){
+    renderMine();renderReferral();renderUsual();refreshCustomer2FA();
+    Promise.all([syncMyGhs(),syncRegulars()]).then(()=>{renderGhsCard();renderUsual();});
+  }
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function renderCreditBanner(){
@@ -2386,19 +2802,42 @@ function saveUsualSlot(){
           email:(state.user&&state.user.email)||'',
           requested:new Date().toISOString() };
   try{ localStorage.setItem(usualKey(), JSON.stringify(USUAL)); }catch(e){}
-  addRegularRequest(USUAL);
+  if(BACKEND && authToken){
+    api('/regulars/request',{method:'POST',token:authToken,
+      body:{class_key:USUAL.clsId, weekday:USUAL.weekday, hour:USUAL.time, solo:!!USUAL.solo}})
+      .then(()=>syncRegulars()).catch(()=>{});
+  }else{
+    addRegularRequest(USUAL);
+  }
   toast('Request sent — the studio will confirm your regular slot','My usual');
 }
 /* ---- the studio's list of regular-slot requests ---- */
 /* ---------- GHS (ΓΕΣΥ) coverage: customer requests, studio approves ---------- */
+let GHS_LIST=[], MY_GHS=null;
 function loadGhs(){
+  if(BACKEND) return GHS_LIST;
   try{ return JSON.parse(localStorage.getItem('rb_ghs')||'[]'); }catch(e){ return []; }
 }
 function saveGhs(list){
+  GHS_LIST=list;
+  if(BACKEND) return;
   try{ localStorage.setItem('rb_ghs', JSON.stringify(list)); }catch(e){}
+}
+async function syncMyGhs(){
+  if(!BACKEND || !authToken) return;
+  try{ const r=await api('/ghs/mine',{token:authToken}); MY_GHS=r.status||null; }
+  catch(e){ MY_GHS=null; }
+}
+async function syncAllGhs(){
+  if(!BACKEND || !trainerToken) return;
+  try{
+    const r=await api('/ghs/all',{token:trainerToken});
+    GHS_LIST=(r.requests||[]).map(x=>({email:x.email,name:x.name,ref:x.ref,status:x.status}));
+  }catch(e){}
 }
 function myGhsStatus(){
   if(!state.user) return null;
+  if(BACKEND) return MY_GHS;
   const r=loadGhs().find(x=>x.email===state.user.email);
   return r ? r.status : null;
 }
@@ -2409,9 +2848,18 @@ function ghsAppliesToBooking(){
   if(state.bookMode!=='solo') return false;
   return !!(state.cls && state.cls.ghs);
 }
-function requestGhs(){
+async function requestGhs(){
   if(!state.user){ toast('Sign in first','GHS'); return; }
   const ref=(document.getElementById('ghsRef')||{}).value||'';
+  if(BACKEND){
+    try{
+      await api('/ghs/request',{method:'POST',token:authToken,body:{ref:ref.trim()}});
+      MY_GHS='pending';
+      renderGhsCard();
+      toast('Request sent — the studio will confirm your GHS cover','GHS');
+    }catch(e){ toast(e.message,'GHS'); }
+    return;
+  }
   const list=loadGhs();
   const i=list.findIndex(x=>x.email===state.user.email);
   const rec={email:state.user.email, name:state.user.name, ref:ref.trim(),
@@ -2479,22 +2927,46 @@ function renderMgGhs(){
     </div>`;
   }).join('');
 }
-function setGhsStatus(i,status,msg){
+async function setGhsStatus(i,status,msg){
   const list=loadGhs();
   if(!list[i]) return;
-  list[i].status=status;
-  saveGhs(list);
+  if(BACKEND){
+    try{
+      await api(`/ghs/decide?email=${encodeURIComponent(list[i].email)}&status=${status}`,
+                {method:'POST',token:trainerToken});
+      await syncAllGhs();
+    }catch(e){ toast(e.message,'GHS'); return; }
+  }else{
+    list[i].status=status; saveGhs(list);
+  }
   renderMgGhs();
   toast(msg,'GHS');
 }
 function approveGhs(i){ setGhsStatus(i,'approved','GHS cover approved — their private rehab is now free'); }
 function declineGhs(i){ setGhsStatus(i,'declined','GHS request declined'); }
 function revokeGhs(i){ setGhsStatus(i,'declined','GHS cover removed'); }
+let REGULARS=[];
 function loadRegulars(){
+  if(BACKEND) return REGULARS;
   try{ return JSON.parse(localStorage.getItem('rb_regulars')||'[]'); }catch(e){ return []; }
 }
 function saveRegulars(list){
+  REGULARS=list;
+  if(BACKEND) return;
   try{ localStorage.setItem('rb_regulars', JSON.stringify(list)); }catch(e){}
+}
+async function syncRegulars(){
+  if(!BACKEND) return;
+  try{
+    const tok = trainerToken || authToken;
+    if(!tok) return;
+    const path = trainerToken ? '/regulars/all' : '/regulars/mine';
+    const r=await api(path,{token:tok});
+    REGULARS=(r.slots||[]).map(x=>({
+      id:x.id, email:x.email, name:x.name, clsId:x.class_key,
+      weekday:x.weekday, time:x.hour, solo:!!x.solo, status:x.status
+    }));
+  }catch(e){}
 }
 function addRegularRequest(u){
   const list=loadRegulars();
@@ -2617,11 +3089,18 @@ function renderMgRegulars(){
     </div>`;
   }).join('');
 }
-function setRegularStatus(i,status,msg){
+async function setRegularStatus(i,status,msg){
   const list=loadRegulars();
   if(!list[i]) return;
-  list[i].status=status;
-  saveRegulars(list);
+  if(BACKEND && list[i].id){
+    try{
+      await api(`/regulars/decide?slot_id=${list[i].id}&status=${status}`,
+                {method:'POST',token:trainerToken});
+      await syncRegulars();
+    }catch(e){ toast(e.message,'Regulars'); return; }
+  }else{
+    list[i].status=status; saveRegulars(list);
+  }
   applyHeldSpots();
   renderMgRegulars();
   renderTSlots();
@@ -3166,7 +3645,7 @@ async function submitTrainerTotp(){
     const r=await api('/trainer/login',{method:'POST',body:{email,password:pass,totp,remember}});
     trainerToken=r.token;
     if(remember){ try{ localStorage.setItem('rb_ttoken', r.token); }catch(e){} }
-  }catch(e){ toast(e.message,'2FA'); return; }
+  }catch(e){ toast(friendlyAuthError(e.message),'2FA'); shakeCode('tTotpInputs'); return; }
   document.getElementById('t-totp').style.display='none';
   document.getElementById('t-authcard').style.display='block';
   enterTrainerPortal();
@@ -3188,6 +3667,9 @@ function enterTrainerPortal(){
   document.getElementById('t-app').classList.add('on');
   const tb=document.getElementById('trainerBack'); if(tb) tb.textContent='← Sign out';
   renderTDays();renderTSlots();renderClients();
+  // load the real bookings from the server
+  syncTrainerDay(state.trainerDay).then(ok=>{ if(ok){ renderTSlots(); renderClients(); } });
+  startSchedulePolling();
   toast('Welcome back, studio.','Trainer');
 }
 function trainTab(t){document.querySelectorAll('#v-train .ptabs button').forEach(b=>b.classList.toggle('on',b.dataset.tp===t));
@@ -3226,7 +3708,10 @@ function editFirstOffer(){
 function renderManage(){
   renderMgClasses(); renderMgTimes();
   document.getElementById('mgCap').textContent=CAP;
-  renderMgPackages(); renderMgPromos(); renderMgTrainers(); renderMgRegulars(); renderMgGhs();
+  renderMgPackages(); renderMgPromos(); renderMgTrainers(); renderMgRegulars(); renderMgGhs(); renderMgClosures(); renderRefunds();
+  Promise.all([syncAllGhs(),syncRegulars(),syncClosures()]).then(()=>{
+    renderMgGhs(); renderMgRegulars(); renderMgClosures();
+  });
   document.getElementById('mgFirstOn').checked=FIRST_OFFER.on;
   document.getElementById('mgFirstPrice').value=FIRST_OFFER.price;
   document.getElementById('mgFirstPriceWrap').style.display=FIRST_OFFER.on?'flex':'none';
@@ -3317,7 +3802,10 @@ function renderTDays(){
     <div class="day ${i===state.trainerDay?'on':''}" onclick="setTDay(${i})">
       <span class="dow">${i===0?'Today':dow[d.getDay()]}</span><span class="dn">${d.getDate()}</span></div>`).join('');
 }
-function setTDay(i){state.trainerDay=i;renderTDays();renderTSlots();}
+async function setTDay(i){
+  state.trainerDay=i; renderTDays(); renderTSlots();
+  if(await syncTrainerDay(i)){ renderTSlots(); renderClients(); }
+}
 
 function paytag(pay){
   return pay==='viva' ? '<span class="paytag viva">Viva</span>'
@@ -3326,6 +3814,56 @@ function paytag(pay){
     : pay==='credit' ? '<span class="paytag pkg">Package</span>'
     : '<span class="paytag viva">Paid</span>';
 }
+// Pull the real schedule from the server for the selected day, so bookings made
+// on customers' own devices actually appear here. Without this the trainer only
+// ever sees bookings made in her own browser.
+async function syncTrainerDay(di){
+  if(!BACKEND || !trainerToken) return false;
+  const d=DAYS[di];
+  try{
+    const r=await api('/trainer/schedule?date='+isoDate(d),{token:trainerToken});
+    if(!r || !r.classes) return false;
+    r.classes.forEach(cl=>{
+      const slot=store[di][cl.hour];
+      if(!slot) return;
+      slot.cls = cl['class'] || slot.cls;
+      slot.closed = !!cl.closed;
+      slot.private = !!cl.private;
+      // server spots: null | 'held' | {name, pay, attended, ...}
+      slot.spots = (cl.spots||[]).map(s=>{
+        if(s===null || s===undefined) return null;
+        if(s==='held') return 'held';
+        return s;
+      });
+      while(slot.spots.length < CAP) slot.spots.push(null);
+    });
+    return true;
+  }catch(e){
+    console.error('Could not load schedule from server:', e);
+    return false;
+  }
+}
+async function refreshSchedule(){
+  const btn=document.getElementById('tRefresh');
+  if(btn){ btn.disabled=true; btn.textContent='↻ Checking…'; }
+  const ok=await syncTrainerDay(state.trainerDay);
+  if(ok){ renderTSlots(); renderClients(); }
+  if(btn){ btn.disabled=false; btn.textContent='↻ Refresh'; }
+  if(!BACKEND) toast('Live sync works once the site is online','Schedule');
+}
+// quietly check for new bookings every 60s while the schedule is on screen
+let schedPoll=null;
+function startSchedulePolling(){
+  stopSchedulePolling();
+  if(!BACKEND) return;
+  schedPoll=setInterval(async()=>{
+    const panel=document.getElementById('tp-sched');
+    if(!panel || !panel.classList.contains('on')) return;
+    if(document.hidden) return;
+    if(await syncTrainerDay(state.trainerDay)){ renderTSlots(); }
+  }, 60000);
+}
+function stopSchedulePolling(){ if(schedPoll){ clearInterval(schedPoll); schedPoll=null; } }
 function renderTSlots(){
   const di=state.trainerDay,day=store[di];
   const d=DAYS[di];document.getElementById('tDayLabel').textContent=(di===0?'Today · ':'')+d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
@@ -3393,6 +3931,226 @@ function renderTSlots(){
   }).join('');
 }
 
+/* ---------- refunds ---------- */
+async function renderRefunds(){
+  const note=document.getElementById('vivaNote');
+  const badge=document.getElementById('vivaBadge');
+  const box=document.getElementById('mgRefunds');
+  if(!note||!box) return;
+  if(!BACKEND || !trainerToken){
+    note.textContent='Refunds work once the site is live.'; return;
+  }
+  try{
+    const st=await api('/viva/status',{token:trainerToken});
+    VIVA_LIVE = st.configured && !st.demo;
+    if(!st.configured){
+      badge.textContent='Manual'; badge.className='reg-count';
+      note.innerHTML='Viva isn\u2019t connected yet, so refunds are <b>recorded here only</b> — '+
+        'you still need to issue the actual refund in your Viva dashboard. '+
+        'Recording it here keeps your earnings figures correct.';
+    }else if(st.demo){
+      badge.textContent='Demo'; badge.className='reg-count';
+      note.innerHTML='Viva is connected in <b>demo mode</b> — refunds are simulated, no real money moves. '+
+        'Set VIVA_DEMO=0 when you\u2019re ready to go live.';
+    }else{
+      badge.textContent='Live'; badge.className='reg-count';
+      note.innerHTML='Viva is connected. Refunds issued here <b>send real money back</b> to the customer.';
+    }
+    const r=await api('/trainer/refunds',{token:trainerToken});
+    const list=r.refunds||[];
+    box.innerHTML = list.length ? list.map(x=>`
+      <div class="reg-card">
+        <div class="reg-info">
+          <div class="reg-name">${x.name||x.user_email} <span class="reg-badge ok">€${(x.refund_amount||0).toFixed(2)}</span></div>
+          <div class="reg-when">${x.date} · ${x.hour}${x.receipt_no?' · '+x.receipt_no:''}${x.refund_ref?' · '+x.refund_ref:''}</div>
+        </div>
+      </div>`).join('') : '<p class="ms-empty">No refunds yet.</p>';
+  }catch(e){ note.textContent='Could not check payment setup.'; }
+}
+
+/* ---------- closing times off in bulk ---------- */
+let clMode='day', clSelectedDays=[], clSelectedTimes=[];
+let CLOSURES=[];   // kept in sync with the server so every device agrees
+function loadClosures(){
+  if(BACKEND) return CLOSURES;
+  try{ return JSON.parse(localStorage.getItem('rb_closures')||'[]'); }catch(e){ return []; }
+}
+function saveClosures(list){
+  CLOSURES=list;
+  if(BACKEND) return;   // the server is the record when we're online
+  try{ localStorage.setItem('rb_closures', JSON.stringify(list)); }catch(e){}
+}
+// pull the studio's closures from the server — customers need these too
+async function syncClosures(){
+  if(!BACKEND) return;
+  try{
+    const r=await api('/closures');
+    CLOSURES=(r.closures||[]).map(x=>({
+      id:x.id, from:x.date_from, until:x.date_until,
+      days: JSON.parse(x.days||'[]'), times: JSON.parse(x.times||'[]'),
+      reason: x.reason||''
+    }));
+    applyClosuresToSchedule();
+  }catch(e){ /* offline — keep whatever we have */ }
+}
+// is this date+time closed by any rule?
+function isClosedByRule(dateStr, hour){
+  const d=new Date(dateStr+'T00:00:00');
+  return loadClosures().some(r=>{
+    if(dateStr < r.from || dateStr > r.until) return false;
+    if(r.days && r.days.length && !r.days.includes(d.getDay())) return false;
+    if(r.times && r.times.length && !r.times.includes(hour)) return false;
+    return true;
+  });
+}
+function openClosureModal(){
+  const today=isoDate(new Date());
+  document.getElementById('clFrom').value=today;
+  document.getElementById('clUntil').value=today;
+  document.getElementById('clReason').value='';
+  clSelectedDays=[]; clSelectedTimes=[];
+  document.querySelectorAll('#clDays button').forEach(b=>b.classList.remove('on'));
+  // build the time chips from the studio's actual schedule
+  const tw=document.getElementById('clTimes');
+  tw.innerHTML=TIMES.map(t=>`<button data-t="${t}" onclick="toggleClTime('${t}')">${t}</button>`).join('');
+  setClosureMode('day');
+  document.getElementById('closureModal').classList.add('show');
+}
+function closeClosureModal(){ document.getElementById('closureModal').classList.remove('show'); }
+function setClosureMode(m){
+  clMode=m;
+  document.querySelectorAll('.cl-opt').forEach(b=>b.classList.toggle('on', b.dataset.clmode===m));
+  document.getElementById('clTimesWrap').style.display = m==='times' ? 'block' : 'none';
+  updateClPreview();
+}
+function toggleClDay(d){
+  const i=clSelectedDays.indexOf(d);
+  if(i>=0) clSelectedDays.splice(i,1); else clSelectedDays.push(d);
+  document.querySelector(`#clDays button[data-dow="${d}"]`).classList.toggle('on');
+  updateClPreview();
+}
+function toggleClTime(t){
+  const i=clSelectedTimes.indexOf(t);
+  if(i>=0) clSelectedTimes.splice(i,1); else clSelectedTimes.push(t);
+  document.querySelector(`#clTimes button[data-t="${t}"]`).classList.toggle('on');
+  updateClPreview();
+}
+const DOW_SHORT=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function updateClPreview(){
+  const el=document.getElementById('clPreview');
+  if(!el) return;
+  const from=document.getElementById('clFrom').value;
+  const until=document.getElementById('clUntil').value;
+  if(!from||!until){ el.textContent=''; return; }
+  const dayPart = clSelectedDays.length
+    ? 'every '+clSelectedDays.sort().map(d=>DOW_SHORT[d]).join(', ')
+    : 'every day';
+  const timePart = (clMode==='times' && clSelectedTimes.length)
+    ? ' at '+clSelectedTimes.sort().join(', ')
+    : ' (all classes)';
+  const same = from===until;
+  el.textContent = same
+    ? `Closing ${from}${timePart}`
+    : `Closing ${dayPart}${timePart}, ${from} → ${until}`;
+}
+document.addEventListener('change',e=>{
+  if(e.target.id==='clFrom'||e.target.id==='clUntil') updateClPreview();
+});
+async function applyClosure(){
+  const from=document.getElementById('clFrom').value;
+  const until=document.getElementById('clUntil').value;
+  if(!from||!until){ toast('Pick a date range','Closures'); return; }
+  if(until<from){ toast('The end date is before the start date','Closures'); return; }
+  if(clMode==='times' && !clSelectedTimes.length){
+    toast('Pick at least one time, or choose “Whole day”','Closures'); return;
+  }
+  // warn if anyone is already booked in the range
+  let clash=0;
+  DAYS.forEach((d,di)=>{
+    const ds=isoDate(d);
+    if(ds<from||ds>until) return;
+    if(clSelectedDays.length && !clSelectedDays.includes(d.getDay())) return;
+    TIMES.forEach(t=>{
+      if(clMode==='times' && !clSelectedTimes.includes(t)) return;
+      if(spotsBooked(store[di][t])>0) clash++;
+    });
+  });
+  if(clash>0 && !confirm(`${clash} class${clash===1?'':'es'} in that range already ${clash===1?'has':'have'} bookings.\n\nClose anyway? Those clients keep their spots — you'll need to contact them.`)){
+    return;
+  }
+  const reason=(document.getElementById('clReason').value||'').trim();
+  const rule={from, until, days:[...clSelectedDays],
+              times: clMode==='times' ? [...clSelectedTimes] : [], reason};
+  if(BACKEND){
+    try{
+      await api('/closures',{method:'POST',token:trainerToken,
+        body:{date_from:from, date_until:until, days:rule.days, times:rule.times, reason}});
+      await syncClosures();
+    }catch(e){ toast(e.message,'Closures'); return; }
+  }else{
+    const list=loadClosures(); list.push({id:Date.now(), ...rule}); saveClosures(list);
+    applyClosuresToSchedule();
+  }
+  renderTSlots(); renderMgClosures();
+  closeClosureModal();
+  toast('Times closed off — customers can no longer book them','Closures');
+}
+// mark every slot the rules cover as closed
+function applyClosuresToSchedule(){
+  DAYS.forEach((d,di)=>{
+    const ds=isoDate(d);
+    TIMES.forEach(t=>{
+      if(isClosedByRule(ds,t)){
+        const c=store[di][t];
+        if(spotsBooked(c)===0){ c.closed=true; c.spots=c.spots.map(()=>'held'); }
+        c.closedByRule=true;
+      }
+    });
+  });
+}
+function renderMgClosures(){
+  const box=document.getElementById('mgClosures');
+  if(!box) return;
+  const list=loadClosures();
+  const cnt=document.getElementById('closureCount');
+  if(cnt) cnt.textContent = list.length ? list.length+' active' : '';
+  if(!list.length){ box.innerHTML='<p class="ms-empty">Nothing closed off.</p>'; return; }
+  box.innerHTML=list.map((r,i)=>{
+    const days = r.days && r.days.length ? r.days.map(d=>DOW_SHORT[d]).join(', ') : 'Every day';
+    const times = r.times && r.times.length ? r.times.join(', ') : 'All classes';
+    const range = r.from===r.until ? r.from : `${r.from} → ${r.until}`;
+    return `<div class="reg-card">
+      <div class="reg-info">
+        <div class="reg-name">${days}${r.reason?` <span class="reg-badge pending">${r.reason}</span>`:''}</div>
+        <div class="reg-when">${range} · ${times}</div>
+      </div>
+      <div class="reg-actions"><button class="mg-del" onclick="removeClosure(${i})">Remove</button></div>
+    </div>`;
+  }).join('');
+}
+async function removeClosure(i){
+  const list=loadClosures();
+  const r=list[i]; if(!r) return;
+  if(BACKEND && r.id){
+    try{ await api('/closures/'+r.id,{method:'DELETE',token:trainerToken}); }
+    catch(e){ toast(e.message,'Closures'); return; }
+  }
+  list.splice(i,1); saveClosures(list);
+  // re-open anything that was only closed by this rule
+  DAYS.forEach((d,di)=>{
+    const ds=isoDate(d);
+    TIMES.forEach(t=>{
+      const c=store[di][t];
+      if(c.closedByRule && !isClosedByRule(ds,t)){
+        c.closed=false; c.closedByRule=false;
+        c.spots=c.spots.map(s=>s==='held'?null:s);
+      }
+    });
+  });
+  renderTSlots(); renderMgClosures();
+  toast('Closure removed — those times are bookable again','Closures');
+}
+
 /* whole-class controls */
 function tCloseClass(di,t){const c=store[di][t];
   if(spotsBooked(c)>0){toast('Cancel booked clients first, then close the class','Schedule');return;}
@@ -3405,7 +4163,15 @@ function tHold(di,t,si){store[di][t].spots[si]='held';renderTSlots();toast('Spot
 function tFree(di,t,si){store[di][t].spots[si]=null;renderTSlots();toast('Spot '+(si+1)+' freed — bookable again','Schedule');}
 function tMarkCash(di,t,si){const sp=store[di][t].spots[si];if(sp&&typeof sp==='object'){sp.pay='cash';renderTSlots();renderClients();toast('Cash recorded for '+sp.name,'Payment');}}
 // mark a client present / no-show (tap again to clear)
-function tAttend(di,t,si,here){
+async function tAttend(di,t,si,here){
+  if(BACKEND && trainerToken){
+    try{ await api('/trainer/attendance',{method:'POST',token:trainerToken,
+          body:{date:isoDate(DAYS[di]), hour:t, spot:si, present:!!here}}); }
+    catch(e){ /* keep the local change anyway */ }
+  }
+  return tAttendLocal(di,t,si,here);
+}
+function tAttendLocal(di,t,si,here){
   const s=store[di][t].spots[si];
   if(!s || typeof s!=='object') return;
   s.attended = (s.attended===here) ? undefined : here;
@@ -3423,13 +4189,69 @@ function tCancelSpot(di,t,si){
     (isPrivate
       ? 'The whole class reopens for normal bookings and '+who+' receives a cancellation email.'
       : 'Spot '+(si+1)+' reopens for booking and '+who+' receives a cancellation email.')+'</div>';
-  const btn=document.getElementById('mConfirm');btn.textContent='Cancel booking';
-  btn.onclick=()=>{
-    if(isPrivate){ c.private=false; c.spots=c.spots.map(()=>null); }
-    else { c.spots[si]=null; }
-    const mb=state.bookings.find(b=>b.dayIdx===di&&b.time===t&&b.spotIdx===si&&b.status==='confirmed');if(mb)mb.status='rescheduled';
-    closeModal();renderTSlots();renderMine();renderClients();toast('Booking cancelled · email sent to '+who,'Trainer');};
+  const btn=document.getElementById('mConfirm');btn.textContent='Choose what happens…';
+  btn.onclick=()=>{ closeModal(); openCancelOutcome(di,t,si,who,sp); };
   openModal();
+  return;
+}
+
+/* When the studio cancels, ask what should happen for the customer:
+   offer another time, refund, give a credit, or just cancel. */
+let cancelCtx=null;
+async function openCancelOutcome(di,t,si,who,sp){
+  const c=store[di][t];
+  const paid = sp && sp.pay && sp.pay!=='credit' && sp.pay!=='ghs'
+    ? priceFor(c.cls, !!c.private) : 0;
+  cancelCtx={di,t,si,who,email:sp&&sp.email,paid};
+  document.getElementById('coWho').textContent=`${who} · ${t} · ${c.cls}`;
+  document.getElementById('coPaid').textContent = paid>0
+    ? `They paid €${paid.toFixed(2)}` : 'Nothing was paid for this session';
+  document.getElementById('coReason').value='';
+  // money options only make sense if they actually paid
+  document.querySelectorAll('.co-money').forEach(el=>el.style.display = paid>0?'':'none');
+  // fetch some free times to offer them
+  const box=document.getElementById('coTimes');
+  box.innerHTML='<p class="cl-hint">Looking for free times…</p>';
+  if(BACKEND && trainerToken){
+    try{
+      const r=await api('/trainer/free-times?date='+isoDate(DAYS[di]),{token:trainerToken});
+      const times=(r.times||[]).slice(0,6);
+      box.innerHTML = times.length
+        ? times.map((x,i)=>`<label class="co-time"><input type="checkbox" data-lbl="${x.label}" ${i<3?'checked':''}><span>${x.date} · ${x.hour} · ${x['class']}</span></label>`).join('')
+        : '<p class="cl-hint">No free times in the next week.</p>';
+    }catch(e){ box.innerHTML='<p class="cl-hint">Could not load free times.</p>'; }
+  }else{
+    box.innerHTML='<p class="cl-hint">Free times appear here once the site is live.</p>';
+  }
+  document.getElementById('cancelOutcomeModal').classList.add('show');
+}
+function closeCancelOutcome(){ document.getElementById('cancelOutcomeModal').classList.remove('show'); }
+async function doCancelOutcome(outcome){
+  if(!cancelCtx) return;
+  const {di,t,si,who,email,paid}=cancelCtx;
+  const reason=(document.getElementById('coReason').value||'').trim();
+  const times=[...document.querySelectorAll('#coTimes input:checked')].map(i=>i.dataset.lbl);
+  if(BACKEND && trainerToken){
+    try{
+      const r=await api('/trainer/cancel-booking',{method:'POST',token:trainerToken,
+        body:{date:isoDate(DAYS[di]), hour:t, spot:si, notify_client:true,
+              outcome, reason, suggested_times:times}});
+      await syncTrainerDay(di);
+      const msg = outcome==='refund' ? `Cancelled · €${(r.refunded||0).toFixed(2)} refunded`
+                : outcome==='credit' ? `Cancelled · class credit given to ${who}`
+                : outcome==='reschedule' ? `Cancelled · ${who} invited to pick a new time`
+                : `Cancelled · ${who} notified`;
+      toast(msg,'Trainer');
+      if(outcome==='refund' && !VIVA_LIVE && paid>0){
+        toast('Remember to issue the actual refund in Viva','Refund');
+      }
+    }catch(e){ toast(e.message,'Trainer'); return; }
+  }else{
+    const c=store[di][t];
+    if(c.private){ c.private=false; c.spots=c.spots.map(()=>null); } else { c.spots[si]=null; }
+    toast('Booking cancelled','Trainer');
+  }
+  closeCancelOutcome(); renderTSlots(); renderMine(); renderClients();
 }
 
 /* walk-in into a specific spot */
@@ -3451,6 +4273,11 @@ function saveWalkin(){
   toast('Walk-in booked · '+pay+' recorded for '+name,'Payment');
 }
 
+async function syncClients(){
+  if(!BACKEND || !trainerToken) return null;
+  try{ const r=await api('/trainer/clients',{token:trainerToken}); return r.clients||[]; }
+  catch(e){ return null; }
+}
 function renderClients(){
   const rows=[];
   DAYS.forEach((d,di)=>TIMES.forEach(t=>{const c=store[di][t];c.spots.forEach((s,si)=>{if(s&&typeof s==='object')rows.push({di,t,d,si,name:s.name,pay:s.pay,cls:c.cls,attended:s.attended,priv:!!(c.private||s.private)});});}));
@@ -3547,6 +4374,14 @@ function periodRange(){
   }
   const fmt=x=>x.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
   return {from:null,to:null,label:fmt(DAYS[0])+' – '+fmt(DAYS[DAYS.length-1])};
+}
+async function syncEarnings(){
+  if(!BACKEND || !trainerToken) return null;
+  const r=periodRange();
+  try{
+    const q=[]; if(r.from) q.push('date_from='+r.from); if(r.to) q.push('date_to='+r.to);
+    return await api('/trainer/earnings-detail'+(q.length?'?'+q.join('&'):''),{token:trainerToken});
+  }catch(e){ return null; }
 }
 function renderEarnings(){
   const range=periodRange();
@@ -3688,10 +4523,78 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
   map.on('mouseout',()=>map.scrollWheelZoom.disable());
   setTimeout(()=>map.invalidateSize(),300);
 })();
+applyClosuresToSchedule();
+syncClosures();
 custTab('login');
 applyLang();  // paint the site in the phone's language (or their saved choice)
 loadServerSettings();  // when live, the server's settings win
 restoreSession();      // "remember me" — sign back in if we have a saved token
+setupGoogleSignIn();   // show the Google button if the server has it configured
+
+/* ---------- Google sign-in ----------
+   Only appears if GOOGLE_CLIENT_ID is set on the server. Google verifies the
+   person's identity, so there's no password or emailed code to deal with. */
+async function setupGoogleSignIn(){
+  if(!BACKEND) return;
+  let cfg;
+  try{ cfg=await api('/auth/google/config'); }catch(e){ return; }
+  if(!cfg || !cfg.enabled || !cfg.client_id) return;   // not set up — stay hidden
+
+  // load Google's script once
+  await new Promise((res,rej)=>{
+    if(window.google && google.accounts) return res();
+    const sc=document.createElement('script');
+    sc.src='https://accounts.google.com/gsi/client';
+    sc.async=true; sc.defer=true;
+    sc.onload=res; sc.onerror=rej;
+    document.head.appendChild(sc);
+  }).catch(()=>null);
+  if(!window.google || !google.accounts) return;
+
+  google.accounts.id.initialize({
+    client_id: cfg.client_id,
+    callback: onGoogleCredential
+  });
+  const holder=document.getElementById('googleBtn');
+  if(holder){
+    google.accounts.id.renderButton(holder,
+      {theme:'outline', size:'large', width:280, text:'continue_with', shape:'pill'});
+    document.getElementById('googleDivider').style.display='flex';
+    document.getElementById('googleBtnHolder').style.display='flex';
+  }
+}
+async function onGoogleCredential(resp){
+  if(!resp || !resp.credential) return;
+  // we need a phone number for new customers, same as normal signup
+  const typedPhone=(document.getElementById('ci-phone')||{}).value||'';
+  try{
+    const r=await api('/auth/google',{method:'POST',
+      body:{credential:resp.credential, phone:typedPhone.trim(), remember:true}});
+    authToken=r.token;
+    state.user={email:r.email,name:r.name};
+    state.credits=r.credits||0;
+    try{ localStorage.setItem('rb_token', r.token); }catch(e){}
+    if(r.needs_phone){
+      const p=prompt('One last thing — your mobile number, so we can reach you if a class changes:');
+      if(p && p.replace(/\D/g,'').length>=8){
+        try{ await api('/auth/google',{method:'POST',
+          body:{credential:resp.credential, phone:p.trim(), remember:true}}); }catch(e){}
+      }
+    }
+    pendingAuth={mode:r.new_account?'signup':'login',email:r.email,name:r.name};
+    updateCustBack();
+    document.getElementById('c-auth').classList.remove('on');
+    document.getElementById('c-flow').classList.add('on');
+    renderClasses(); custStep('class');
+    toast(r.new_account?'Welcome to Rebalance 🌿':'Welcome back!','Account');
+  }catch(e){
+    if(String(e.message).includes('2FA_REQUIRED')){
+      toast('Please sign in with your password and authenticator code','2FA');
+      return;
+    }
+    toast(friendlyAuthError(e.message),'Google');
+  }
+}
 
 // If "remember me" saved a token last time, validate it and sign the person
 // straight back in, so they don't have to log in on every visit.
