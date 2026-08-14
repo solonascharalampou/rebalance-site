@@ -1210,6 +1210,10 @@
     body.customer-app-mode .home-session b{font-size:14px}.home-session span{line-height:1.5}
     body.customer-app-mode .classlist{gap:11px}
     body.customer-app-mode .classlist .cls{min-height:0;display:grid;grid-template-columns:1fr auto;gap:10px;padding:18px 19px;border:0;border-radius:21px;background:#fff;box-shadow:0 12px 30px -29px rgba(55,35,39,.8)}
+    body.customer-app-mode .classlist .class-reformer{background:linear-gradient(145deg,#f9e2e9,#f2c9d5);border:1px solid rgba(185,111,116,.16)}
+    body.customer-app-mode .classlist .class-rehab{background:linear-gradient(145deg,#fff7cf,#ffe79a);border:1px solid rgba(190,145,41,.18)}
+    body.customer-app-mode .classlist .class-mat{background:linear-gradient(145deg,#f8d2cf,#ec918c);border:1px solid rgba(170,70,66,.18)}
+    body.customer-app-mode .classlist .class-reformer .meta,body.customer-app-mode .classlist .class-rehab .meta,body.customer-app-mode .classlist .class-mat .meta{color:rgba(74,59,62,.72)}
     body.customer-app-mode .classlist .cls>div:last-child{grid-column:1/-1;padding-top:11px}
     body.customer-app-mode .profile-hero{border:0;border-radius:27px;padding:23px;background:linear-gradient(135deg,#ead0cc,#f8e9e4)}
     body.customer-app-mode .profile-list{border:0;border-radius:23px;background:#fff;box-shadow:0 12px 32px -30px rgba(55,35,39,.75)}
@@ -1434,23 +1438,10 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
           <label>Email</label><input id="ci-email" type="email" placeholder="you@email.com">
           <label>Password</label><div class="pw-wrap"><input id="ci-pass" type="password" placeholder="••••••••"><button type="button" class="pw-eye" onclick="togglePw('ci-pass',this)" aria-label="Show password">👁</button></div>
           <div id="cf-phone" style="display:none"><label>Mobile number</label><input id="ci-phone" type="tel" inputmode="tel" placeholder="Your mobile number" autocomplete="tel"><p class="field-hint">So we can reach you quickly if a class changes.</p></div>
-          <div class="identity-fields" id="cf-identity">
-            <h3 class="identity-title">Identity details</h3>
-            <p class="identity-copy">Required for safe client records. Your ID images are encrypted and can only be opened from the authenticated trainer portal.</p>
-            <label>ID or passport number</label><input id="ci-id-number" autocomplete="off" placeholder="Enter the document number">
-            <div class="identity-grid">
-              <div><label>Date of birth</label><input id="ci-dob" type="date" autocomplete="bday"></div>
-              <div><label>Home address</label><input id="ci-address" autocomplete="street-address" placeholder="Street, city, postcode"></div>
-            </div>
-            <div class="identity-grid">
-              <label class="id-upload" id="idFrontLabel"><input id="ci-id-front" type="file" accept="image/jpeg,image/png" capture="environment" onchange="idFileChosen('front')"><b>Front of ID</b><span>JPG or PNG · maximum 5 MB</span></label>
-              <label class="id-upload" id="idBackLabel"><input id="ci-id-back" type="file" accept="image/jpeg,image/png" capture="environment" onchange="idFileChosen('back')"><b>Back of ID</b><span>JPG or PNG · maximum 5 MB</span></label>
-            </div>
-          </div>
           <div id="cf-ref" style="display:none"><label>Referral code (optional)</label><input id="ci-ref" placeholder="Enter code" oninput="this.value=this.value.toUpperCase()"></div>
           <label class="consent-check" id="cConsentWrap" style="display:none">
             <input type="checkbox" id="ci-consent">
-            <span>I agree to the <button type="button" class="linkbtn" onclick="openPrivacy()">Privacy Policy</button> and consent to my identity details and ID images being used for client verification and booking management.</span>
+            <span>I agree to the <button type="button" class="linkbtn" onclick="openPrivacy()">Privacy Policy</button> and consent to my details being used for patient records and booking management.</span>
           </label>
           <label class="remember-check">
             <input type="checkbox" id="ci-remember" checked>
@@ -1677,7 +1668,7 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
         <div class="profile-settings">
           <div class="profile-list"><div class="profile-row"><span>Full name</span><b id="profileNameRow">—</b></div><div class="profile-row"><span>Mobile</span><b id="profilePhoneRow">Not added</b></div><div class="profile-row"><span>Email</span><b id="profileEmailRow">—</b></div></div>
           <div class="security-card notification-row"><div class="notification-copy"><span class="notification-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z"/><path d="M10 21h4"/></svg></span><div><h3>Session notifications</h3><p id="notificationStatus">Get reminders on this device.</p></div></div><button class="btn ghost sm" id="notificationBtn" onclick="enablePushNotifications()">Enable</button></div>
-          <div class="profile-list"><div class="profile-row"><span>Identity</span><b id="profileIdentityRow">Submitted for review</b></div><div class="profile-row"><span>Class credits</span><b id="profileCreditsRow">0</b></div></div>
+          <div class="profile-list"><div class="profile-row"><span>Patient record</span><b id="profileIdentityRow">Managed by the clinic</b></div><div class="profile-row"><span>Class credits</span><b id="profileCreditsRow">0</b></div></div>
         </div>
 
         <div class="security-card">
@@ -2074,7 +2065,7 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
 
     <h4>2. What we collect</h4>
     <p><b>Your account:</b> name, email address, mobile number, and a password stored only as irreversible encryption — we never see your actual password. If you enable two-factor authentication, we store a key used solely to verify your login codes.</p>
-    <p><b>Identity verification:</b> your legal name, ID or passport number, date of birth, home address, and front/back photographs of the identity document. The images are encrypted at rest and are available only to authenticated, authorised studio staff for verification.</p>
+    <p><b>Patient record:</b> your contact and clinical administration details may be synchronised with Cliniko so the studio can maintain one accurate patient record.</p>
     <p><b>Your bookings:</b> which sessions you booked and when, group or private, payment status and method, amount paid, receipt number, attendance (including no-shows), waitlist entries, and any promo, referral or gift voucher codes used.</p>
     <p><b>Health information:</b> notes recorded by your physiotherapist or instructor about injuries, physical conditions, treatment goals, or adaptations needed for your safety, and any GHS (ΓΕΣΥ) referral details.</p>
     <p><b>We never store your card number, CVV, or bank details.</b> Card payments are handled entirely by Stripe — your card details never reach our systems. We use no advertising cookies or third-party tracking.</p>
@@ -2092,14 +2083,14 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
     <p><b>We never sell, rent or trade your data.</b> We may disclose it where legally required, such as to the Cyprus tax authorities.</p>
 
     <h4>6. How long we keep it</h4>
-    <p>Booking and payment records: six years, as Cyprus tax law requires. Treatment notes: as long as needed for your care and professional record-keeping obligations. Account details: while your account is active. ID images should be deleted when verification is complete unless a documented legal or clinical requirement justifies keeping them; the studio must set and follow that retention period before launch. Verification codes are deleted after 20 minutes; login sessions expire after 12 hours, or 30 days if you chose “keep me signed in”.</p>
+    <p>Booking and payment records: six years, as Cyprus tax law requires. Treatment notes: as long as needed for your care and professional record-keeping obligations. Account details: while your account is active. Verification codes are deleted after 20 minutes; login sessions expire after 12 hours, or 30 days if you chose “keep me signed in”.</p>
 
     <h4>7. Your rights</h4>
     <p>You have the right to access your data, correct it, ask us to delete it (where we are not legally required to keep it), restrict or object to how we use it, receive it in a portable format, and withdraw consent at any time.</p>
     <p>To exercise any of these, contact us at hello@rebalance.cy or 22 035001 — we will respond within one month. You may also complain to the <b>Office of the Commissioner for Personal Data Protection</b> (dataprotection.gov.cy).</p>
 
     <h4>8. How we protect your data</h4>
-    <p>Passwords are stored using strong one-way encryption (bcrypt). ID images are encrypted separately on disk and are served with no-store controls only after trainer authentication. Two-factor authentication is available using Google or Microsoft Authenticator. All traffic is encrypted over HTTPS, sign-in attempts are rate-limited to prevent password guessing, portal access is restricted to authorised staff, and backups are taken regularly.</p>
+    <p>Passwords are stored using strong one-way encryption (bcrypt). Two-factor authentication is available using Google or Microsoft Authenticator. All traffic is encrypted over HTTPS, sign-in attempts are rate-limited to prevent password guessing, portal access is restricted to authorised staff, and backups are taken regularly.</p>
     <p>If a breach occurs that is likely to put your rights at risk, we will notify the Cyprus Commissioner within 72 hours and inform you where required.</p>
 
     <h4>9. Cookies</h4>
@@ -2411,26 +2402,11 @@ function custTab(m){custMode=m;
   document.getElementById('ct-signup').classList.toggle('on',m==='signup');
   document.getElementById('cf-name').style.display=m==='signup'?'block':'none';
   document.getElementById('cf-phone').style.display=m==='signup'?'block':'none';
-  document.getElementById('cf-identity').classList.toggle('on',m==='signup');
   const fl=document.getElementById('cForgotLine'); if(fl) fl.style.display=m==='signup'?'none':'block';
   document.getElementById('cf-ref').style.display=m==='signup'?'block':'none';
   document.getElementById('cConsentWrap').style.display=m==='signup'?'flex':'none';
   document.getElementById('cAuthBtn').textContent=m==='signup'?'Create account':'Log in';
   document.getElementById('cAuthFine').textContent=m==='signup'?'Already a member? Switch to Log in.':'New here? Switch to Sign up.';
-}
-const idFiles={front:null,back:null};
-function idFileChosen(side){
-  const input=document.getElementById(side==='front'?'ci-id-front':'ci-id-back');
-  const label=document.getElementById(side==='front'?'idFrontLabel':'idBackLabel');
-  const file=input.files&&input.files[0];
-  idFiles[side]=null;label.classList.remove('ready');
-  if(!file)return;
-  if(!['image/jpeg','image/png'].includes(file.type)){input.value='';toast('Use a JPG or PNG image','Identity');return;}
-  if(file.size>5*1024*1024){input.value='';toast('Each ID photo must be smaller than 5 MB','Identity');return;}
-  if(file.size<20000){input.value='';toast('That image is too small to review clearly','Identity');return;}
-  const reader=new FileReader();
-  reader.onload=()=>{idFiles[side]=reader.result;label.classList.add('ready');label.querySelector('span').textContent='✓ '+file.name;};
-  reader.onerror=()=>toast('That image could not be read','Identity');reader.readAsDataURL(file);
 }
 function custReset(){
   if(state.user){document.getElementById('c-auth').classList.remove('on');document.getElementById('c-flow').classList.add('on');customerNavAction('home');}
@@ -2447,24 +2423,13 @@ async function custAuth(){
   if(custMode==='signup'){
     if(!phone){toast('Enter your mobile number so we can reach you','Account');return;}
     if(phone.replace(/\D/g,'').length<8){toast('That mobile number looks too short','Account');return;}
-    const idNumber=document.getElementById('ci-id-number').value.trim();
-    const dob=document.getElementById('ci-dob').value;
-    const address=document.getElementById('ci-address').value.trim();
-    if(idNumber.length<5){toast('Enter the ID or passport number','Identity');return;}
-    if(!dob){toast('Enter the date of birth','Identity');return;}
-    if(address.length<8){toast('Enter the full home address','Identity');return;}
-    if(!idFiles.front||!idFiles.back){toast('Upload both the front and back of the ID','Identity');return;}
     if(!document.getElementById('ci-consent').checked){
       toast('Please accept the Privacy Policy to create an account','Privacy');return;
     }
   }
   const name=document.getElementById('ci-name').value.trim();
   const pass=document.getElementById('ci-pass').value;
-  pendingAuth={mode:custMode,email,name:name||email.split('@')[0],pass,phone,
-    idNumber:custMode==='signup'?document.getElementById('ci-id-number').value.trim():'',
-    dob:custMode==='signup'?document.getElementById('ci-dob').value:'',
-    address:custMode==='signup'?document.getElementById('ci-address').value.trim():'',
-    idFront:custMode==='signup'?idFiles.front:null,idBack:custMode==='signup'?idFiles.back:null};
+  pendingAuth={mode:custMode,email,name:name||email.split('@')[0],pass,phone};
   authBusy=true;
   try{
   // For login: verify email + password FIRST, so wrong credentials show
@@ -2605,8 +2570,7 @@ async function doBackendAuth(emailCode, totpCode){
   const path=pendingAuth.mode==='signup'?'/signup':'/login';
   const body=pendingAuth.mode==='signup'
     ? {name:pendingAuth.name,email:pendingAuth.email,password:pendingAuth.pass,
-       phone:pendingAuth.phone||'',code:emailCode,remember,id_number:pendingAuth.idNumber,
-       date_of_birth:pendingAuth.dob,address:pendingAuth.address,id_front:pendingAuth.idFront,id_back:pendingAuth.idBack}
+       phone:pendingAuth.phone||'',code:emailCode,remember}
     : {email:pendingAuth.email,password:pendingAuth.pass,code:emailCode,totp:totpCode,remember};
   let r;
   try{
@@ -3248,7 +3212,7 @@ function applyProfilePhoto(src){const btn=document.getElementById('profilePhotoB
 function profilePhotoChosen(input){const file=input.files&&input.files[0];if(!file)return;if(!['image/jpeg','image/png','image/webp'].includes(file.type)){toast('Choose a JPG, PNG, or WebP photo','Profile photo');return;}if(file.size>2*1024*1024){toast('Choose a photo smaller than 2 MB','Profile photo');return;}const reader=new FileReader();reader.onload=()=>saveProfilePhoto(String(reader.result||''));reader.readAsDataURL(file);}
 async function saveProfilePhoto(photo){try{if(BACKEND)await api('/me/photo',{method:'PUT',token:authToken,body:{photo}});state.user={...(state.user||{}),profile_photo:photo};applyProfilePhoto(photo);toast(photo?'Profile picture updated':'Profile picture removed','Profile');}catch(e){toast(e.message||'Could not save the picture','Profile');}}
 function removeProfilePhoto(){saveProfilePhoto('');}
-function renderNotifications(){const el=document.getElementById('notificationList');if(!el)return;const upcoming=state.bookings.filter(b=>b.status==='confirmed'&&(!b.start||b.start>new Date())).slice(0,5);const items=upcoming.map(b=>({title:'Upcoming session',body:`${b.cls} · ${b.when}`,time:'Session reminder'}));if(state.user?.id_status==='pending')items.push({title:'Identity verification',body:'Your identity documents were submitted and are awaiting review.',time:'Account update'});el.innerHTML=items.length?items.map(n=>`<article class="notification-card"><span class="notification-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z"/><path d="M10 21h4"/></svg></span><div><h3>${n.title}</h3><p>${n.body}</p><time>${n.time}</time></div></article>`).join(''):'<div class="notification-empty">You have no new notifications.</div>';}
+function renderNotifications(){const el=document.getElementById('notificationList');if(!el)return;const upcoming=state.bookings.filter(b=>b.status==='confirmed'&&(!b.start||b.start>new Date())).slice(0,5);const items=upcoming.map(b=>({title:'Upcoming session',body:`${b.cls} · ${b.when}`,time:'Session reminder'}));el.innerHTML=items.length?items.map(n=>`<article class="notification-card"><span class="notification-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z"/><path d="M10 21h4"/></svg></span><div><h3>${n.title}</h3><p>${n.body}</p><time>${n.time}</time></div></article>`).join(''):'<div class="notification-empty">You have no new notifications.</div>';}
 function loyaltyMemberId(){const src=String(state.user?.email||'MEMBER').toLowerCase();let h=2166136261;for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619);}return 'RB-'+String(h>>>0).padStart(10,'0').slice(-10);}
 function renderLoyaltyCard(){const goal=Math.max(2,Math.min(30,+LOYALTY.stamps||10)),confirmed=state.bookings.filter(b=>b.status==='confirmed').length,rewards=Math.floor(confirmed/goal),filled=confirmed%goal,until=filled===0&&confirmed>0?goal:goal-filled;const grid=document.getElementById('loyaltyStamps');if(grid){grid.style.gridTemplateColumns=`repeat(${Math.min(goal,5)},1fr)`;grid.innerHTML=Array.from({length:goal},(_,i)=>`<span class="stamp ${i<filled?'on':''}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.5 5.8L21 9.5l-4.8 4.3 1.4 6.2-5.6-3.2L6.4 20l1.4-6.2L3 9.5l6.5-.7L12 3Z"/></svg></span>`).join('');}const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};set('loyaltyName',state.user?.name||'Customer');set('loyaltyUntil',until+' stamp'+(until===1?'':'s'));set('loyaltyRewards',String(rewards));set('loyaltyReward',LOYALTY.reward||'Free group class');set('loyaltyCode',loyaltyMemberId());}
 async function addLoyaltyToWallet(){if(!BACKEND){toast('Apple Wallet will activate when the live pass certificate is connected','Loyalty');return;}try{const r=await fetch(BACKEND+'/wallet/loyalty',{headers:{Authorization:'Bearer '+authToken}});if(!r.ok){const d=await r.json().catch(()=>({}));throw new Error(d.detail||'Wallet pass is not configured yet');}const blob=await r.blob(),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Rebalance-Loyalty.pkpass';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}catch(e){toast(e.message,'Apple Wallet');}}
@@ -3725,7 +3689,7 @@ function shareVoucher(){
 }
 function renderClasses(){
   document.getElementById('classList').innerHTML=CLASSES.map(c=>`
-    <div class="cls" role="button" tabindex="0" onkeydown="keyboardClick(event)" onclick="chooseClass('${c.id}')">
+    <div class="cls class-${c.id}" role="button" tabindex="0" onkeydown="keyboardClick(event)" onclick="chooseClass('${c.id}')">
       <div><h3>${c.name}</h3><div class="meta">${c.dur} · ${c.who}</div></div>
       <div><div class="price">${t('from')} €${c.price}</div><div class="pk">${t('select')}</div></div>
     </div>`).join('');
@@ -4880,7 +4844,7 @@ function renderClients(){
           <div class="cc-right"><span class="id-badge ${clientEsc(status)}">ID ${clientEsc(status)}</span><span class="cc-arrow">⌄</span></div>
         </div>
         <div class="id-summary"><div><b>ID / passport</b>${clientEsc(c.id_number)||'Not provided'}</div><div><b>Date of birth</b>${clientEsc(c.date_of_birth)||'Not provided'}</div><div><b>Phone</b>${clientEsc(c.phone)||'Not provided'}</div><div><b>Address</b>${clientEsc(c.address)||'Not provided'}</div></div>
-        <div class="id-actions">${c.id_front?`<button class="btn ghost sm" onclick="viewIdDocument(${c.id},'front')">View ID front</button>`:''}${c.id_back?`<button class="btn ghost sm" onclick="viewIdDocument(${c.id},'back')">View ID back</button>`:''}<button class="btn ghost sm" onclick="reviewId(${c.id},'verified')">✓ Verify</button><button class="btn ghost sm" onclick="reviewId(${c.id},'rejected')">Needs resubmission</button></div>
+        ${(c.id_front||c.id_back)?`<div class="id-actions">${c.id_front?`<button class="btn ghost sm" onclick="viewIdDocument(${c.id},'front')">View ID front</button>`:''}${c.id_back?`<button class="btn ghost sm" onclick="viewIdDocument(${c.id},'back')">View ID back</button>`:''}</div>`:''}
         <ul class="cc-history">${history||'<li>No bookings yet.</li>'}</ul>
         <div class="cc-notes"><label>Private notes <span>— visible only to studio staff</span></label><textarea rows="3" placeholder="Injuries, goals, GHS referral, things to watch…" onchange="saveNote('${clientEsc(c.email)}',this.value)">${clientEsc(NOTES[c.email]||'')}</textarea><p class="cc-gdpr">⚠︎ Identity and health information is sensitive. Access it only when needed for studio operations.</p></div>
       </div>`;
@@ -4909,8 +4873,7 @@ function renderClients(){
       return `<li>${badge}<span>${x.d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})} · ${x.t}</span>
               <span class="h-cls">${x.cls}${x.priv?' · Private':''}</span>${paytag(x.pay)}</li>`;
     }).join('');
-    const demoId=state.user&&state.user.name===name?state.user.id_number||'Pending demo ID':'';
-    const search=(name+' '+demoId+' '+(state.user?.email||'')+' '+(state.user?.phone||'')).toLowerCase();
+    const search=(name+' '+(state.user?.email||'')+' '+(state.user?.phone||'')).toLowerCase();
     return `<div class="client-card ${warn?'warn':''}" data-search="${clientEsc(search)}">
       <div class="cc-head" onclick="this.parentElement.classList.toggle('open')">
         <div>
@@ -4919,10 +4882,9 @@ function renderClients(){
         </div>
         <div class="cc-right">
           ${noshow>0?`<span class="cc-noshow">${noshow} no-show${noshow!==1?'s':''}</span>`:''}
-          ${demoId?'<span class="id-badge">ID pending</span>':''}<span class="cc-arrow">⌄</span>
+          <span class="cc-arrow">⌄</span>
         </div>
       </div>
-      ${demoId?`<div class="id-summary"><div><b>ID / passport</b>${clientEsc(state.user.id_number||'Pending')}</div><div><b>Date of birth</b>${clientEsc(state.user.date_of_birth||'Not provided')}</div><div><b>Phone</b>${clientEsc(state.user.phone||'Not provided')}</div><div><b>Address</b>${clientEsc(state.user.address||'Not provided')}</div></div><div class="id-actions"><span class="id-badge">Front uploaded</span><span class="id-badge">Back uploaded</span><button class="btn ghost sm" onclick="toast('ID review saves once the site is live','Identity')">✓ Verify</button></div>`:''}
       <ul class="cc-history">${history}</ul>
       <div class="cc-notes">
         <label>Private notes <span>— visible only to studio staff</span></label>
