@@ -1,4 +1,4 @@
-const CACHE='rebalance-customer-v12';
+const CACHE='rebalance-customer-v13';
 const SHELL=['./app.html?app=customer','./app.html','./manifest.webmanifest','./app-icon.svg','./app-icon-180.png','./app-icon-512.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
