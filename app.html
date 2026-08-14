@@ -6,9 +6,12 @@
 <meta name="color-scheme" content="light only">
 <meta name="supported-color-schemes" content="light">
 <meta name="theme-color" content="#F6EDE8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Rebalance">
+<title>Rebalance Physiotherapy & Clinical Pilates — Nicosia</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="app-icon-180.png">
-<title>Rebalance Physiotherapy & Clinical Pilates — Nicosia</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -280,6 +283,7 @@
   .roleswitch{display:flex;gap:0;border:1px solid var(--line);border-radius:40px;padding:4px;margin-bottom:24px}
   .roleswitch button{flex:1;border:none;background:none;padding:11px;border-radius:40px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
   .roleswitch button.on{background:var(--ink);color:var(--oat)}
+  .auth-brand-mark{width:62px;height:62px;margin:0 auto 15px;display:grid;place-items:center;border-radius:21px;background:linear-gradient(145deg,#e9c7c2,#c9787d);box-shadow:0 18px 32px -22px rgba(127,66,74,.7)}.auth-brand-mark .seed{width:38px;height:38px;filter:brightness(0) invert(1)}.auth-subtitle{max-width:290px;margin:8px auto 0;color:var(--mut);font-size:13px;line-height:1.5}.auth-secure-note{display:flex;align-items:center;justify-content:center;gap:7px;margin:16px 0 0;color:#927a7e;font-size:11px}.auth-secure-note:before{content:'✓';width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:#edf1e8;color:#64734f;font-size:10px}
   /* AI chatbot */
   /* ---- animated receipt (prints out after payment) ---- */
   .receipt-overlay{position:fixed;inset:0;z-index:3500;background:rgba(38,36,31,.72);backdrop-filter:blur(6px);
@@ -797,6 +801,29 @@
   .cc-notes textarea:focus{border-color:var(--olive);outline:none}
   .cc-gdpr{font-size:11px;color:var(--mut);line-height:1.5;margin-top:8px;background:rgba(201,138,92,.08);
     border-radius:8px;padding:8px 10px}
+  .client-tools{display:flex;gap:12px;align-items:center;margin-bottom:18px}
+  .client-search{position:relative;flex:1}
+  .client-search input{padding-left:42px;background:var(--paper)}
+  .client-search::before{content:'⌕';position:absolute;left:15px;top:50%;transform:translateY(-50%);font-size:1.25rem;color:var(--mut);z-index:1}
+  .client-count{font-size:12px;color:var(--mut);white-space:nowrap}
+  .identity-fields{display:none;margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+  .identity-fields.on{display:block}
+  .identity-title{font-family:'Fraunces',serif;font-size:1.25rem;margin-bottom:4px}
+  .identity-copy{font-size:12.5px;color:var(--mut);line-height:1.55;margin-bottom:14px}
+  .identity-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .id-upload{display:block;margin:10px 0 0;padding:18px 14px;border:1px dashed var(--clay);border-radius:14px;background:#fff;text-align:center;cursor:pointer;text-transform:none;letter-spacing:0}
+  .id-upload:hover{border-color:var(--rust);background:rgba(199,123,123,.04)}
+  .id-upload input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+  .id-upload b{display:block;font-size:13px;color:var(--ink);font-weight:500}
+  .id-upload span{display:block;font-size:11px;color:var(--mut);margin-top:3px}
+  .id-upload.ready{border-style:solid;border-color:var(--olive);background:rgba(138,154,110,.08)}
+  .id-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 18px;padding:14px 20px;color:var(--char);font-size:12.5px}
+  .id-summary b{display:block;color:var(--mut);font-size:10px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
+  .id-badge{font-size:10px;text-transform:uppercase;letter-spacing:.06em;padding:5px 10px;border-radius:20px;background:var(--sand);color:var(--mut)}
+  .id-badge.verified{background:rgba(138,154,110,.2);color:#4f5f38}.id-badge.rejected{background:rgba(184,92,87,.14);color:var(--bad)}
+  .id-actions{display:flex;gap:8px;flex-wrap:wrap;padding:0 20px 18px}
+  .id-actions button{min-height:40px}
+  @media(max-width:560px){.identity-grid,.id-summary{grid-template-columns:1fr}.client-tools{align-items:stretch;flex-direction:column}.client-count{padding-left:2px}}
   /* first-session intro line on receipt */
   .rr.intro .k{color:var(--olive)!important;font-weight:600}
   .rr.intro span:last-child{color:#4f5f38}
@@ -860,6 +887,17 @@
   /* manage panel */
   .manage-intro{font-size:13px;color:var(--mut);margin-bottom:20px}
   .manage-sec{border:1px solid var(--line);border-radius:16px;padding:20px 20px 22px;margin-bottom:16px;background:var(--paper)}
+  #tp-manage .manage-sec{display:none;margin-bottom:0;animation:panelIn .25s ease both}
+  #tp-manage .manage-sec.on{display:block}
+  .manage-subtabs{display:flex;gap:9px;overflow-x:auto;padding:4px 2px 14px;margin:0 0 22px;
+    scroll-snap-type:x proximity;overscroll-behavior-inline:contain;scrollbar-width:thin;scrollbar-color:var(--clay) transparent}
+  .manage-subtabs button{flex:0 0 auto;scroll-snap-align:start;min-height:44px;border:1px solid var(--line);border-radius:30px;
+    padding:10px 17px;background:rgba(255,255,255,.55);color:var(--mut);font-size:12px;letter-spacing:.035em;white-space:nowrap;transition:all .2s}
+  .manage-subtabs button:hover{border-color:var(--olive);color:var(--ink)}
+  .manage-subtabs button.on{background:var(--ink);border-color:var(--ink);color:var(--oat);box-shadow:0 8px 22px -14px rgba(74,59,62,.75)}
+  .manage-subtabs button:focus-visible{outline:3px solid rgba(193,110,110,.35);outline-offset:2px}
+  .manage-section-meta{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:-8px 0 18px;color:var(--mut);font-size:12px}
+  .manage-section-meta b{color:var(--ink);font-weight:500}
   .ms-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
   .ms-head h3{font-family:'Fraunces',serif;font-weight:400;font-size:1.3rem}
   .ms-note{font-size:12.5px;color:var(--mut);margin-bottom:14px}
@@ -924,6 +962,279 @@
   .reveal{opacity:0;transform:translateY(28px);transition:opacity .85s cubic-bezier(.2,.7,.2,1),transform .85s cubic-bezier(.2,.7,.2,1)}
   .reveal.in{opacity:1;transform:none}
   @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+
+  /* 2026 layout refresh: give content room and keep mobile actions usable */
+  @media(min-width:901px){
+    .wrap,.nav-in{max-width:1280px}
+    .hero-grid{grid-template-columns:minmax(0,1fr) minmax(360px,.82fr);gap:clamp(64px,8vw,112px)}
+    .authwrap{max-width:500px}
+    .card{padding:38px}
+    .ppanel.on{animation:panelIn .28s ease both}
+  }
+  @keyframes panelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .burger{min-width:44px;min-height:44px;align-items:center;justify-content:center}
+  .lang-btn{min-height:44px;min-width:44px}
+  .mobile-menu a{min-height:48px;display:flex;align-items:center}
+  .chat-fab:focus-visible,.btn:focus-visible,.burger:focus-visible,.lang-btn:focus-visible,
+  .mobile-menu a:focus-visible{outline:3px solid rgba(193,110,110,.38);outline-offset:3px}
+  @media(max-width:900px){
+    .hero-grid{gap:30px}
+    .hero-visual{order:initial;max-width:620px;margin:6px auto 0;aspect-ratio:16/9}
+    .hero-stat{margin-top:30px}
+  }
+  @media(max-width:640px){
+    .hero{padding-top:106px;padding-bottom:58px}
+    .hero-grid{gap:32px}
+    .hero h1{font-size:clamp(3rem,14vw,4rem);line-height:.98;margin:20px 0 24px}
+    .hero p{font-size:16px;line-height:1.7;margin-bottom:30px}
+    .hero-visual{aspect-ratio:4/3;border-radius:22px;max-height:290px}
+    .hero-stat{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:32px}
+    .hero-stat>div{min-width:0}
+    .hero-stat .l{line-height:1.4}
+    .steps{justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;padding:2px 2px 12px;margin-bottom:22px}
+    .steps .s{flex:0 0 auto}
+    .card,.verify-card{padding:28px 22px;border-radius:20px}
+    .authwrap{margin:28px auto}
+    input,select{min-height:48px}
+    .roleswitch button,.ptabs button{min-height:44px}
+    .cls{align-items:flex-start;flex-wrap:wrap;padding:22px 20px;gap:12px}
+    .cls>div:first-child{flex:1 1 220px}
+    .cls>div:last-child{width:100%;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:12px}
+    .privacy-banner{left:10px;right:10px;bottom:10px;padding:16px;border-radius:16px}
+    body:has(.privacy-banner.show) .chat-fab{opacity:0;pointer-events:none}
+    .chat-fab{width:54px;height:54px;bottom:18px;right:18px}
+    .chat-panel{inset:76px 10px 10px;width:auto;height:auto;max-height:none;border-radius:20px}
+    .chat-chips button{min-height:42px}
+    .portal.wrap{width:100%;margin:0;overflow-x:hidden}
+    .portal .ptabs{width:100%;overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:none}
+    .portal .ptabs::-webkit-scrollbar{display:none}
+    .portal .ptabs button{flex:1 0 auto;padding-inline:16px}
+    .mg-card{max-width:100%}
+    .manage-subtabs{margin-inline:-18px;padding-inline:18px;scroll-padding-inline:18px}
+    #tp-manage .manage-sec{padding:22px 18px;border-radius:18px}
+    .manage-section-meta{align-items:flex-start;flex-direction:column;gap:3px}
+  }
+  #v-cust.on~.chat-fab,#v-cust.on~.chat-panel,
+  #v-train.on~.chat-fab,#v-train.on~.chat-panel{display:none}
+  [role="button"][tabindex="0"]:focus-visible{outline:3px solid rgba(193,110,110,.38);outline-offset:3px}
+
+  /* ============ PORTAL PRODUCT REDESIGN ============ */
+  :root{
+    --app-bg:#f7f3f0;--app-surface:#fffdfa;--app-surface-2:#f2eae6;--app-ink:#33282b;
+    --app-muted:#74666a;--app-border:rgba(74,59,62,.14);--app-accent:#a95661;
+    --app-accent-soft:#f1dfe0;--app-success:#557765;--app-warning:#9d683a;
+    --app-shadow:0 18px 48px -36px rgba(68,46,51,.45);--app-r-lg:24px;--app-r-md:16px;
+  }
+  body.portal-active{background:var(--app-bg)}
+  body.portal-active>nav{display:none}
+  body.portal-active #v-train:has(#t-app.on) #trainerBack,
+  body.portal-active #v-cust:has(#c-flow.on) #custBack{display:none}
+  body.customer-app-mode #custBack{display:none!important}
+  body.portal-active .privacy-banner{display:none}
+  body.portal-active .view.on>.portal{padding-top:0}
+  body.portal-active .portal{max-width:none;min-height:100dvh;padding:0;background:var(--app-bg)}
+  .portal-shell{min-height:100dvh;display:grid;grid-template-columns:260px minmax(0,1fr)}
+  .portal-rail{position:sticky;top:0;height:100dvh;padding:30px 22px 24px;background:var(--app-ink);color:#fff;display:flex;flex-direction:column;z-index:20}
+  .portal-brand{font-family:'Fraunces',serif;font-size:1.45rem;display:flex;align-items:center;gap:12px;margin-bottom:44px}
+  .portal-brand-mark{width:34px;height:34px;border-radius:12px;background:linear-gradient(145deg,#d58b91,#a95661);display:grid;place-items:center;font-family:'Inter',sans-serif;font-size:13px;font-weight:600}
+  .portal-rail-kicker{font-size:10px;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,255,255,.52);margin-bottom:10px;padding-left:12px}
+  .portal-nav{position:static;inset:auto;display:grid;gap:8px;background:transparent;border:0;backdrop-filter:none}
+  .portal-nav button{width:100%;min-height:48px;border:0;border-radius:14px;background:transparent;color:rgba(255,255,255,.68);display:flex;align-items:center;gap:12px;padding:0 14px;font-size:14px;text-align:left;transition:background .2s,color .2s}
+  .portal-nav button:hover{background:rgba(255,255,255,.08);color:#fff}
+  .portal-nav button.on{background:#fff;color:var(--app-ink);box-shadow:0 10px 24px -18px rgba(0,0,0,.7)}
+  .nav-glyph{width:28px;height:28px;border-radius:9px;background:rgba(255,255,255,.1);display:grid;place-items:center;font-size:12px;font-weight:600}
+  .portal-nav button.on .nav-glyph{background:var(--app-accent-soft);color:var(--app-accent)}
+  .portal-rail-footer{margin-top:auto;display:grid;gap:10px}
+  .rail-status{padding:14px;border:1px solid rgba(255,255,255,.12);border-radius:14px;font-size:12px;color:rgba(255,255,255,.66);line-height:1.5}
+  .rail-status b{display:block;color:#fff;font-size:13px;margin-bottom:2px}
+  .rail-exit{min-height:44px;border:0;background:transparent;color:rgba(255,255,255,.65);text-align:left;padding:0 12px;border-radius:12px}
+  .rail-exit:hover{background:rgba(255,255,255,.08);color:#fff}
+  .portal-main{min-width:0;padding:38px clamp(24px,4vw,64px) 72px}
+  .portal-topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:30px}
+  .portal-heading .eyebrow{letter-spacing:.2em;font-size:10px;margin-bottom:8px}
+  .portal-heading h1{font-size:clamp(2.1rem,4vw,3.4rem);line-height:1;margin:0;color:var(--app-ink)}
+  .portal-heading p{color:var(--app-muted);font-size:14px;margin-top:10px;max-width:60ch}
+  .portal-top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+  .app-pill{min-height:44px;border:1px solid var(--app-border);border-radius:999px;background:var(--app-surface);padding:0 16px;color:var(--app-ink);font-size:12px;box-shadow:var(--app-shadow)}
+  .portal-content{max-width:1180px}
+  body.portal-active .ppanel{padding-bottom:0}
+  body.portal-active .card,body.portal-active .verify-card,body.portal-active .classcard,body.portal-active .client-card,
+  body.portal-active .manage-sec,body.portal-active .receipt,body.portal-active .security-card,body.portal-active .referral-card,
+  body.portal-active .ghs-card,body.portal-active .booking,body.portal-active .pkg,body.portal-active .tc-card{
+    background:var(--app-surface);border-color:var(--app-border);box-shadow:var(--app-shadow)
+  }
+  body.portal-active input,body.portal-active select,body.portal-active textarea{border-color:var(--app-border);background:#fff;min-height:48px;border-radius:12px}
+  body.portal-active input:focus,body.portal-active select:focus,body.portal-active textarea:focus{border-color:var(--app-accent);box-shadow:0 0 0 3px rgba(169,86,97,.12)}
+  body.portal-active .btn{min-height:44px;letter-spacing:.08em;background:var(--app-ink)}
+  body.portal-active .btn.ghost{background:var(--app-surface);border-color:var(--app-border);color:var(--app-ink)}
+  body.portal-active .btn.ghost:hover{background:var(--app-surface-2);color:var(--app-ink);transform:none}
+  .customer-shell{max-width:1160px;margin:0 auto;padding:30px clamp(20px,4vw,48px) 72px}
+  .customer-appbar{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:30px}
+  .customer-brand{font-family:'Fraunces',serif;font-size:1.35rem;display:flex;align-items:center;gap:10px;border:0;background:transparent;box-shadow:none;padding:6px 0;color:var(--app-ink);border-radius:0}
+  .customer-brand:hover,.customer-brand:active{background:transparent;box-shadow:none;transform:none;color:var(--app-ink)}
+  .customer-brand .seed,.portal-brand .seed{width:30px;height:30px;flex:0 0 auto}
+  .customer-nav{position:static;inset:auto;display:flex;align-items:center;gap:6px;padding:5px;border:1px solid var(--app-border);background:rgba(255,253,250,.86);border-radius:999px;box-shadow:var(--app-shadow);backdrop-filter:none}
+  .customer-nav button{min-height:42px;border:0;background:transparent;border-radius:999px;padding:0 18px;color:var(--app-muted);font-size:13px}
+  .customer-nav button.on{background:var(--app-ink);color:#fff}
+  .customer-nav .nav-icon{width:22px;height:22px;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .customer-nav .nav-label{font-size:10px;line-height:1.1;white-space:nowrap}
+  .customer-nav .loyalty-nav .nav-icon-wrap{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:var(--app-accent);color:#fff;box-shadow:0 10px 24px -12px rgba(169,86,97,.75)}
+  .customer-nav .loyalty-nav.on{background:transparent;color:var(--app-accent)}
+  .customer-nav button{transition:color .22s ease,background .22s ease,transform .18s ease}.customer-nav button:active{transform:scale(.92)}
+  .customer-nav .nav-icon{transition:transform .28s cubic-bezier(.2,.8,.2,1),stroke-width .2s ease}.customer-nav button.on:not(.loyalty-nav) .nav-icon{transform:translateY(-3px) scale(1.08);stroke-width:2.25}.customer-nav button.on:not(.loyalty-nav) .nav-label{font-weight:600}
+  .customer-nav .loyalty-nav .nav-icon-wrap{transition:transform .32s cubic-bezier(.2,.9,.25,1.2),box-shadow .25s ease}.customer-nav .loyalty-nav.on .nav-icon-wrap{transform:translateY(-3px) rotate(-4deg) scale(1.08);box-shadow:0 15px 30px -13px rgba(169,86,97,.9)}
+  .customer-content .flow.on{animation:appScreenIn .28s cubic-bezier(.2,.75,.25,1) both}@keyframes appScreenIn{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+  .home-panel,.classlist .cls,.booking,.profile-hero,.profile-list{transition:transform .22s ease,box-shadow .22s ease}.home-panel:active,.classlist .cls:active,.booking:active{transform:scale(.985)}
+  .customer-home-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:18px}.home-panel{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:24px}.home-panel h2{font-size:1.6rem;margin-bottom:7px}.home-panel p{color:var(--mut);font-size:13px}.home-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.home-session-list{display:grid;gap:10px;margin-top:16px}.home-session{padding:15px;border-radius:15px;background:#fff;border:1px solid var(--line)}.home-session b{display:block;font-size:14px}.home-session span{font-size:12px;color:var(--mut)}
+  .app-section-intro{margin-bottom:18px}.app-section-intro h2{font-size:1.75rem}.app-section-intro p{font-size:13px;color:var(--mut);margin-top:6px}.profile-hero{display:flex;align-items:center;gap:16px;padding:22px;background:linear-gradient(135deg,#f3dfdd,#fbf4f0);border:1px solid rgba(193,110,110,.16);border-radius:22px;margin-bottom:16px}.profile-avatar{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#c16e6e;color:#fff;font-size:22px;font-weight:600}.profile-hero h2{font-size:1.45rem}.profile-hero p{font-size:13px;color:var(--mut)}.profile-list{background:var(--paper);border:1px solid var(--line);border-radius:20px;overflow:hidden;margin-bottom:16px}.profile-row{display:flex;justify-content:space-between;gap:18px;padding:16px 18px;border-bottom:1px solid var(--line);font-size:13px}.profile-row:last-child{border-bottom:0}.profile-row span{color:var(--mut)}.profile-row b{text-align:right;font-weight:500}.app-danger{width:100%;min-height:48px;border:1px solid rgba(184,92,87,.3);border-radius:14px;background:transparent;color:var(--bad);font-weight:500}
+  .loyalty-placeholder{max-width:560px;margin:20px auto;text-align:center;background:var(--paper);border:1px solid var(--line);border-radius:24px;padding:48px 28px}.loyalty-placeholder .loyalty-orb{width:72px;height:72px;margin:0 auto 18px;border-radius:50%;display:grid;place-items:center;background:var(--app-accent-soft);color:var(--app-accent);font-family:'Fraunces';font-size:28px}.loyalty-placeholder p{color:var(--mut);margin-top:10px}
+  .profile-settings{display:grid;gap:14px;margin-bottom:18px}.profile-settings .security-card{margin:0}.profile-settings h3{font-size:1.08rem}.profile-settings p{font-size:13px;color:var(--mut);line-height:1.5}.notification-row{display:flex;align-items:center;justify-content:space-between;gap:16px}.notification-copy{display:flex;align-items:center;gap:12px}.notification-icon{width:42px;height:42px;flex:0 0 auto;display:grid;place-items:center;border-radius:14px;background:var(--app-accent-soft);color:var(--app-accent)}.notification-icon svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.app-danger{margin:2px 0 38px}
+  .profile-photo-wrap{position:relative;flex:0 0 auto}.profile-photo-button{width:66px;height:66px;border:3px solid rgba(255,255,255,.8);border-radius:50%;padding:0;overflow:hidden;background:#c16e6e;box-shadow:0 8px 20px -14px #7e5258}.profile-photo-button img{width:100%;height:100%;object-fit:cover;display:none}.profile-photo-button.has-photo img{display:block}.profile-photo-button.has-photo .profile-avatar{display:none}.profile-photo-button .profile-avatar{width:100%;height:100%;border-radius:0}.photo-edit-dot{position:absolute;right:-2px;bottom:-2px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#72565a;font-size:13px;box-shadow:0 4px 12px rgba(70,45,49,.18);pointer-events:none}.photo-actions{display:flex;gap:8px;margin-top:9px}.photo-actions button{border:0;background:transparent;padding:0;color:#9c5960;font-size:12px}.notification-list{display:grid;gap:11px}.notification-card{display:grid;grid-template-columns:44px 1fr;gap:13px;padding:17px;border-radius:21px;background:#fff;box-shadow:0 12px 30px -29px rgba(55,35,39,.8)}.notification-card .notification-icon{width:44px;height:44px}.notification-card h3{font-family:'Inter',sans-serif;font-size:14px;margin:2px 0 4px}.notification-card p{font-size:13px;color:var(--mut);line-height:1.45}.notification-card time{display:block;margin-top:7px;font-size:11px;color:#aa9295}.notification-empty{text-align:center;padding:48px 22px;border-radius:25px;background:#fff;color:var(--mut)}
+  #cs-loyalty{position:relative;padding:4px 0 28px}#cs-loyalty:before{content:'';position:absolute;z-index:-1;inset:52px -18px -18px;border-radius:34px;background:linear-gradient(155deg,rgba(239,214,207,.65),rgba(255,248,244,.18) 70%)}.loyalty-card{position:relative;isolation:isolate;max-width:500px;margin:0 auto;padding:27px 24px;border:1px solid rgba(255,255,255,.45);border-radius:29px;overflow:hidden;background:linear-gradient(145deg,#a95f69 0%,#c77f83 48%,#dda8a1 100%);color:#fffaf7;box-shadow:0 25px 55px -30px rgba(126,66,75,.72)}.loyalty-card:before,.loyalty-card:after{content:'';position:absolute;z-index:-1;border-radius:50%;border:26px solid rgba(255,244,238,.12)}.loyalty-card:before{width:180px;height:180px;right:-72px;top:-80px}.loyalty-card:after{width:120px;height:120px;left:-58px;bottom:-64px}.loyalty-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}.loyalty-card-brand{font-family:'Fraunces',serif;font-size:25px;letter-spacing:-.02em}.loyalty-card-name{text-align:right}.loyalty-card-name small,.loyalty-progress small{display:block;color:rgba(255,250,247,.7);font-size:9px;letter-spacing:.13em;text-transform:uppercase;margin-bottom:4px}.loyalty-card-name b{font-size:15px;font-weight:600}.stamp-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:31px 0 27px}.stamp{aspect-ratio:1;border:1px solid rgba(255,255,255,.18);border-radius:15px;background:rgba(107,55,65,.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.12);display:grid;place-items:center;color:transparent;transition:transform .28s ease,background .28s ease}.stamp.on{background:linear-gradient(145deg,#fff4dc,#f0d5b0);border-color:rgba(255,255,255,.7);color:#9d5962;box-shadow:0 8px 18px -13px rgba(85,40,48,.7),inset 0 1px 0 #fff;transform:scale(1.04)}.stamp svg{width:54%;height:54%;fill:currentColor;stroke:currentColor;stroke-width:1.2}.loyalty-summary{display:flex;justify-content:space-between;gap:18px;align-items:flex-end;padding:15px 16px;border-radius:18px;background:rgba(105,51,61,.16);backdrop-filter:blur(8px)}.loyalty-progress strong{font-family:'Fraunces',serif;font-size:27px;font-weight:500}.loyalty-code{margin-top:15px;padding:13px 16px;border:1px solid rgba(255,255,255,.55);border-radius:13px;background:rgba(255,248,243,.94);color:#7b4850;text-align:center;font:650 13px/1.3 monospace;letter-spacing:.08em;overflow-wrap:anywhere}.wallet-add{width:100%;max-width:500px;margin:15px auto 0;min-height:53px;border:1px solid rgba(171,100,107,.16);border-radius:17px;background:linear-gradient(135deg,#fff,#f9eee9);color:#604247;font-weight:650;box-shadow:0 14px 30px -24px rgba(93,52,59,.6);display:block}.wallet-add:hover{background:#fff;transform:translateY(-1px)}.loyalty-note{max-width:460px;margin:13px auto 0;text-align:center;color:#92777b;font-size:12px;line-height:1.5}
+  .wallet-buttons{max-width:500px;margin:15px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:10px}.wallet-buttons .wallet-add{margin:0}.wallet-add.google{background:linear-gradient(135deg,#fff,#f5f5f5);color:#41383a}.member-id-label{margin-top:14px;text-align:center;color:rgba(255,250,247,.68);font-size:9px;letter-spacing:.13em;text-transform:uppercase}.reward-preview{margin-top:15px;padding:13px 15px;border-radius:15px;background:rgba(255,247,240,.14);text-align:center;font-size:13px}.reward-preview b{color:#fff2d8}@media(max-width:390px){.wallet-buttons{grid-template-columns:1fr}}
+  .customer-account{display:flex;align-items:center;gap:9px}
+  .native-app-title,.native-alert{display:none}
+  .account-copy{display:grid;gap:2px;text-align:right;font-family:'Inter',sans-serif;line-height:1.2}
+  .account-copy b{display:block;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;letter-spacing:0;color:var(--app-ink)}
+  .account-copy small{display:block;font-family:'Inter',sans-serif;font-size:11px;font-weight:400;letter-spacing:.02em;color:var(--app-muted)}
+  .customer-avatar{width:42px;height:42px;border-radius:50%;background:var(--app-accent-soft);color:var(--app-accent);display:grid;place-items:center;font-weight:600}
+  .customer-content{max-width:960px;margin:0 auto}
+  .customer-flow-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:24px}
+  .customer-flow-head .phead{padding:0}
+  body.portal-active .steps{justify-content:flex-start;margin:0;padding:0;overflow:visible}
+  body.portal-active .steps .s{opacity:1;color:var(--app-muted);font-size:11px}
+  body.portal-active .steps .s.on{color:var(--app-ink);font-weight:500}
+  body.portal-active .steps .s .n{width:26px;height:26px;background:var(--app-surface);border-color:var(--app-border)}
+  body.portal-active .steps .s.on .n{background:var(--app-accent);color:#fff;border-color:var(--app-accent)}
+  body.portal-active .classlist{max-width:none;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+  body.portal-active .cls{min-height:180px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;padding:24px;border-radius:20px;background:var(--app-surface);box-shadow:var(--app-shadow)}
+  body.portal-active .cls:hover{transform:translateY(-2px);border-color:rgba(169,86,97,.38)}
+  body.portal-active .cls>div:last-child{width:100%;display:flex;justify-content:space-between;align-items:flex-end;border-top:1px solid var(--app-border);padding-top:16px}
+  body.portal-active .typechoice{max-width:none}
+  body.portal-active .slots{max-width:none;grid-template-columns:repeat(auto-fill,minmax(128px,1fr))}
+  body.portal-active .daybar{max-width:none}
+  body.portal-active .pay{max-width:680px;margin:0 auto}
+  .trainer-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:22px}
+  .overview-card{padding:18px 20px;border:1px solid var(--app-border);border-radius:18px;background:var(--app-surface);box-shadow:var(--app-shadow)}
+  .overview-card span{display:block;font-size:11px;color:var(--app-muted);text-transform:uppercase;letter-spacing:.08em}
+  .overview-card b{display:block;font-family:'Fraunces',serif;font-size:1.7rem;font-weight:400;margin-top:5px}
+  body.portal-active .tgrid-head{background:var(--app-surface);border:1px solid var(--app-border);border-radius:18px;padding:16px 18px;margin-bottom:16px}
+  body.portal-active .tslots{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+  body.portal-active .classcard{border-radius:20px}
+  body.portal-active .earn-grid{gap:16px}
+  body.portal-active .earn-card{padding:22px;border-radius:18px;background:var(--app-surface);box-shadow:var(--app-shadow)}
+  body.portal-active .client-tools{position:sticky;top:16px;z-index:5;padding:12px;background:rgba(247,243,240,.92);backdrop-filter:blur(12px);border-radius:18px;margin-inline:-12px}
+  body.portal-active .client-card{border-radius:18px}
+  body.portal-active .manage-subtabs{position:sticky;top:16px;z-index:6;background:rgba(247,243,240,.94);backdrop-filter:blur(12px);padding:10px;border-radius:18px}
+  body.portal-active #tp-manage .manage-sec{border-radius:22px;padding:28px}
+  body.portal-active .mg-card{border-radius:16px;padding:18px}
+  .mobile-portal-bar{display:none;top:auto}
+  @media(max-width:1020px){
+    .portal-shell{grid-template-columns:1fr}.portal-rail{display:none}.portal-main{padding:26px 22px 96px}
+    .mobile-portal-bar{position:fixed;display:grid;grid-template-columns:repeat(4,1fr);left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:100;padding:7px;background:rgba(51,40,43,.96);border-radius:20px;box-shadow:0 18px 44px -16px rgba(30,20,24,.7)}
+    .mobile-portal-bar button{min-height:54px;border:0;border-radius:14px;background:transparent;color:rgba(255,255,255,.58);font-size:11px;display:grid;place-items:center;gap:2px}
+    .mobile-portal-bar button.on{background:#fff;color:var(--app-ink)}
+    .trainer-overview{grid-template-columns:repeat(3,1fr)}
+  }
+  @media(max-width:760px){
+    .customer-shell{padding:18px max(20px,env(safe-area-inset-left)) calc(112px + env(safe-area-inset-bottom))}.customer-appbar{margin-bottom:24px}.customer-account .account-copy{display:none}.customer-content{width:100%;max-width:100%}
+    .customer-nav{position:fixed;left:max(14px,env(safe-area-inset-left));right:max(14px,env(safe-area-inset-right));bottom:calc(8px + env(safe-area-inset-bottom));z-index:100;display:grid;grid-template-columns:repeat(5,1fr);border-radius:24px;background:rgba(51,40,43,.97);border:0;padding:8px 5px 7px}
+    .customer-nav button{min-height:58px;color:rgba(255,255,255,.52);padding:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border-radius:16px}.customer-nav button.on{background:transparent;color:#fff}.customer-nav .loyalty-nav{transform:translateY(-15px)}.customer-nav .loyalty-nav .nav-label{transform:translateY(9px)}
+    .customer-flow-head{align-items:flex-start;flex-direction:column}.customer-flow-head .steps{width:100%;overflow-x:auto}
+    body.portal-active .classlist{grid-template-columns:1fr}.trainer-overview{grid-template-columns:1fr}.portal-topbar{align-items:flex-start;flex-direction:column}.portal-top-actions{justify-content:flex-start}.customer-home-grid{grid-template-columns:1fr}
+    body.portal-active .tslots{grid-template-columns:1fr}.portal-content{width:100%}
+    body.portal-active .client-tools{top:8px}.mobile-portal-bar{grid-template-columns:repeat(4,1fr)}
+  }
+
+  /* Light portal correction — keep the original Rebalance character */
+  .portal-shell{grid-template-columns:1fr;background:var(--oat)}
+  .portal-rail{position:sticky;top:0;width:100%;height:auto;min-height:78px;padding:14px clamp(20px,4vw,54px);background:rgba(246,237,232,.96);color:var(--ink);border-bottom:1px solid var(--line);display:flex;flex-direction:row;align-items:center;gap:28px;backdrop-filter:blur(16px)}
+  .portal-brand{font-size:1.25rem;margin:0;white-space:nowrap}.portal-brand-mark{display:none}
+  .portal-rail-kicker{display:none}.portal-nav{display:flex;flex:1;justify-content:center;gap:5px}
+  .portal-nav button{width:auto;min-height:46px;padding:0 17px;border-radius:999px;color:var(--muted);gap:8px}
+  .portal-nav button:hover{background:rgba(185,122,122,.1);color:var(--ink)}
+  .portal-nav button.on{background:var(--ink);color:#fff;box-shadow:none}
+  .nav-glyph{width:24px;height:24px;border-radius:50%;background:rgba(80,61,64,.07);font-size:10px}
+  .portal-nav button.on .nav-glyph{background:rgba(255,255,255,.18);color:#fff}
+  .portal-rail-footer{margin:0}.rail-status{display:none}.rail-exit{color:var(--muted);text-align:center;padding:0 15px;border:1px solid var(--line);background:var(--paper)}
+  .rail-exit:hover{background:#fff;color:var(--ink)}
+  .portal-main{padding:38px clamp(24px,5vw,72px) 72px}.portal-content{max-width:1240px;margin:0 auto}.portal-topbar{max-width:1240px;margin-left:auto;margin-right:auto}
+  body.portal-active .card,body.portal-active .verify-card,body.portal-active .classcard,body.portal-active .client-card,
+  body.portal-active .manage-sec,body.portal-active .receipt,body.portal-active .security-card,body.portal-active .referral-card,
+  body.portal-active .ghs-card,body.portal-active .booking,body.portal-active .pkg,body.portal-active .tc-card,
+  .overview-card,body.portal-active .earn-card{box-shadow:0 1px 0 rgba(69,52,55,.05)}
+  @media(max-width:1020px){
+    .portal-rail{display:none}.portal-main{padding:26px 22px 96px}
+    .mobile-portal-bar{background:rgba(255,252,249,.97);border:1px solid var(--line);box-shadow:0 12px 30px -20px rgba(69,52,55,.4)}
+    .mobile-portal-bar button{color:var(--muted)}.mobile-portal-bar button.on{background:var(--ink);color:#fff}
+  }
+  @media(max-width:760px){
+    .customer-nav{background:rgba(235,218,211,.98);border:1px solid rgba(193,110,110,.18);box-shadow:0 16px 34px -20px rgba(92,71,75,.4)}
+    .customer-nav button{color:#8a7175}.customer-nav button.on{background:transparent;color:#5c474b}
+    .customer-nav .loyalty-nav .nav-icon-wrap{background:#c16e6e;color:#fff;box-shadow:0 12px 26px -14px rgba(193,110,110,.85)}
+
+    /* Installed customer app: an iPhone screen, not a shrunken website */
+    body.customer-app-mode{background:#fff9f6}
+    body.customer-app-mode #v-cust{background:radial-gradient(circle at 90% 0,rgba(238,206,202,.34),transparent 30%),#fff9f6}
+    body.customer-app-mode .customer-shell{max-width:540px;min-height:100dvh;padding:calc(16px + env(safe-area-inset-top)) max(20px,env(safe-area-inset-left)) calc(116px + env(safe-area-inset-bottom))}
+    body.customer-app-mode .customer-appbar{min-height:52px;margin:0 0 25px;gap:12px}
+    body.customer-app-mode #v-cust:has(#c-auth.on) .customer-appbar{display:none}
+    body.customer-app-mode .customer-brand{display:none}
+    body.customer-app-mode .native-app-title{display:none}
+    body.customer-app-mode .native-app-title small{font-size:12px;color:#927d80}
+    body.customer-app-mode .native-app-title strong{font-family:'Inter',sans-serif;font-size:21px;letter-spacing:-.035em;color:#463638}
+    body.customer-app-mode .customer-account{margin-left:auto;gap:9px}
+    body.customer-app-mode .native-alert{width:42px;height:42px;display:grid;place-items:center;padding:0;border:1px solid rgba(126,91,96,.1);border-radius:50%;background:rgba(255,255,255,.82);color:#59464a;box-shadow:0 8px 22px -18px rgba(70,45,49,.6)}
+    body.customer-app-mode .native-alert svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    body.customer-app-mode .customer-avatar{width:44px;height:44px;background:linear-gradient(145deg,#d49a98,#ad666c);border:3px solid #fff;color:#fff;box-shadow:0 8px 20px -14px #7e5258}
+    body.customer-app-mode .customer-flow-head{margin:0}
+    body.customer-app-mode .customer-flow-head>.phead{display:none}
+    body.customer-app-mode .customer-flow-head .steps{margin:0 0 20px;padding:7px;background:#f3e7e3;border-radius:18px;gap:3px}
+    body.customer-app-mode .customer-flow-head .steps .s{font-size:0;gap:0;flex:1;justify-content:center}
+    body.customer-app-mode .customer-flow-head .steps .s .n{width:30px;height:30px;font-size:11px;border:0;background:transparent}
+    body.customer-app-mode .customer-flow-head .steps .s.on .n{background:#bc7478;box-shadow:0 7px 15px -10px #8c4b53}
+    body.customer-app-mode .customer-flow-head .steps .sep{height:1px;min-width:12px;background:rgba(101,73,77,.16)}
+    body.customer-app-mode .app-section-intro{margin:2px 2px 20px}
+    body.customer-app-mode .app-section-intro h2{font-family:'Inter',sans-serif;font-size:28px;font-weight:650;letter-spacing:-.045em}
+    body.customer-app-mode .app-section-intro p{font-size:14px;line-height:1.5}
+    body.customer-app-mode .customer-home-grid{gap:12px}
+    body.customer-app-mode .home-panel{border:0;border-radius:26px;padding:21px;background:#fff;box-shadow:0 14px 38px -32px rgba(66,43,47,.65)}
+    body.customer-app-mode #cs-home .customer-home-grid .home-panel:first-child{min-height:190px;padding:25px;background:linear-gradient(140deg,#eed7d1 0%,#f7eae5 58%,#fff7f3 100%);position:relative;overflow:hidden}
+    body.customer-app-mode #cs-home .customer-home-grid .home-panel:first-child:after{content:'';position:absolute;width:140px;height:140px;right:-42px;bottom:-55px;border-radius:50%;border:28px solid rgba(193,110,110,.1)}
+    body.customer-app-mode .home-panel h2{font-family:'Inter',sans-serif;font-size:25px;font-weight:650;letter-spacing:-.04em}
+    body.customer-app-mode .home-panel p{font-size:14px;line-height:1.55;max-width:310px}
+    body.customer-app-mode .home-actions{position:relative;z-index:1;margin-top:24px}
+    body.customer-app-mode .home-actions .btn{border:0;background:#fff;color:#684f53;box-shadow:0 8px 20px -16px rgba(76,45,49,.5)}
+    body.customer-app-mode #cs-home>.home-panel{margin-top:12px!important}
+    body.customer-app-mode .home-session{padding:16px;border:0;border-radius:17px;background:#fbf5f2}
+    body.customer-app-mode .home-session b{font-size:14px}.home-session span{line-height:1.5}
+    body.customer-app-mode .classlist{gap:11px}
+    body.customer-app-mode .classlist .cls{min-height:0;display:grid;grid-template-columns:1fr auto;gap:10px;padding:18px 19px;border:0;border-radius:21px;background:#fff;box-shadow:0 12px 30px -29px rgba(55,35,39,.8)}
+    body.customer-app-mode .classlist .cls>div:last-child{grid-column:1/-1;padding-top:11px}
+    body.customer-app-mode .profile-hero{border:0;border-radius:27px;padding:23px;background:linear-gradient(135deg,#ead0cc,#f8e9e4)}
+    body.customer-app-mode .profile-list{border:0;border-radius:23px;background:#fff;box-shadow:0 12px 32px -30px rgba(55,35,39,.75)}
+    body.customer-app-mode .profile-row{padding:17px 19px;border-color:#f2e8e4}
+    body.customer-app-mode .security-card{border:0;border-radius:23px;background:#fff;box-shadow:0 12px 32px -30px rgba(55,35,39,.75)}
+    body.customer-app-mode #cs-profile{padding-bottom:18px}
+    body.customer-app-mode .loyalty-placeholder{margin:0;border:0;border-radius:28px;background:linear-gradient(150deg,#f0d8d3,#fff);padding:46px 25px;box-shadow:none}
+    body.customer-app-mode .customer-nav{left:max(18px,env(safe-area-inset-left));right:max(18px,env(safe-area-inset-right));bottom:calc(11px + env(safe-area-inset-bottom));min-height:74px;padding:7px 7px 6px;border:1px solid rgba(167,110,113,.15);border-radius:27px;background:rgba(239,220,214,.94);box-shadow:0 18px 45px -25px rgba(77,48,53,.65);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
+    body.customer-app-mode .customer-nav button{min-height:56px;color:#967c80}
+    body.customer-app-mode .customer-nav button.on{color:#563f43}
+    body.customer-app-mode .customer-nav .loyalty-nav{transform:translateY(-13px)}
+    body.customer-app-mode .customer-nav .loyalty-nav .nav-icon-wrap{width:52px;height:52px;background:#b96f74;border:4px solid #fff4ef;box-shadow:0 14px 25px -14px rgba(111,55,62,.7)}
+    body.customer-app-mode #v-cust:has(#c-auth.on) .customer-brand{display:flex}
+    body.customer-app-mode #v-cust:has(#c-auth.on) .native-app-title,body.customer-app-mode #v-cust:has(#c-auth.on) .customer-account{display:none}
+    body.customer-app-mode #c-auth .authwrap{width:100%;max-width:430px;margin:2px auto 0}
+    body.customer-app-mode #c-authcard{box-sizing:border-box;width:100%;padding:24px 22px 22px;border:0;border-radius:28px;background:rgba(255,255,255,.86);box-shadow:0 24px 55px -42px rgba(75,45,51,.7);backdrop-filter:blur(14px)}
+    body.customer-app-mode #c-authcard .phead{padding:0}body.customer-app-mode #c-authcard .phead h1{font-family:'Inter',sans-serif;font-size:27px;font-weight:680;letter-spacing:-.045em}body.customer-app-mode #c-authcard .eyebrow{display:none}
+    body.customer-app-mode #c-authcard .roleswitch{margin:20px 0 18px;padding:4px;border:0;background:#f3e5e1}body.customer-app-mode #c-authcard .roleswitch button{min-height:40px}body.customer-app-mode #c-authcard .roleswitch button.on{background:#b96f74;box-shadow:0 7px 15px -11px #7a4048}
+    body.customer-app-mode #c-authcard label{font-size:11px;margin:11px 0 6px}body.customer-app-mode #c-authcard input{min-height:47px;background:#fff;border-color:#eadeda}body.customer-app-mode #c-authcard .remember-check{margin-top:13px}body.customer-app-mode #c-authcard #cAuthBtn{margin-top:13px!important;min-height:49px;background:#a96168}
+    body.customer-app-mode #c-authcard .fine{margin-top:13px}body.customer-app-mode #c-authcard #cForgotLine{margin-top:7px}
+    .customer-nav .loyalty-nav.on{color:#a95860}
+  }
+  #v-cust:has(#c-auth.on) .customer-nav{display:none}
+
+  @media(prefers-reduced-motion:reduce){.customer-content .flow.on{animation:none}.customer-nav button,.customer-nav .nav-icon,.customer-nav .loyalty-nav .nav-icon-wrap{transition:none}}
 
   /* keep palette intact when the OS/browser forces dark mode */
   @media (prefers-color-scheme: dark){
@@ -1114,7 +1425,7 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
     <div class="flow on" id="c-auth">
       <div class="authwrap">
         <div class="card" id="c-authcard">
-          <div class="phead center" style="padding-top:0"><span class="eyebrow" data-i18n="portal_customer">Customer portal</span><h1 style="margin-top:8px" data-i18n="book_title">Book your mat</h1></div>
+          <div class="phead center" style="padding-top:0"><div class="auth-brand-mark"><svg class="seed" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M8 26C8 16 16 9 26 12C20 13 16 18 17 24C18 30 24 32 30 29C27 33 20 35 14 32C10 30 8 28 8 26Z" fill="#fff"/><path d="M32 14C32 24 24 31 14 28C20 27 24 22 23 16C22 10 16 8 10 11C13 7 20 5 26 8C30 10 32 12 32 14Z" fill="#fff" opacity=".72"/></svg></div><span class="eyebrow" data-i18n="portal_customer">Customer portal</span><h1>Welcome to Rebalance</h1><p class="auth-subtitle">Book sessions, manage appointments, and keep your loyalty rewards together.</p></div>
           <div class="roleswitch" style="margin-top:24px">
             <button class="on" id="ct-login" onclick="custTab('login')" data-i18n="login">Log in</button>
             <button id="ct-signup" onclick="custTab('signup')" data-i18n="signup">Sign up</button>
@@ -1123,16 +1434,30 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
           <label>Email</label><input id="ci-email" type="email" placeholder="you@email.com">
           <label>Password</label><div class="pw-wrap"><input id="ci-pass" type="password" placeholder="••••••••"><button type="button" class="pw-eye" onclick="togglePw('ci-pass',this)" aria-label="Show password">👁</button></div>
           <div id="cf-phone" style="display:none"><label>Mobile number</label><input id="ci-phone" type="tel" inputmode="tel" placeholder="Your mobile number" autocomplete="tel"><p class="field-hint">So we can reach you quickly if a class changes.</p></div>
+          <div class="identity-fields" id="cf-identity">
+            <h3 class="identity-title">Identity details</h3>
+            <p class="identity-copy">Required for safe client records. Your ID images are encrypted and can only be opened from the authenticated trainer portal.</p>
+            <label>ID or passport number</label><input id="ci-id-number" autocomplete="off" placeholder="Enter the document number">
+            <div class="identity-grid">
+              <div><label>Date of birth</label><input id="ci-dob" type="date" autocomplete="bday"></div>
+              <div><label>Home address</label><input id="ci-address" autocomplete="street-address" placeholder="Street, city, postcode"></div>
+            </div>
+            <div class="identity-grid">
+              <label class="id-upload" id="idFrontLabel"><input id="ci-id-front" type="file" accept="image/jpeg,image/png" capture="environment" onchange="idFileChosen('front')"><b>Front of ID</b><span>JPG or PNG · maximum 5 MB</span></label>
+              <label class="id-upload" id="idBackLabel"><input id="ci-id-back" type="file" accept="image/jpeg,image/png" capture="environment" onchange="idFileChosen('back')"><b>Back of ID</b><span>JPG or PNG · maximum 5 MB</span></label>
+            </div>
+          </div>
           <div id="cf-ref" style="display:none"><label>Referral code (optional)</label><input id="ci-ref" placeholder="Enter code" oninput="this.value=this.value.toUpperCase()"></div>
           <label class="consent-check" id="cConsentWrap" style="display:none">
             <input type="checkbox" id="ci-consent">
-            <span>I agree to the <button type="button" class="linkbtn" onclick="openPrivacy()">Privacy Policy</button> and consent to my data being used to manage my bookings.</span>
+            <span>I agree to the <button type="button" class="linkbtn" onclick="openPrivacy()">Privacy Policy</button> and consent to my identity details and ID images being used for client verification and booking management.</span>
           </label>
           <label class="remember-check">
             <input type="checkbox" id="ci-remember" checked>
             <span>Keep me signed in on this device</span>
           </label>
           <button class="btn" style="width:100%;margin-top:16px" id="cAuthBtn" onclick="custAuth()">Log in</button>
+          <p class="auth-secure-note">Your account and health details stay protected</p>
 
           <div class="or-divider" id="googleDivider" style="display:none"><span>or</span></div>
           <div id="googleBtnHolder" style="display:none">
@@ -1211,7 +1536,16 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
         <div class="s" data-st="4"><span class="n">4</span> Pay</div>
       </div>
 
+      <div class="flow" id="cs-home">
+        <div class="customer-home-grid">
+          <section class="home-panel"><span class="eyebrow">Your Rebalance</span><h2 id="homeGreeting">Welcome back</h2><p>Your active sessions, class balance, and latest account updates at a glance.</p><div class="home-actions"><button class="btn ghost sm" onclick="custStep('packages')">View packages</button></div></section>
+          <section class="home-panel"><span class="eyebrow">Credits</span><h2 id="homeCredits">0 sessions</h2><p>Your prepaid class balance.</p></section>
+        </div>
+        <section class="home-panel" style="margin-top:18px"><div class="sc-head"><div><span class="eyebrow">Active sessions</span><h2 style="margin-top:7px">Coming up</h2></div><button class="btn ghost sm" onclick="customerNavAction('history')">Session history</button></div><div class="home-session-list" id="homeSessionList"></div></section>
+      </div>
+
       <div class="flow on" id="cs-class">
+        <div class="app-section-intro"><h2>Choose your session</h2><p>Select a class to see available types, days, and times.</p></div>
         <div id="creditBanner"></div>
         <div class="classlist" id="classList"></div>
         <div class="pkg-link center" style="margin-top:22px">
@@ -1222,7 +1556,7 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
 
       <div class="flow" id="cs-packages">
         <button class="back" onclick="custStep('class')">← Back</button>
-        <div class="phead" style="padding-top:0"><p style="color:var(--mut);font-size:14px;margin-top:8px">Prepay and your classes come out cheaper. Buy once with Viva, then book with no extra charge until your credits run out.</p></div>
+        <div class="phead" style="padding-top:0"><p style="color:var(--mut);font-size:14px;margin-top:8px">Prepay securely with Stripe and your classes come out cheaper. Buy once, then book with no extra charge until your credits run out.</p></div>
         <div class="roleswitch" style="max-width:340px;margin:0 auto 22px">
           <button class="on" id="pk-mine" onclick="pkgMode('mine')" data-i18n="for_me">For me</button>
           <button id="pk-gift" onclick="pkgMode('gift')" data-i18n="as_gift">🎁 As a gift</button>
@@ -1302,13 +1636,13 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
           </div>
           <div class="receipt" id="receipt"></div>
           <div class="viva" id="vivaRow">
-            <svg class="viva-logo" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Viva Wallet">
+            <svg class="viva-logo" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Secure card payment">
               <!-- left V: outlined -->
               <path d="M9 11 L20 11 L15 32 Q14.5 33.5 13.5 32 L7 13 Q6.4 11 9 11 Z" fill="none" stroke="#16243A" stroke-width="2.4" stroke-linejoin="round"/>
               <!-- right V: solid, overlapping -->
               <path d="M18.5 11 L29 11 Q31.6 11 31 13 L24.5 32 Q23.5 33.5 23 32 L18 13 Q17.4 11 18.5 11 Z" fill="#16243A"/>
             </svg>
-            <div><b>viva</b> wallet · secure payment<br><span class="viva-sub">Card · Apple&nbsp;Pay · Google&nbsp;Pay</span></div>
+            <div><b>Stripe</b> · secure payment<br><span class="viva-sub">Card · Apple&nbsp;Pay · Google&nbsp;Pay</span></div>
           </div>
           <div class="policy"><b>Cancellation policy.</b> Cancel <b>more than 4 hours</b> before and you can reschedule — your payment moves to the new time. Within 4 hours, the session is lost. We email you either way.</div>
           <button class="viva-btn" id="payBtn" onclick="custPay()">
@@ -1319,48 +1653,31 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
                 <path d="M9 11 L20 11 L15 32 Q14.5 33.5 13.5 32 L7 13 Q6.4 11 9 11 Z" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round"/>
                 <path d="M18.5 11 L29 11 Q31.6 11 31 13 L24.5 32 Q23.5 33.5 23 32 L18 13 Q17.4 11 18.5 11 Z" fill="#fff"/>
               </svg>
-              viva wallet
+              Stripe
             </span>
           </button>
         </div>
       </div>
 
       <div class="flow" id="cs-mine">
-        <div class="phead" style="padding-top:6px"><h1 style="font-size:1.8rem" data-i18n="my_sessions_h">My sessions</h1></div>
-
-        <div class="usual-card" id="usualCard" style="display:none">
-          <div class="uc-left">
-            <span class="uc-icon">⭐</span>
-            <div>
-              <div class="uc-label" data-i18n="your_usual">Your usual</div>
-              <div class="uc-slot" id="usualSlot">—</div>
-              <div class="uc-status" id="usualStatus"></div>
-            </div>
-          </div>
-          <div class="uc-actions">
-            <button class="btn sm" id="usualBookBtn" onclick="bookUsual()" data-i18n="book_usual">Book it</button>
-            <button class="uc-clear" onclick="clearUsual()" title="Forget this">✕</button>
-          </div>
-        </div>
+        <div class="app-section-intro"><h2>Session history</h2><p>Your upcoming and previous Rebalance appointments in one place.</p></div>
 
         <div id="myList"></div>
-        <div class="center" style="margin-top:22px"><button class="btn ghost" onclick="custStep('class')" data-i18n="book_another">+ Book another session</button></div>
+      </div>
 
-        <div class="referral-card">
-          <div class="rf-icon">🤝</div>
-          <h3 data-i18n="bring_friend">Bring a friend</h3>
-          <p>Share your code. When they book their first class, <b>you both get a free class</b>.</p>
-          <div class="rf-code" id="rfCode">—</div>
-          <button class="btn ghost" style="width:100%" onclick="shareReferral()" data-i18n="share_code">Share my code</button>
-          <div class="rf-stat" id="rfStat"></div>
-        </div>
+      <div class="flow" id="cs-loyalty">
+        <div class="app-section-intro"><h2>Loyalty card</h2><p>Confirmed bookings earn stamps. Cancelled bookings are removed automatically.</p></div>
+        <div class="loyalty-card"><div class="loyalty-card-top"><div class="loyalty-card-brand">Rebalance</div><div class="loyalty-card-name"><small>Member</small><b id="loyaltyName">Customer</b></div></div><div class="stamp-grid" id="loyaltyStamps"></div><div class="loyalty-summary"><div class="loyalty-progress"><small>Until reward</small><strong id="loyaltyUntil">10 stamps</strong></div><div class="loyalty-progress" style="text-align:right"><small>Rewards earned</small><strong id="loyaltyRewards">0</strong></div></div><div class="reward-preview">Your next reward: <b id="loyaltyReward">Free group class</b></div><div class="member-id-label">Private member ID</div><div class="loyalty-code" id="loyaltyCode">RB-0000000000</div></div>
+        <div class="wallet-buttons"><button class="wallet-add" onclick="addLoyaltyToWallet()"> Apple Wallet</button><button class="wallet-add google" onclick="addLoyaltyToGoogleWallet()">G&nbsp; Google Wallet</button></div><p class="loyalty-note">The Member ID identifies your loyalty account without displaying your email. Both wallet cards use the same live stamp balance.</p>
+      </div>
 
-        <div class="ghs-card none" id="ghsCard">
-          <div class="sc-head">
-            <div><h3>🏥 GHS (ΓΕΣΥ) cover</h3></div>
-            <span class="ghs-badge" id="ghsBadge"></span>
-          </div>
-          <div id="ghsBody"></div>
+      <div class="flow" id="cs-profile">
+        <div class="app-section-intro"><h2>Profile</h2><p>Your personal details, verification, and account security.</p></div>
+        <div class="profile-hero"><div class="profile-photo-wrap"><button class="profile-photo-button" id="profilePhotoButton" onclick="document.getElementById('profilePhotoInput').click()" aria-label="Add or change profile picture"><img id="profilePhoto" alt="Profile picture"><span class="profile-avatar" id="profileAvatar">R</span></button><span class="photo-edit-dot">+</span><input id="profilePhotoInput" type="file" accept="image/jpeg,image/png,image/webp" hidden onchange="profilePhotoChosen(this)"></div><div><h2 id="profileName">My account</h2><p id="profileEmail">Signed in securely</p><div class="photo-actions"><button onclick="document.getElementById('profilePhotoInput').click()">Change photo</button><button id="removePhotoBtn" onclick="removeProfilePhoto()" style="display:none">Remove</button></div></div></div>
+        <div class="profile-settings">
+          <div class="profile-list"><div class="profile-row"><span>Full name</span><b id="profileNameRow">—</b></div><div class="profile-row"><span>Mobile</span><b id="profilePhoneRow">Not added</b></div><div class="profile-row"><span>Email</span><b id="profileEmailRow">—</b></div></div>
+          <div class="security-card notification-row"><div class="notification-copy"><span class="notification-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z"/><path d="M10 21h4"/></svg></span><div><h3>Session notifications</h3><p id="notificationStatus">Get reminders on this device.</p></div></div><button class="btn ghost sm" id="notificationBtn" onclick="enablePushNotifications()">Enable</button></div>
+          <div class="profile-list"><div class="profile-row"><span>Identity</span><b id="profileIdentityRow">Submitted for review</b></div><div class="profile-row"><span>Class credits</span><b id="profileCreditsRow">0</b></div></div>
         </div>
 
         <div class="security-card">
@@ -1380,6 +1697,12 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
             <div id="passkeyList" style="margin-top:10px"></div>
           </div>
         </div>
+        <button class="app-danger" onclick="custLogout()">Sign out</button>
+      </div>
+
+      <div class="flow" id="cs-notifications">
+        <div class="app-section-intro"><button class="back" onclick="customerNavAction('home')">← Home</button><h2 style="margin-top:18px">Notifications</h2><p>Session reminders and important account updates.</p></div>
+        <div class="notification-list" id="notificationList"></div>
       </div>
     </div>
   </div>
@@ -1442,6 +1765,7 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
       </div>
 
       <div class="ppanel" id="tp-clients">
+        <div class="client-tools"><div class="client-search"><input id="clientSearch" placeholder="Search by name, ID number, email or phone" oninput="filterClients()" aria-label="Search clients"></div><span class="client-count" id="clientCount"></span></div>
         <div id="tClients"></div>
       </div>
 
@@ -1449,41 +1773,43 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
         <div class="earn-period" id="earnPeriod"></div>
         <div id="earnSummary"></div>
         <div id="earnBreakdown"></div>
-        <p style="font-size:12px;color:var(--mut);margin-top:20px;line-height:1.6">For your records. Card &amp; Viva payments are received electronically (traceable for GHS/VAT); cash is collected in studio. Keep this alongside your receipts for your Cyprus tax return. This is a summary tool, not official accounting advice.</p>
+        <p style="font-size:12px;color:var(--mut);margin-top:20px;line-height:1.6">For your records. Card and Stripe payments are received electronically (traceable for GHS/VAT); cash is collected in studio. Keep this alongside your receipts for your Cyprus tax return. This is a summary tool, not official accounting advice.</p>
       </div>
 
       <div class="ppanel" id="tp-manage">
         <p class="manage-intro">Everything here is editable — no code needed. Changes save automatically.</p>
+        <div class="manage-subtabs" id="manageSubtabs" role="tablist" aria-label="Manage studio sections"></div>
+        <div class="manage-section-meta"><b id="manageSectionTitle">Classes</b><span id="manageSectionCount">1 of 13</span></div>
 
-        <div class="manage-sec">
+        <div class="manage-sec" data-manage="classes">
           <div class="ms-head"><h3>Classes</h3><button class="btn ghost sm" onclick="addClass()">+ Add class</button></div>
           <div id="mgClasses"></div>
         </div>
 
-        <div class="manage-sec">
+        <div class="manage-sec" data-manage="times">
           <div class="ms-head"><h3>Class times</h3></div>
           <p class="ms-note">The hours classes run each day.</p>
           <div id="mgTimes" class="chip-wrap"></div>
           <div class="add-inline"><select id="newTime"></select><button class="btn ghost sm" onclick="addTime()">+ Add time</button></div>
         </div>
 
-        <div class="manage-sec">
+        <div class="manage-sec" data-manage="capacity">
           <div class="ms-head"><h3>Reformers per class</h3></div>
           <p class="ms-note">How many people fit in one class.</p>
           <div class="cap-row"><button class="capbtn" onclick="changeCap(-1)">−</button><span id="mgCap">5</span><button class="capbtn" onclick="changeCap(1)">+</button></div>
         </div>
 
-        <div class="manage-sec">
+        <div class="manage-sec" data-manage="packages">
           <div class="ms-head"><h3>Packages &amp; offers</h3><button class="btn ghost sm" onclick="addPackage()">+ Add package</button></div>
           <div id="mgPackages"></div>
         </div>
 
-        <div class="manage-sec">
+        <div class="manage-sec" data-manage="promos">
           <div class="ms-head"><h3>Promo codes</h3><button class="btn ghost sm" onclick="addPromo()">+ Add code</button></div>
           <div id="mgPromos"></div>
         </div>
 
-        <div class="manage-sec">
+        <div class="manage-sec" data-manage="first-offer">
           <div class="ms-head"><h3>First-session offer</h3></div>
           <p class="ms-note">A special price for someone's very first class, to bring new people in.</p>
           <label class="mg-check" style="margin-bottom:12px">
@@ -1493,45 +1819,46 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
             <label>First-class price €<input type="number" id="mgFirstPrice" onchange="editFirstOffer()"></label>
           </div>
         </div>
+        <div class="manage-sec" data-manage="loyalty"><div class="ms-head"><h3>Loyalty reward</h3></div><p class="ms-note">Choose how many confirmed bookings earn a reward and what the customer receives.</p><div class="mg-card"><div class="mg-fields"><label>Reward description<input id="mgLoyaltyReward" placeholder="Free group class" onchange="editLoyaltySettings()"></label><label>Stamps required<input id="mgLoyaltyStamps" type="number" min="2" max="30" onchange="editLoyaltySettings()"></label></div></div></div>
 
-        <div class="manage-sec">
+        <div class="manage-sec" data-manage="trainers">
           <div class="ms-head"><h3>Trainers</h3><button class="btn ghost sm" onclick="addTrainer()">+ Add trainer</button></div>
           <p class="ms-note">Each trainer can be assigned to classes. Earnings can be split by trainer.</p>
           <div id="mgTrainers"></div>
         </div>
 
-        <div class="manage-sec">
+        <div class="manage-sec" data-manage="regulars">
           <div class="ms-head"><h3>Regular slots</h3><span class="reg-count" id="regCount"></span></div>
           <p class="ms-note">Clients can ask to keep a weekly slot. Approving <b>holds that spot for them every week</b> — so only approve people who reliably attend. You can revoke anytime.</p>
           <div id="mgRegulars"></div>
         </div>
 
-        <div class="manage-sec">
+        <div class="manage-sec" data-manage="refunds">
           <div class="ms-head"><h3>Refunds</h3><span class="reg-count" id="vivaBadge"></span></div>
           <p class="ms-note" id="vivaNote">Checking payment setup…</p>
           <div id="mgRefunds"></div>
         </div>
 
-        <div class="manage-sec">
+        <div class="manage-sec" data-manage="closures">
           <div class="ms-head"><h3>Close times off</h3><span class="reg-count" id="closureCount"></span></div>
           <p class="ms-note">Block out holidays, a regular day off, or a single afternoon. Anything you close here can't be booked by customers.</p>
           <button class="btn ghost" style="width:100%" onclick="openClosureModal()">📅 Close times off</button>
           <div id="mgClosures" style="margin-top:14px"></div>
         </div>
 
-        <div class="manage-sec">
+        <div class="manage-sec" data-manage="ghs">
           <div class="ms-head"><h3>GHS (ΓΕΣΥ) cover</h3><span class="reg-count" id="ghsCount"></span></div>
           <p class="ms-note">Clients whose physiotherapy is covered by GHS. Approving means their <b>private Clinical Rehab</b> sessions are free to them — the fee is recorded separately for you to claim.</p>
           <div id="mgGhs"></div>
         </div>
 
-        <div class="manage-sec">
+        <div class="manage-sec" data-manage="security">
           <div class="ms-head"><h3>Security</h3></div>
           <p class="ms-note">Two-factor adds a 6-digit code from Google or Microsoft Authenticator on top of your password. Strongly recommended — this account holds every client's details.</p>
           <button class="btn ghost" style="width:100%" onclick="open2FASetup('trainer')">🛡️ Set up two-factor authentication</button>
         </div>
 
-        <div class="manage-sec">
+        <div class="manage-sec" data-manage="backup">
           <div class="ms-head"><h3>Backup</h3></div>
           <p class="ms-note">Download a copy of every booking, client and receipt record. Keep it somewhere safe — do this regularly.</p>
           <button class="btn ghost" style="width:100%" onclick="downloadBackup()">⤓ Download full backup</button>
@@ -1739,7 +2066,7 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
 <div class="modal" id="privacyModal"><div class="sheet privacy-sheet">
   <h3>Privacy Policy</h3>
   <div class="privacy-body">
-    <p class="pp-updated">Last updated: July 2026 · <b>Draft — to be reviewed by a legal advisor.</b></p>
+    <p class="pp-updated">Last updated: August 2026 · <b>Draft — to be reviewed by a legal advisor before ID collection goes live.</b></p>
 
     <h4>1. Who we are</h4>
     <p>Rebalance Physiotherapy &amp; Clinical Pilates is the data controller for the information described here.<br>
@@ -1747,12 +2074,13 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
 
     <h4>2. What we collect</h4>
     <p><b>Your account:</b> name, email address, mobile number, and a password stored only as irreversible encryption — we never see your actual password. If you enable two-factor authentication, we store a key used solely to verify your login codes.</p>
+    <p><b>Identity verification:</b> your legal name, ID or passport number, date of birth, home address, and front/back photographs of the identity document. The images are encrypted at rest and are available only to authenticated, authorised studio staff for verification.</p>
     <p><b>Your bookings:</b> which sessions you booked and when, group or private, payment status and method, amount paid, receipt number, attendance (including no-shows), waitlist entries, and any promo, referral or gift voucher codes used.</p>
     <p><b>Health information:</b> notes recorded by your physiotherapist or instructor about injuries, physical conditions, treatment goals, or adaptations needed for your safety, and any GHS (ΓΕΣΥ) referral details.</p>
-    <p><b>We never store your card number, CVV, or bank details.</b> Card payments are handled entirely by Viva Wallet — your card details never reach our systems. We use no advertising cookies or third-party tracking.</p>
+    <p><b>We never store your card number, CVV, or bank details.</b> Card payments are handled entirely by Stripe — your card details never reach our systems. We use no advertising cookies or third-party tracking.</p>
 
     <h4>3. Why we use it</h4>
-    <p>To create and manage your account, take and confirm bookings, issue receipts, send confirmations and reminders, contact you if a class changes, verify your identity when signing in, and keep the financial records Cyprus law requires.</p>
+    <p>To create and manage your account, verify the client record, take and confirm bookings, issue receipts, send confirmations and reminders, contact you if a class changes, and keep the financial records Cyprus law requires.</p>
     <p><b>Legal basis:</b> performing our contract with you (bookings and account), our legitimate interest in running the studio safely and securely, and our legal obligations for tax records. Health information is processed for the provision of health care under Article 9(2)(h) GDPR, with your explicit consent.</p>
 
     <h4>4. Health information</h4>
@@ -1760,18 +2088,18 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
 
     <h4>5. Who has access</h4>
     <p>Inside the studio: only the owner and authorised staff who need it to deliver your sessions.</p>
-    <p>Service providers who process data only on our instructions: <b>Viva Wallet</b> (card payments), our <b>hosting provider</b> (stores the booking database), our <b>email provider</b> (sends codes, confirmations and receipts), and <b>Google Calendar</b> if enabled (class times and how many spaces are booked).</p>
+    <p>Service providers who process data only on our instructions: <b>Stripe</b> (card payments), our <b>hosting provider</b> (stores the booking database), our <b>email provider</b> (sends codes, confirmations and receipts), and <b>Google Calendar</b> if enabled (class times and how many spaces are booked).</p>
     <p><b>We never sell, rent or trade your data.</b> We may disclose it where legally required, such as to the Cyprus tax authorities.</p>
 
     <h4>6. How long we keep it</h4>
-    <p>Booking and payment records: six years, as Cyprus tax law requires. Treatment notes: as long as needed for your care and professional record-keeping obligations. Account details: while your account is active. Verification codes are deleted after 10 minutes; login sessions expire after 12 hours, or 30 days if you chose “keep me signed in”.</p>
+    <p>Booking and payment records: six years, as Cyprus tax law requires. Treatment notes: as long as needed for your care and professional record-keeping obligations. Account details: while your account is active. ID images should be deleted when verification is complete unless a documented legal or clinical requirement justifies keeping them; the studio must set and follow that retention period before launch. Verification codes are deleted after 20 minutes; login sessions expire after 12 hours, or 30 days if you chose “keep me signed in”.</p>
 
     <h4>7. Your rights</h4>
     <p>You have the right to access your data, correct it, ask us to delete it (where we are not legally required to keep it), restrict or object to how we use it, receive it in a portable format, and withdraw consent at any time.</p>
     <p>To exercise any of these, contact us at hello@rebalance.cy or 22 035001 — we will respond within one month. You may also complain to the <b>Office of the Commissioner for Personal Data Protection</b> (dataprotection.gov.cy).</p>
 
     <h4>8. How we protect your data</h4>
-    <p>Passwords are stored using strong one-way encryption (bcrypt). Two-factor authentication is available using Google or Microsoft Authenticator. All traffic is encrypted over HTTPS, sign-in attempts are rate-limited to prevent password guessing, portal access is restricted to authorised staff, and backups are taken regularly.</p>
+    <p>Passwords are stored using strong one-way encryption (bcrypt). ID images are encrypted separately on disk and are served with no-store controls only after trainer authentication. Two-factor authentication is available using Google or Microsoft Authenticator. All traffic is encrypted over HTTPS, sign-in attempts are rate-limited to prevent password guessing, portal access is restricted to authorised staff, and backups are taken regularly.</p>
     <p>If a breach occurs that is likely to put your rights at risk, we will notify the Cyprus Commissioner within 72 hours and inform you where required.</p>
 
     <h4>9. Cookies</h4>
@@ -1832,6 +2160,7 @@ const I18N = {
     reschedule:'Reschedule', cancel:'Cancel', confirmed:'Confirmed',
     full_join:'Full · join list', on_waitlist:'✓ On waitlist',
     closed:'Closed', private_booked:'Private — booked', left:'left', available:'Available', taken:'Taken',
+    sec_title:'Account security', sec_sub:'Add a 6-digit code from Google or Microsoft Authenticator on top of your password.', sec_enable:'Turn on two-factor',
   },
   el:{
     nav_book:'Κράτηση / Σύνδεση', nav_trainer:'Γυμναστής',
@@ -1865,6 +2194,7 @@ const I18N = {
     reschedule:'Αλλαγή ώρας', cancel:'Ακύρωση', confirmed:'Επιβεβαιωμένο',
     full_join:'Πλήρες · λίστα αναμονής', on_waitlist:'✓ Σε λίστα αναμονής',
     closed:'Κλειστό', private_booked:'Ιδιαίτερο — κλεισμένο', left:'ελεύθερες', available:'Διαθέσιμο', taken:'Κλεισμένο',
+    sec_title:'Ασφάλεια λογαριασμού', sec_sub:'Προσθέστε έναν 6ψήφιο κωδικό από το Google ή Microsoft Authenticator μαζί με τον κωδικό σας.', sec_enable:'Ενεργοποίηση επαλήθευσης δύο βημάτων',
   }
 };
 // auto-detect the phone's language on first visit; remember their choice after
@@ -1880,6 +2210,9 @@ function setLang(l){
   applyLang();
 }
 function toggleLang(){ setLang(LANG==='el'?'en':'el'); }
+function keyboardClick(e){
+  if(e.key==='Enter'||e.key===' '){e.preventDefault();e.currentTarget.click();}
+}
 // paint every element that declares data-i18n
 function applyLang(){
   document.querySelectorAll('[data-i18n]').forEach(el=>{
@@ -1949,8 +2282,9 @@ let PROMOS={ 'FIRST20':{off:0.20,label:'20% off'}, 'WELCOME10':{off:0.10,label:'
 // ---- persistence: save/load all editable settings (survives refresh when hosted) ----
 let TRAINERS=[{id:'t1',name:'Aphrodite',role:'Physiotherapist · Owner'}];
 let FIRST_OFFER = { on:true, price:15 };
+let LOYALTY = { stamps:10, reward:'Free group class' };
 function saveSettings(){
-  const data={CLASSES,PACKAGES,CAP,TIMES,PROMOS,TRAINERS,FIRST_OFFER};
+  const data={CLASSES,PACKAGES,CAP,TIMES,PROMOS,TRAINERS,FIRST_OFFER,LOYALTY};
   try{ localStorage.setItem('rb_settings', JSON.stringify(data)); }catch(e){}
   // when live, also save on the server so edits are permanent and shared
   if(BACKEND && trainerToken){
@@ -1962,6 +2296,7 @@ function applySettings(s){
   if(s.CLASSES)CLASSES=s.CLASSES; if(s.PACKAGES)PACKAGES=s.PACKAGES; if(s.CAP)CAP=s.CAP;
   if(s.TIMES)TIMES=s.TIMES; if(s.PROMOS)PROMOS=s.PROMOS;
   if(s.TRAINERS)TRAINERS=s.TRAINERS; if(s.FIRST_OFFER)FIRST_OFFER=s.FIRST_OFFER;
+  if(s.LOYALTY)LOYALTY=s.LOYALTY;
 }
 function loadSettings(){
   try{ applySettings(JSON.parse(localStorage.getItem('rb_settings')||'null')); }catch(e){}
@@ -2015,11 +2350,60 @@ let walkinTarget=null;
 function show(v){
   document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
   document.getElementById('v-'+v).classList.add('on');
+  document.body.classList.toggle('portal-active',v==='cust'||v==='train');
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function jump(id){setTimeout(()=>document.getElementById(id)?.scrollIntoView({behavior:'smooth'}),60);}
 function openCustomer(){show('cust');custReset();}
 function openTrainer(){show('train');document.getElementById('t-auth').classList.add('on');document.getElementById('t-app').classList.remove('on');}
+function isCustomerAppLaunch(){
+  const appParam=new URLSearchParams(location.search).get('app')==='customer';
+  const standalone=window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches;
+  return appParam||standalone||window.navigator.standalone===true;
+}
+function customerBrandAction(){if(isCustomerAppLaunch())openCustomer();else show('home');}
+
+function portalGlyph(label){return `<span class="nav-glyph" aria-hidden="true">${label}</span>`;}
+function customerNavIcon(name){const p={home:'<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-7h6v7"/>',book:'<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',loyalty:'<path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10Z"/><path d="M9.5 11.5h5M12 9v5"/>',history:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',profile:'<circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/>'}[name];return `<svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;}
+function portalBrandSeed(){return `<svg class="seed" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M8 26C8 16 16 9 26 12C20 13 16 18 17 24C18 30 24 32 30 29C27 33 20 35 14 32C10 30 8 28 8 26Z" fill="#C77B7B"/><path d="M32 14C32 24 24 31 14 28C20 27 24 22 23 16C22 10 16 8 10 11C13 7 20 5 26 8C30 10 32 12 32 14Z" fill="#D4A8A0"/></svg>`;}
+function buildPortalExperience(){
+  const custPortal=document.querySelector('#v-cust>.portal');
+  const custFlow=document.getElementById('c-flow');
+  if(custPortal&&!document.getElementById('customerAppbar')){
+    const appbar=document.createElement('div');appbar.id='customerAppbar';appbar.className='customer-appbar';
+    appbar.innerHTML=`<button class="customer-brand" onclick="customerBrandAction()" aria-label="Rebalance customer app">${portalBrandSeed()}Rebalance</button>
+      <nav class="customer-nav" aria-label="Customer app"><button data-cnav="home" onclick="customerNavAction('home')">${customerNavIcon('home')}<span class="nav-label">Home</span></button><button data-cnav="book" onclick="customerNavAction('book')">${customerNavIcon('book')}<span class="nav-label">Book</span></button><button class="loyalty-nav" data-cnav="loyalty" onclick="customerNavAction('loyalty')"><span class="nav-icon-wrap">${customerNavIcon('loyalty')}</span><span class="nav-label">Loyalty</span></button><button data-cnav="history" onclick="customerNavAction('history')">${customerNavIcon('history')}<span class="nav-label">History</span></button><button data-cnav="profile" onclick="customerNavAction('profile')">${customerNavIcon('profile')}<span class="nav-label">Profile</span></button></nav>
+      <div class="customer-account"><button class="native-alert" onclick="custStep('notifications')" aria-label="Open notifications"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z"/><path d="M10 21h4"/></svg></button><div class="account-copy"><b id="customerNameTop">My account</b><small id="customerStatusTop">Secure portal</small></div></div>`;
+    custPortal.insertBefore(appbar,custPortal.firstChild);
+    custPortal.classList.add('customer-shell');custPortal.classList.remove('wrap');
+    if(custFlow){custFlow.classList.add('customer-content');const head=custFlow.querySelector(':scope>.phead');const steps=document.getElementById('cSteps');if(head&&steps){const flowHead=document.createElement('div');flowHead.className='customer-flow-head';custFlow.insertBefore(flowHead,head);flowHead.append(head,steps);}}
+  }
+  const trainerApp=document.getElementById('t-app');
+  if(trainerApp&&!trainerApp.querySelector('.portal-shell')){
+    const oldHead=trainerApp.querySelector(':scope>.phead'),oldTabs=trainerApp.querySelector(':scope>.ptabs');
+    const panels=[...trainerApp.querySelectorAll(':scope>.ppanel')];
+    const shell=document.createElement('div');shell.className='portal-shell';
+    shell.innerHTML=`<aside class="portal-rail"><div class="portal-brand">${portalBrandSeed()}Rebalance</div><div class="portal-rail-kicker">Studio workspace</div><nav class="portal-nav" aria-label="Trainer portal"><button data-tpnav="sched" onclick="trainTab('sched')">${portalGlyph('01')}Schedule</button><button data-tpnav="clients" onclick="trainTab('clients')">${portalGlyph('02')}Clients</button><button data-tpnav="earnings" onclick="trainTab('earnings')">${portalGlyph('03')}Earnings</button><button data-tpnav="manage" onclick="trainTab('manage')">${portalGlyph('04')}Manage studio</button></nav><div class="portal-rail-footer"><div class="rail-status"><b>Studio connected</b>Bookings and client records in one place.</div><button class="rail-exit" onclick="trainerLogout()">Sign out</button></div></aside><main class="portal-main"><header class="portal-topbar"><div class="portal-heading"><span class="eyebrow">Trainer portal</span><h1 id="trainerPageTitle">Schedule</h1><p id="trainerPageSub">Today’s classes, attendance, and availability.</p></div><div class="portal-top-actions"><button class="app-pill" onclick="refreshSchedule()">Refresh schedule</button><button class="app-pill" onclick="show('home')">View website</button></div></header><div class="portal-content" id="trainerPortalContent"></div></main><nav class="mobile-portal-bar" aria-label="Trainer portal mobile"><button data-tpmob="sched" onclick="trainTab('sched')">Schedule</button><button data-tpmob="clients" onclick="trainTab('clients')">Clients</button><button data-tpmob="earnings" onclick="trainTab('earnings')">Earnings</button><button data-tpmob="manage" onclick="trainTab('manage')">Manage</button></nav>`;
+    trainerApp.appendChild(shell);const content=shell.querySelector('#trainerPortalContent');panels.forEach(p=>content.appendChild(p));oldHead?.remove();oldTabs?.remove();
+    const sched=document.getElementById('tp-sched');if(sched){const overview=document.createElement('div');overview.className='trainer-overview';overview.id='trainerOverview';sched.insertBefore(overview,sched.firstChild);}
+  }
+  updateCustomerAppNav('home');updateTrainerAppNav('sched');
+}
+let customerNavKey='home';
+function customerNavAction(key){customerNavKey=key;const target={home:'home',book:'class',loyalty:'loyalty',history:'mine',profile:'profile'}[key];custStep(target);}
+function updateCustomerAppNav(section){
+  let key=customerNavKey;
+  if(['type','slots','pay','class','packages','gift'].includes(section)&&customerNavKey!=='home')key='book';
+  if(section==='mine'&&customerNavKey!=='profile')key='history';
+  if(section==='profile')key='profile';if(section==='loyalty')key='loyalty';if(section==='home')key='home';
+  document.querySelectorAll('[data-cnav]').forEach(b=>b.classList.toggle('on',b.dataset.cnav===key));
+  const n=document.getElementById('customerNameTop');if(n)n.textContent=state.user?.name||'My account';
+}
+function updateTrainerAppNav(tab){
+  document.querySelectorAll('[data-tpnav],[data-tpmob]').forEach(b=>b.classList.toggle('on',(b.dataset.tpnav||b.dataset.tpmob)===tab));
+  const copy={sched:['Schedule','Today’s classes, attendance, and availability.'],clients:['Clients','Search profiles, verify identity, and review attendance.'],earnings:['Earnings','Track studio revenue and prepare clean records.'],manage:['Manage studio','Classes, pricing, closures, security, and operations.']}[tab];
+  const title=document.getElementById('trainerPageTitle'),sub=document.getElementById('trainerPageSub');if(title)title.textContent=copy[0];if(sub)sub.textContent=copy[1];
+}
 
 /* ===================== CUSTOMER AUTH ===================== */
 function custTab(m){custMode=m;
@@ -2027,14 +2411,29 @@ function custTab(m){custMode=m;
   document.getElementById('ct-signup').classList.toggle('on',m==='signup');
   document.getElementById('cf-name').style.display=m==='signup'?'block':'none';
   document.getElementById('cf-phone').style.display=m==='signup'?'block':'none';
+  document.getElementById('cf-identity').classList.toggle('on',m==='signup');
   const fl=document.getElementById('cForgotLine'); if(fl) fl.style.display=m==='signup'?'none':'block';
   document.getElementById('cf-ref').style.display=m==='signup'?'block':'none';
   document.getElementById('cConsentWrap').style.display=m==='signup'?'flex':'none';
   document.getElementById('cAuthBtn').textContent=m==='signup'?'Create account':'Log in';
   document.getElementById('cAuthFine').textContent=m==='signup'?'Already a member? Switch to Log in.':'New here? Switch to Sign up.';
 }
+const idFiles={front:null,back:null};
+function idFileChosen(side){
+  const input=document.getElementById(side==='front'?'ci-id-front':'ci-id-back');
+  const label=document.getElementById(side==='front'?'idFrontLabel':'idBackLabel');
+  const file=input.files&&input.files[0];
+  idFiles[side]=null;label.classList.remove('ready');
+  if(!file)return;
+  if(!['image/jpeg','image/png'].includes(file.type)){input.value='';toast('Use a JPG or PNG image','Identity');return;}
+  if(file.size>5*1024*1024){input.value='';toast('Each ID photo must be smaller than 5 MB','Identity');return;}
+  if(file.size<20000){input.value='';toast('That image is too small to review clearly','Identity');return;}
+  const reader=new FileReader();
+  reader.onload=()=>{idFiles[side]=reader.result;label.classList.add('ready');label.querySelector('span').textContent='✓ '+file.name;};
+  reader.onerror=()=>toast('That image could not be read','Identity');reader.readAsDataURL(file);
+}
 function custReset(){
-  if(state.user){document.getElementById('c-auth').classList.remove('on');document.getElementById('c-flow').classList.add('on');custStep('class');}
+  if(state.user){document.getElementById('c-auth').classList.remove('on');document.getElementById('c-flow').classList.add('on');customerNavAction('home');}
   else{document.getElementById('c-auth').classList.add('on');document.getElementById('c-flow').classList.remove('on');}
 }
 let pendingAuth=null; // holds signup/login details until code verified
@@ -2048,13 +2447,24 @@ async function custAuth(){
   if(custMode==='signup'){
     if(!phone){toast('Enter your mobile number so we can reach you','Account');return;}
     if(phone.replace(/\D/g,'').length<8){toast('That mobile number looks too short','Account');return;}
+    const idNumber=document.getElementById('ci-id-number').value.trim();
+    const dob=document.getElementById('ci-dob').value;
+    const address=document.getElementById('ci-address').value.trim();
+    if(idNumber.length<5){toast('Enter the ID or passport number','Identity');return;}
+    if(!dob){toast('Enter the date of birth','Identity');return;}
+    if(address.length<8){toast('Enter the full home address','Identity');return;}
+    if(!idFiles.front||!idFiles.back){toast('Upload both the front and back of the ID','Identity');return;}
     if(!document.getElementById('ci-consent').checked){
       toast('Please accept the Privacy Policy to create an account','Privacy');return;
     }
   }
   const name=document.getElementById('ci-name').value.trim();
   const pass=document.getElementById('ci-pass').value;
-  pendingAuth={mode:custMode,email,name:name||email.split('@')[0],pass,phone};
+  pendingAuth={mode:custMode,email,name:name||email.split('@')[0],pass,phone,
+    idNumber:custMode==='signup'?document.getElementById('ci-id-number').value.trim():'',
+    dob:custMode==='signup'?document.getElementById('ci-dob').value:'',
+    address:custMode==='signup'?document.getElementById('ci-address').value.trim():'',
+    idFront:custMode==='signup'?idFiles.front:null,idBack:custMode==='signup'?idFiles.back:null};
   authBusy=true;
   try{
   // For login: verify email + password FIRST, so wrong credentials show
@@ -2122,7 +2532,8 @@ async function verifyCode(){
     }
   }else{
     if(code!==demoCode){toast('Incorrect code — check and try again','Verify');shakeCode('codeInputs');return;}
-    state.user={email:pendingAuth.email,name:pendingAuth.name};
+    state.user={email:pendingAuth.email,name:pendingAuth.name,phone:pendingAuth.phone,id_number:pendingAuth.idNumber,
+      date_of_birth:pendingAuth.dob,address:pendingAuth.address,id_status:'pending'};
   }
   showVerifySuccess(()=>finishAuth());
 }
@@ -2194,7 +2605,8 @@ async function doBackendAuth(emailCode, totpCode){
   const path=pendingAuth.mode==='signup'?'/signup':'/login';
   const body=pendingAuth.mode==='signup'
     ? {name:pendingAuth.name,email:pendingAuth.email,password:pendingAuth.pass,
-       phone:pendingAuth.phone||'',code:emailCode,remember}
+       phone:pendingAuth.phone||'',code:emailCode,remember,id_number:pendingAuth.idNumber,
+       date_of_birth:pendingAuth.dob,address:pendingAuth.address,id_front:pendingAuth.idFront,id_back:pendingAuth.idBack}
     : {email:pendingAuth.email,password:pendingAuth.pass,code:emailCode,totp:totpCode,remember};
   let r;
   try{
@@ -2202,7 +2614,7 @@ async function doBackendAuth(emailCode, totpCode){
   }catch(e){
     throw new Error(friendlyAuthError(e.message));
   }
-  authToken=r.token; state.user={email:r.email,name:r.name,phone:pendingAuth.phone||''}; state.credits=r.credits||0;
+  authToken=r.token; state.user={email:r.email,name:r.name,phone:r.phone||pendingAuth.phone||'',profile_photo:r.profile_photo||''}; state.credits=r.credits||0;
   if(remember){ try{ localStorage.setItem('rb_token', r.token); }catch(e){} }
 }
 function togglePw(id, btn){
@@ -2360,7 +2772,7 @@ async function custLogout(){
   showAuthPane('c-authcard');
   custTab('login');
   updateCustBack();
-  show('home');
+  if(isCustomerAppLaunch())openCustomer();else show('home');
   toast('Signed out','Account');
 }
 function trainerLogout(){
@@ -2387,7 +2799,7 @@ function finishAuth(){
   document.getElementById('c-authcard').style.display='block';
   document.getElementById('c-auth').classList.remove('on');
   document.getElementById('c-flow').classList.add('on');
-  renderClasses();custStep('class');
+  renderClasses();customerNavAction('home');
   // new customers get the option to link an authenticator (they can skip)
   if(wasSignup && BACKEND){
     setTimeout(()=>document.getElementById('twofaOfferModal').classList.add('show'), 700);
@@ -2709,8 +3121,8 @@ function INTENTS(){
    el:()=>`Ναι — το ιδιαίτερο σας δίνει όλο το στούντιο μόνο για εσάς. Κλείνει και τις ${CAP} θέσεις εκείνη την ώρα. Τιμές: `+CLASSES.map(c=>`${c.name} ${money(c.solo)}`).join(', ')+'. Επιλέξτε «Private» αφού διαλέξετε μάθημα.'},
 
   {id:'howbook', w:['book','booking','reserve','reservation','sign up','signup','register','join','how do i','how can i','attend','come to','κρατηση','κρατησεις','κλεισω','κλεινω','εγγραφη','πως','συμμετοχη'],
-   en:()=>'Booking takes a minute:\n1. Tap "Book / Sign in" at the top\n2. Create an account — we email you a 6-digit code to confirm it\'s you\n3. Pick a class, then Class of '+CAP+' or Private\n4. Choose a date & time (you\'ll see what\'s free)\n5. Pay securely by Viva Wallet\n\nYou can reschedule if you cancel more than 4 hours before.',
-   el:()=>'Η κράτηση παίρνει ένα λεπτό:\n1. Πατήστε «Book / Sign in» πάνω\n2. Δημιουργήστε λογαριασμό — σας στέλνουμε 6ψήφιο κωδικό στο email\n3. Διαλέξτε μάθημα, μετά ομαδικό ή ιδιαίτερο\n4. Επιλέξτε μέρα & ώρα\n5. Πληρώστε με ασφάλεια μέσω Viva Wallet\n\nΜπορείτε να αλλάξετε ώρα αν ακυρώσετε 4+ ώρες πριν.'},
+   en:()=>'Booking takes a minute:\n1. Tap "Book / Sign in" at the top\n2. Create an account — we email you a 6-digit code to confirm it\'s you\n3. Pick a class, then Class of '+CAP+' or Private\n4. Choose a date & time (you\'ll see what\'s free)\n5. Pay securely with Stripe\n\nYou can reschedule if you cancel more than 4 hours before.',
+   el:()=>'Η κράτηση παίρνει ένα λεπτό:\n1. Πατήστε «Book / Sign in» πάνω\n2. Δημιουργήστε λογαριασμό — σας στέλνουμε 6ψήφιο κωδικό στο email\n3. Διαλέξτε μάθημα, μετά ομαδικό ή ιδιαίτερο\n4. Επιλέξτε μέρα & ώρα\n5. Πληρώστε με ασφάλεια μέσω Stripe\n\nΜπορείτε να αλλάξετε ώρα αν ακυρώσετε 4+ ώρες πριν.'},
 
   {id:'cancel', w:['cancel','cancellation','reschedule','refund','change my','move my','miss','late','ακυρ','αλλαξ','επιστροφη','χασω','αργησω'],
    en:()=>'Cancel more than 4 hours before your class and you can reschedule — your payment moves to the new time. Within 4 hours, the session is used up. We email you either way.',
@@ -2798,22 +3210,64 @@ function localAnswer(q){
 
 /* ===================== CUSTOMER FLOW ===================== */
 function custStep(s){
-  ['class','packages','type','slots','pay','mine','gift'].forEach(x=>document.getElementById('cs-'+x).classList.remove('on'));
+  ['home','class','packages','type','slots','pay','mine','gift','loyalty','profile','notifications'].forEach(x=>document.getElementById('cs-'+x).classList.remove('on'));
   document.getElementById('cs-'+s).classList.add('on');
-  const map={class:1,packages:0,type:2,slots:3,pay:4,mine:0};
+  const map={home:0,class:1,packages:0,type:2,slots:3,pay:4,mine:0,loyalty:0,profile:0,notifications:0};
   document.querySelectorAll('#cSteps .s').forEach(el=>el.classList.toggle('on',+el.dataset.st<=map[s]&&map[s]>0));
-  document.getElementById('cSteps').style.display=(s==='mine'||s==='packages')?'none':'flex';
-  const titles={mine:'My sessions',packages:'Packages & offers'};
+  document.getElementById('cSteps').style.display=['home','mine','packages','loyalty','profile','notifications'].includes(s)?'none':'flex';
+  const titles={home:'Home',mine:'Session history',packages:'Packages & offers',loyalty:'Loyalty',profile:'Profile',notifications:'Notifications'};
   document.getElementById('cFlowTitle').textContent=titles[s]||'Book a session';
+  updateCustomerAppNav(s);
   if(s==='class'){renderCreditBanner();renderClasses();}
+  if(s==='home')renderCustomerHome();
   if(s==='packages')renderPackages();
   if(s==='type')renderTypeChoice();
   if(s==='mine'){
-    renderMine();renderReferral();renderUsual();refreshCustomer2FA();
-    Promise.all([syncMyGhs(),syncRegulars()]).then(()=>{renderGhsCard();renderUsual();});
-    renderPasskeys();
+    renderMine();
   }
+  if(s==='profile'){renderCustomerProfile();refreshCustomer2FA();renderPasskeys();refreshNotificationState();}
+  if(s==='loyalty')renderLoyaltyCard();
+  if(s==='notifications')renderNotifications();
   window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderCustomerHome(synced=false){
+  const greeting=document.getElementById('homeGreeting'),credits=document.getElementById('homeCredits'),list=document.getElementById('homeSessionList');
+  if(greeting)greeting.textContent='Welcome'+(state.user?.name?', '+state.user.name.split(' ')[0]:'');
+  if(credits)credits.textContent=state.credits+' session'+(state.credits===1?'':'s');
+  if(!list)return;const active=state.bookings.filter(b=>b.status==='confirmed'&&(!b.start||b.start>new Date())).slice(0,3);
+  list.innerHTML=active.length?active.map(b=>`<div class="home-session"><b>${b.cls}</b><span>${b.when} · €${b.price}</span></div>`).join(''):'<div class="empty">No active sessions yet. Your next booking will appear here.</div>';
+  if(!synced&&BACKEND&&authToken)loadMyBookings().then(()=>renderCustomerHome(true));
+}
+function renderCustomerProfile(){
+  const name=state.user?.name||'My account',email=state.user?.email||'—',phone=state.user?.phone||'Not added';
+  const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};
+  set('profileAvatar',name.trim().charAt(0).toUpperCase());set('profileName',name);set('profileEmail',email);set('profileNameRow',name);set('profilePhoneRow',phone);set('profileEmailRow',email);set('profileCreditsRow',String(state.credits||0));
+  applyProfilePhoto(state.user?.profile_photo||'');
+}
+function applyProfilePhoto(src){const btn=document.getElementById('profilePhotoButton'),img=document.getElementById('profilePhoto'),rm=document.getElementById('removePhotoBtn');if(!btn||!img)return;img.src=src||'';btn.classList.toggle('has-photo',!!src);if(rm)rm.style.display=src?'inline':'none';}
+function profilePhotoChosen(input){const file=input.files&&input.files[0];if(!file)return;if(!['image/jpeg','image/png','image/webp'].includes(file.type)){toast('Choose a JPG, PNG, or WebP photo','Profile photo');return;}if(file.size>2*1024*1024){toast('Choose a photo smaller than 2 MB','Profile photo');return;}const reader=new FileReader();reader.onload=()=>saveProfilePhoto(String(reader.result||''));reader.readAsDataURL(file);}
+async function saveProfilePhoto(photo){try{if(BACKEND)await api('/me/photo',{method:'PUT',token:authToken,body:{photo}});state.user={...(state.user||{}),profile_photo:photo};applyProfilePhoto(photo);toast(photo?'Profile picture updated':'Profile picture removed','Profile');}catch(e){toast(e.message||'Could not save the picture','Profile');}}
+function removeProfilePhoto(){saveProfilePhoto('');}
+function renderNotifications(){const el=document.getElementById('notificationList');if(!el)return;const upcoming=state.bookings.filter(b=>b.status==='confirmed'&&(!b.start||b.start>new Date())).slice(0,5);const items=upcoming.map(b=>({title:'Upcoming session',body:`${b.cls} · ${b.when}`,time:'Session reminder'}));if(state.user?.id_status==='pending')items.push({title:'Identity verification',body:'Your identity documents were submitted and are awaiting review.',time:'Account update'});el.innerHTML=items.length?items.map(n=>`<article class="notification-card"><span class="notification-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z"/><path d="M10 21h4"/></svg></span><div><h3>${n.title}</h3><p>${n.body}</p><time>${n.time}</time></div></article>`).join(''):'<div class="notification-empty">You have no new notifications.</div>';}
+function loyaltyMemberId(){const src=String(state.user?.email||'MEMBER').toLowerCase();let h=2166136261;for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619);}return 'RB-'+String(h>>>0).padStart(10,'0').slice(-10);}
+function renderLoyaltyCard(){const goal=Math.max(2,Math.min(30,+LOYALTY.stamps||10)),confirmed=state.bookings.filter(b=>b.status==='confirmed').length,rewards=Math.floor(confirmed/goal),filled=confirmed%goal,until=filled===0&&confirmed>0?goal:goal-filled;const grid=document.getElementById('loyaltyStamps');if(grid){grid.style.gridTemplateColumns=`repeat(${Math.min(goal,5)},1fr)`;grid.innerHTML=Array.from({length:goal},(_,i)=>`<span class="stamp ${i<filled?'on':''}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.5 5.8L21 9.5l-4.8 4.3 1.4 6.2-5.6-3.2L6.4 20l1.4-6.2L3 9.5l6.5-.7L12 3Z"/></svg></span>`).join('');}const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};set('loyaltyName',state.user?.name||'Customer');set('loyaltyUntil',until+' stamp'+(until===1?'':'s'));set('loyaltyRewards',String(rewards));set('loyaltyReward',LOYALTY.reward||'Free group class');set('loyaltyCode',loyaltyMemberId());}
+async function addLoyaltyToWallet(){if(!BACKEND){toast('Apple Wallet will activate when the live pass certificate is connected','Loyalty');return;}try{const r=await fetch(BACKEND+'/wallet/loyalty',{headers:{Authorization:'Bearer '+authToken}});if(!r.ok){const d=await r.json().catch(()=>({}));throw new Error(d.detail||'Wallet pass is not configured yet');}const blob=await r.blob(),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Rebalance-Loyalty.pkpass';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}catch(e){toast(e.message,'Apple Wallet');}}
+async function addLoyaltyToGoogleWallet(){if(!BACKEND){toast('Google Wallet will activate when the live issuer account is connected','Loyalty');return;}try{const r=await api('/wallet/google',{token:authToken});if(!r.url)throw new Error('Google Wallet is not configured yet');location.href=r.url;}catch(e){toast(e.message,'Google Wallet');}}
+function refreshNotificationState(){
+  const status=document.getElementById('notificationStatus'),btn=document.getElementById('notificationBtn');if(!status||!btn)return;
+  if(!('Notification' in window)){status.textContent='Notifications are not supported in this browser.';btn.style.display='none';return;}
+  const allowed=Notification.permission==='granted';status.textContent=allowed?'Notifications are enabled on this device.':Notification.permission==='denied'?'Notifications are blocked in iPhone Settings.':'Get appointment reminders on this device.';btn.textContent=allowed?'Test':'Enable';btn.disabled=Notification.permission==='denied';
+}
+async function enablePushNotifications(){
+  if(!('Notification' in window)){toast('Notifications are not supported here','Notifications');return;}
+  try{
+    let permission=Notification.permission;if(permission==='default')permission=await Notification.requestPermission();
+    if(permission!=='granted'){refreshNotificationState();toast('Allow notifications in your iPhone settings','Notifications');return;}
+    const registration='serviceWorker' in navigator?await navigator.serviceWorker.ready:null;
+    const options={body:'You’ll receive your Rebalance session reminders here.',icon:'./app-icon-180.png',badge:'./app-icon-180.png',tag:'rebalance-notification-test'};
+    if(registration)await registration.showNotification('Rebalance notifications are on',options);else new Notification('Rebalance notifications are on',options);
+    refreshNotificationState();toast('Notifications enabled','Rebalance');
+  }catch(e){toast('Install the app from Safari, then enable notifications in Profile.','Notifications');}
 }
 function renderCreditBanner(){
   const el=document.getElementById('creditBanner');if(!el)return;
@@ -2828,7 +3282,7 @@ function renderPackages(){
       <h3>${p.name}</h3>
       <div class="pkg-price">€${p.price}</div>
       <div class="pkg-note">${p.note}</div>
-      <button class="btn ${p.best?'':'ghost'}" style="width:100%;margin-top:18px" onclick="buyPackage('${p.id}')">${giftMode?'🎁 Gift this':'Buy with Viva'}</button>
+      <button class="btn ${p.best?'':'ghost'}" style="width:100%;margin-top:18px" onclick="buyPackage('${p.id}')">${giftMode?'🎁 Gift this':'Buy securely with Stripe'}</button>
     </div>`).join('');
 }
 async function buyPackage(id){
@@ -2840,7 +3294,7 @@ async function buyPackage(id){
     saveVouchers();
     document.getElementById('vcPkg').textContent=p.name;
     document.getElementById('vcCode').textContent=code;
-    toast('Gift paid — voucher created','Viva Wallet');
+    toast('Gift paid — voucher created','Stripe');
     custStep('gift');
     return;
   }
@@ -2848,7 +3302,7 @@ async function buyPackage(id){
     try{ const r=await api('/buy-package?pkg_id='+id,{method:'POST',token:authToken}); state.credits=r.credits; }
     catch(e){toast(e.message,'Package');return;}
   }else{ state.credits+=p.count; }
-  toast(`Package paid · ${p.count} credits added`,'Viva Wallet');
+  toast(`Package paid · ${p.count} credits added`,'Stripe');
   custStep('class');
 }
 
@@ -3271,7 +3725,7 @@ function shareVoucher(){
 }
 function renderClasses(){
   document.getElementById('classList').innerHTML=CLASSES.map(c=>`
-    <div class="cls" onclick="chooseClass('${c.id}')">
+    <div class="cls" role="button" tabindex="0" onkeydown="keyboardClick(event)" onclick="chooseClass('${c.id}')">
       <div><h3>${c.name}</h3><div class="meta">${c.dur} · ${c.who}</div></div>
       <div><div class="price">${t('from')} €${c.price}</div><div class="pk">${t('select')}</div></div>
     </div>`).join('');
@@ -3289,13 +3743,13 @@ function renderTypeChoice(){
   const c=state.cls;
   const credit=state.credits>0;
   document.getElementById('typeChoice').innerHTML=`
-    <div class="tc-card" onclick="chooseType('shared')">
+    <div class="tc-card" role="button" tabindex="0" onkeydown="keyboardClick(event)" onclick="chooseType('shared')">
       <div class="tc-ico">👥</div>
       <h3>Class of ${CAP}</h3>
       <p>Join a shared reformer class — up to ${CAP} people.</p>
       <div class="tc-price">${credit?'1 credit':'€'+c.price}</div>
     </div>
-    <div class="tc-card" onclick="chooseType('solo')">
+    <div class="tc-card" role="button" tabindex="0" onkeydown="keyboardClick(event)" onclick="chooseType('solo')">
       <div class="tc-ico">🌙</div>
       <h3>Private</h3>
       <p>The studio to yourself — one-to-one, no one else books.</p>
@@ -3311,7 +3765,7 @@ async function chooseType(mode){
 }
 function renderCDays(){
   document.getElementById('daybar').innerHTML=DAYS.map((d,i)=>`
-    <div class="day ${i===state.dayIdx?'on':''}" onclick="setCDay(${i})">
+    <div class="day ${i===state.dayIdx?'on':''}" role="button" tabindex="0" onkeydown="keyboardClick(event)" onclick="setCDay(${i})">
       <span class="dow">${i===0?'Today':dow[d.getDay()]}</span><span class="dn">${d.getDate()}</span></div>`).join('');
 }
 async function setCDay(i){state.dayIdx=i;state.slot=null;renderCDays();await loadAvail();}
@@ -3344,11 +3798,11 @@ function renderCSlots(){
     else label = free>0 ? free+' of '+CAP+' left' : 'Full';
     if(canWait){
       const on = onWaitlist(t);
-      return `<div class="slot full waitable ${on?'waiting':''}" onclick="toggleWaitlist('${t}')">
+      return `<div class="slot full waitable ${on?'waiting':''}" role="button" tabindex="0" onkeydown="keyboardClick(event)" onclick="toggleWaitlist('${t}')">
         <div class="t">${t}</div>
         <div class="lft">${on?'✓ On waitlist':'Full · join list'}</div></div>`;
     }
-    return `<div class="slot ${avail?'':'full'} ${state.slot===t?'on':''}" ${avail?`onclick="pickSlot('${t}')"`:''}>
+    return `<div class="slot ${avail?'':'full'} ${state.slot===t?'on':''}" ${avail?`role="button" tabindex="0" onkeydown="keyboardClick(event)" onclick="pickSlot('${t}')"`:''}>
       <div class="t">${t}</div>
       <div class="lft">${label}</div></div>`;
   }).join('');
@@ -3441,7 +3895,7 @@ function buildReceipt(){
     viva.style.display='none';
   }else{
     btn.classList.remove('is-credit');
-    btn.innerHTML='<span class="vb-lock">🔒</span><span>Pay €'+price+'</span><span class="vb-brand"><svg viewBox="0 0 44 44" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 11 L20 11 L15 32 Q14.5 33.5 13.5 32 L7 13 Q6.4 11 9 11 Z" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round"/><path d="M18.5 11 L29 11 Q31.6 11 31 13 L24.5 32 Q23.5 33.5 23 32 L18 13 Q17.4 11 18.5 11 Z" fill="#fff"/></svg>viva wallet</span>';
+    btn.innerHTML='<span class="vb-lock">🔒</span><span>Pay €'+price+'</span><span class="vb-brand">Stripe</span>';
     viva.style.display='flex';
   }
 }
@@ -3459,7 +3913,7 @@ async function custPay(){
       if(r.amount===0) state.credits=Math.max(0,state.credits-1);
       await loadMyBookings();
       showReceipt({no:r.receipt_no, cls:state.cls.name, solo, d, time:state.slot,
-                   total:r.amount, method:r.amount===0?'Package credit':'Viva Wallet'});
+                   total:r.amount, method:r.amount===0?'Package credit':'Stripe'});
     }catch(e){toast(e.message,'Booking');return;}
     return;
   }
@@ -3469,7 +3923,7 @@ async function custPay(){
   const weeks=repeatWeeks();
   const isGhs=ghsAppliesToBooking();
   const usingCredit=!isGhs && !solo && state.credits>0 && weeks===1;
-  const payType = isGhs ? 'ghs' : (usingCredit ? 'credit' : 'viva');
+  const payType = isGhs ? 'ghs' : (usingCredit ? 'credit' : 'stripe');
   c.spots[idx]={name:state.user.name,pay:payType,private:solo,
                 ghsValue: isGhs ? state.cls.solo : 0};
   if(solo){ c.spots=c.spots.map((s,i)=> i===idx ? s : 'held'); c.private=true; }
@@ -3483,13 +3937,13 @@ async function custPay(){
     state.bookings.unshift({id:Date.now()+w,cls:state.cls.name+(solo?' · Private':''),price:unit,
       dayIdx:w===0?state.dayIdx:-1,time:state.slot,spotIdx:w===0?idx:0,clsId:state.cls.id,solo,
       when:`${wd.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})} · ${state.slot}`,
-      start:st,status:'confirmed',paidBy:usingCredit?'credit':'viva',
+      start:st,status:'confirmed',paidBy:usingCredit?'credit':'stripe',
       series: weeks>1 ? (w+1)+'/'+weeks : null});
   }
   const rno='RB-'+new Date().getFullYear()+'-'+String(Math.floor(Math.random()*900000+100000));
   showReceipt({no:rno, cls:state.cls.name, solo, d, time:state.slot,
                total:isGhs?0:(usingCredit?0:price),
-               method:isGhs?'GHS (ΓΕΣΥ)':(usingCredit?'Package credit':'Viva Wallet'),
+               method:isGhs?'GHS (ΓΕΣΥ)':(usingCredit?'Package credit':'Stripe'),
                promo: (!usingCredit && state.promo) ? state.promo : null,
                weeks: weeks>1 ? weeks : null});
 }
@@ -3597,7 +4051,7 @@ async function loadMyBookings(){
 /* ===================== CANCEL / RESCHEDULE (shared logic) ===================== */
 function hoursUntil(start){return (start-new Date())/36e5;}
 function renderMine(){
-  if(!state.bookings.length){document.getElementById('myList').innerHTML='<div class="empty">No sessions yet. Book your first mat above.</div>';return;}
+  if(!state.bookings.length){document.getElementById('myList').innerHTML='<div class="empty">No sessions yet.</div>';return;}
   document.getElementById('myList').innerHTML=state.bookings.map(b=>{
     let pill,cd='',act='';
     const series=b.series?`<span class="series-tag">Weekly ${b.series}</span>`:'';
@@ -3745,6 +4199,7 @@ function enterTrainerPortal(){
   document.getElementById('t-app').classList.add('on');
   const tb=document.getElementById('trainerBack'); if(tb) tb.textContent='← Sign out';
   renderTDays();renderTSlots();renderClients();
+  loadTrainerClients();
   // load the real bookings from the server
   syncTrainerDay(state.trainerDay).then(ok=>{ if(ok){ renderTSlots(); renderClients(); } });
   startSchedulePolling();
@@ -3755,8 +4210,33 @@ function trainTab(t){document.querySelectorAll('#v-train .ptabs button').forEach
   document.getElementById('tp-clients').classList.toggle('on',t==='clients');
   document.getElementById('tp-earnings').classList.toggle('on',t==='earnings');
   document.getElementById('tp-manage').classList.toggle('on',t==='manage');
+  const title=document.querySelector('#t-app .phead h1');
+  if(title) title.textContent=({sched:'Studio schedule',clients:'Clients',earnings:'Earnings',manage:'Manage studio'})[t]||'Trainer portal';
+  updateTrainerAppNav(t);
   if(t==='earnings')renderEarnings();
+  if(t==='clients')loadTrainerClients();
   if(t==='manage')renderManage();}
+
+const MANAGE_TABS=[
+  ['classes','Classes'],['times','Class times'],['capacity','Capacity'],['packages','Packages'],
+  ['promos','Promo codes'],['first-offer','First offer'],['loyalty','Loyalty'],['trainers','Trainers'],['regulars','Regular slots'],
+  ['refunds','Refunds'],['closures','Closures'],['ghs','GHS cover'],['security','Security'],['backup','Backup']
+];
+let activeManageTab='classes';
+function buildManageTabs(){
+  const nav=document.getElementById('manageSubtabs'); if(!nav)return;
+  nav.innerHTML=MANAGE_TABS.map(([key,label])=>`<button type="button" role="tab" aria-selected="${key===activeManageTab}" class="${key===activeManageTab?'on':''}" data-mtab="${key}" onclick="manageSection('${key}')">${label}</button>`).join('');
+}
+function manageSection(key){
+  if(!MANAGE_TABS.some(([k])=>k===key))key='classes';
+  activeManageTab=key;
+  document.querySelectorAll('#tp-manage .manage-sec').forEach(sec=>sec.classList.toggle('on',sec.dataset.manage===key));
+  document.querySelectorAll('#manageSubtabs button').forEach(btn=>{const on=btn.dataset.mtab===key;btn.classList.toggle('on',on);btn.setAttribute('aria-selected',String(on));});
+  const index=MANAGE_TABS.findIndex(([k])=>k===key), label=MANAGE_TABS[index][1];
+  const title=document.getElementById('manageSectionTitle'),count=document.getElementById('manageSectionCount');
+  if(title)title.textContent=label;if(count)count.textContent=`${index+1} of ${MANAGE_TABS.length}`;
+  document.querySelector(`#manageSubtabs button[data-mtab="${key}"]`)?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+}
 
 /* ===================== MANAGE (edit everything, no code) ===================== */
 /* ---------- multi-trainer ---------- */
@@ -3784,6 +4264,7 @@ function editFirstOffer(){
   saveSettings();
 }
 function renderManage(){
+  buildManageTabs(); manageSection(activeManageTab);
   renderMgClasses(); renderMgTimes();
   document.getElementById('mgCap').textContent=CAP;
   renderMgPackages(); renderMgPromos(); renderMgTrainers(); renderMgRegulars(); renderMgGhs(); renderMgClosures(); renderRefunds();
@@ -3793,7 +4274,9 @@ function renderManage(){
   document.getElementById('mgFirstOn').checked=FIRST_OFFER.on;
   document.getElementById('mgFirstPrice').value=FIRST_OFFER.price;
   document.getElementById('mgFirstPriceWrap').style.display=FIRST_OFFER.on?'flex':'none';
+  document.getElementById('mgLoyaltyReward').value=LOYALTY.reward||'';document.getElementById('mgLoyaltyStamps').value=LOYALTY.stamps||10;
 }
+function editLoyaltySettings(){LOYALTY.reward=(document.getElementById('mgLoyaltyReward').value||'').trim()||'Free group class';LOYALTY.stamps=Math.max(2,Math.min(30,+document.getElementById('mgLoyaltyStamps').value||10));saveSettings();toast('Loyalty reward updated','Manage');}
 
 function renderMgClasses(){
   document.getElementById('mgClasses').innerHTML=CLASSES.map((c,i)=>`
@@ -3886,7 +4369,7 @@ async function setTDay(i){
 }
 
 function paytag(pay){
-  return pay==='viva' ? '<span class="paytag viva">Viva</span>'
+  return pay==='viva'||pay==='stripe' ? '<span class="paytag viva">Stripe</span>'
     : pay==='cash' ? '<span class="paytag cash">Cash</span>'
     : pay==='card' ? '<span class="paytag card">Card</span>'
     : pay==='credit' ? '<span class="paytag pkg">Package</span>'
@@ -3945,6 +4428,8 @@ function stopSchedulePolling(){ if(schedPoll){ clearInterval(schedPoll); schedPo
 function renderTSlots(){
   const di=state.trainerDay,day=store[di];
   const d=DAYS[di];document.getElementById('tDayLabel').textContent=(di===0?'Today · ':'')+d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+  const totalBooked=TIMES.reduce((n,t)=>n+spotsBooked(day[t]),0),totalFree=TIMES.reduce((n,t)=>n+spotsFree(day[t]),0),closed=TIMES.filter(t=>day[t].closed).length;
+  const overview=document.getElementById('trainerOverview');if(overview)overview.innerHTML=`<div class="overview-card"><span>Booked today</span><b>${totalBooked}</b></div><div class="overview-card"><span>Available places</span><b>${totalFree}</b></div><div class="overview-card"><span>Closed classes</span><b>${closed}</b></div>`;
   document.getElementById('tSlots').innerHTML=TIMES.map(t=>{
     const c=day[t];
     const free=spotsFree(c), booked=spotsBooked(c);
@@ -4356,14 +4841,60 @@ async function syncClients(){
   try{ const r=await api('/trainer/clients',{token:trainerToken}); return r.clients||[]; }
   catch(e){ return null; }
 }
+let SERVER_CLIENTS=null;
+async function loadTrainerClients(){
+  const list=await syncClients();
+  if(list){SERVER_CLIENTS=list;renderClients();}
+}
+function clientEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function filterClients(){
+  const q=(document.getElementById('clientSearch')?.value||'').trim().toLowerCase();
+  let shown=0,total=0;
+  document.querySelectorAll('#tClients .client-card').forEach(card=>{total++;const on=!q||(card.dataset.search||'').includes(q);card.style.display=on?'':'none';if(on)shown++;});
+  const count=document.getElementById('clientCount');if(count)count.textContent=q?`${shown} of ${total} clients`:`${total} client${total===1?'':'s'}`;
+}
+async function viewIdDocument(userId,side){
+  if(!BACKEND||!trainerToken){toast('Encrypted ID viewing is available on the live server','Identity');return;}
+  try{
+    const res=await fetch(`${BACKEND}/trainer/id-document/${userId}/${side}`,{headers:{Authorization:'Bearer '+trainerToken},cache:'no-store'});
+    if(!res.ok)throw new Error('ID image could not be opened');
+    const url=URL.createObjectURL(await res.blob()),win=window.open(url,'_blank','noopener,noreferrer');
+    if(!win)toast('Allow pop-ups to view the ID image','Identity');
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+  }catch(e){toast(e.message,'Identity');}
+}
+async function reviewId(userId,status){
+  if(!BACKEND||!trainerToken){toast('ID review saves once the site is live','Identity');return;}
+  try{await api('/trainer/id-review',{method:'POST',token:trainerToken,body:{user_id:userId,status}});await loadTrainerClients();toast(`ID marked ${status}`,'Identity');}
+  catch(e){toast(e.message,'Identity');}
+}
 function renderClients(){
+  if(SERVER_CLIENTS){
+    const clients=SERVER_CLIENTS;
+    document.getElementById('tClients').innerHTML=clients.length?clients.map(c=>{
+      const status=c.id_status||'missing',history=(c.bookings||[]).map(b=>`<li><i class="h-q">·</i><span>${clientEsc(b.date)} · ${clientEsc(b.hour)}</span><span class="h-cls">${clientEsc(b.class_key)}${b.private?' · Private':''}</span>${paytag(b.pay)}</li>`).join('');
+      const search=[c.name,c.id_number,c.email,c.phone].join(' ').toLowerCase();
+      return `<div class="client-card" data-search="${clientEsc(search)}">
+        <div class="cc-head" role="button" tabindex="0" onkeydown="keyboardClick(event)" onclick="this.parentElement.classList.toggle('open')">
+          <div><h3>${clientEsc(c.name)}</h3><div class="cc-meta">${c.sessions||0} session${c.sessions===1?'':'s'} · €${Number(c.spent||0).toFixed(2)} total · ${clientEsc(c.email)}</div></div>
+          <div class="cc-right"><span class="id-badge ${clientEsc(status)}">ID ${clientEsc(status)}</span><span class="cc-arrow">⌄</span></div>
+        </div>
+        <div class="id-summary"><div><b>ID / passport</b>${clientEsc(c.id_number)||'Not provided'}</div><div><b>Date of birth</b>${clientEsc(c.date_of_birth)||'Not provided'}</div><div><b>Phone</b>${clientEsc(c.phone)||'Not provided'}</div><div><b>Address</b>${clientEsc(c.address)||'Not provided'}</div></div>
+        <div class="id-actions">${c.id_front?`<button class="btn ghost sm" onclick="viewIdDocument(${c.id},'front')">View ID front</button>`:''}${c.id_back?`<button class="btn ghost sm" onclick="viewIdDocument(${c.id},'back')">View ID back</button>`:''}<button class="btn ghost sm" onclick="reviewId(${c.id},'verified')">✓ Verify</button><button class="btn ghost sm" onclick="reviewId(${c.id},'rejected')">Needs resubmission</button></div>
+        <ul class="cc-history">${history||'<li>No bookings yet.</li>'}</ul>
+        <div class="cc-notes"><label>Private notes <span>— visible only to studio staff</span></label><textarea rows="3" placeholder="Injuries, goals, GHS referral, things to watch…" onchange="saveNote('${clientEsc(c.email)}',this.value)">${clientEsc(NOTES[c.email]||'')}</textarea><p class="cc-gdpr">⚠︎ Identity and health information is sensitive. Access it only when needed for studio operations.</p></div>
+      </div>`;
+    }).join(''):'<div class="empty">No registered clients yet.</div>';
+    filterClients();return;
+  }
   const rows=[];
   DAYS.forEach((d,di)=>TIMES.forEach(t=>{const c=store[di][t];c.spots.forEach((s,si)=>{if(s&&typeof s==='object')rows.push({di,t,d,si,name:s.name,pay:s.pay,cls:c.cls,attended:s.attended,priv:!!(c.private||s.private)});});}));
-  if(!rows.length){document.getElementById('tClients').innerHTML='<div class="empty">No booked clients yet.</div>';return;}
+  if(!rows.length&&!state.user){document.getElementById('tClients').innerHTML='<div class="empty">No registered clients yet.</div>';filterClients();return;}
 
   // group every booking by client name
   const byName={};
   rows.forEach(r=>{ (byName[r.name]=byName[r.name]||[]).push(r); });
+  if(state.user&&!byName[state.user.name])byName[state.user.name]=[];
 
   const html=Object.keys(byName).sort().map(name=>{
     const list=byName[name].sort((a,b)=>a.d-b.d);
@@ -4378,7 +4909,9 @@ function renderClients(){
       return `<li>${badge}<span>${x.d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})} · ${x.t}</span>
               <span class="h-cls">${x.cls}${x.priv?' · Private':''}</span>${paytag(x.pay)}</li>`;
     }).join('');
-    return `<div class="client-card ${warn?'warn':''}">
+    const demoId=state.user&&state.user.name===name?state.user.id_number||'Pending demo ID':'';
+    const search=(name+' '+demoId+' '+(state.user?.email||'')+' '+(state.user?.phone||'')).toLowerCase();
+    return `<div class="client-card ${warn?'warn':''}" data-search="${clientEsc(search)}">
       <div class="cc-head" onclick="this.parentElement.classList.toggle('open')">
         <div>
           <h3>${name}</h3>
@@ -4386,9 +4919,10 @@ function renderClients(){
         </div>
         <div class="cc-right">
           ${noshow>0?`<span class="cc-noshow">${noshow} no-show${noshow!==1?'s':''}</span>`:''}
-          <span class="cc-arrow">⌄</span>
+          ${demoId?'<span class="id-badge">ID pending</span>':''}<span class="cc-arrow">⌄</span>
         </div>
       </div>
+      ${demoId?`<div class="id-summary"><div><b>ID / passport</b>${clientEsc(state.user.id_number||'Pending')}</div><div><b>Date of birth</b>${clientEsc(state.user.date_of_birth||'Not provided')}</div><div><b>Phone</b>${clientEsc(state.user.phone||'Not provided')}</div><div><b>Address</b>${clientEsc(state.user.address||'Not provided')}</div></div><div class="id-actions"><span class="id-badge">Front uploaded</span><span class="id-badge">Back uploaded</span><button class="btn ghost sm" onclick="toast('ID review saves once the site is live','Identity')">✓ Verify</button></div>`:''}
       <ul class="cc-history">${history}</ul>
       <div class="cc-notes">
         <label>Private notes <span>— visible only to studio staff</span></label>
@@ -4399,6 +4933,7 @@ function renderClients(){
     </div>`;
   }).join('');
   document.getElementById('tClients').innerHTML=html;
+  filterClients();
 }
 /* ---------- client notes (trainer only — special-category data, handle with care) ---------- */
 let NOTES={};
@@ -4491,7 +5026,7 @@ function renderEarnings(){
 
   document.getElementById('earnBreakdown').innerHTML=`
     <div class="earn-grid">
-      <div class="earn-card viva"><div class="ec-method"><span class="paytag viva">Viva</span></div><div class="ec-amt">€${totals.viva.toFixed(2)}</div><div class="ec-note">Online · electronic</div></div>
+      <div class="earn-card viva"><div class="ec-method"><span class="paytag viva">Stripe</span></div><div class="ec-amt">€${totals.viva.toFixed(2)}</div><div class="ec-note">Online · electronic</div></div>
       <div class="earn-card card"><div class="ec-method"><span class="paytag card">Card</span></div><div class="ec-amt">€${totals.card.toFixed(2)}</div><div class="ec-note">In studio · electronic</div></div>
       <div class="earn-card cash"><div class="ec-method"><span class="paytag cash">Cash</span></div><div class="ec-amt">€${totals.cash.toFixed(2)}</div><div class="ec-note">In studio · cash</div></div>
     </div>
@@ -4604,11 +5139,19 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 applyClosuresToSchedule();
 syncClosures();
 custTab('login');
+buildPortalExperience();
 applyLang();  // paint the site in the phone's language (or their saved choice)
+if(isCustomerAppLaunch()){
+  document.body.classList.add('customer-app-mode');
+  openCustomer();
+}
 loadServerSettings();  // when live, the server's settings win
 restoreSession();      // "remember me" — sign back in if we have a saved token
 setupGoogleSignIn();   // show the Google button if the server has it configured
 setupPasskeys();       // show passkey options if supported
+if('serviceWorker' in navigator&&location.protocol!=='file:'){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
+}
 
 /* ---------- Google sign-in ----------
    Only appears if GOOGLE_CLIENT_ID is set on the server. Google verifies the
@@ -4665,7 +5208,8 @@ async function setupPasskeys(){
 }
 // add a passkey to the account they're signed into
 async function addPasskey(){
-  if(!authToken){ toast('Sign in first','Passkey'); return; }
+  if(!BACKEND){toast('Passkeys need the live secure server. They are unavailable only in this local preview.','Passkey');return;}
+  if(!authToken){ toast('Your session expired. Sign in again to add a passkey.','Passkey'); return; }
   if(!window.PublicKeyCredential){ toast('This device doesn\u2019t support passkeys','Passkey'); return; }
   try{
     const opts=await api('/passkey/register/begin',{method:'POST',token:authToken});
@@ -4722,13 +5266,13 @@ async function passkeyLogin(){
     };
     const r=await api('/passkey/login/finish',{method:'POST',
       body:{email, credential:payload, remember:true}});
-    authToken=r.token; state.user={email:r.email,name:r.name}; state.credits=r.credits||0;
+    authToken=r.token; state.user={email:r.email,name:r.name,phone:r.phone||'',profile_photo:r.profile_photo||''}; state.credits=r.credits||0;
     try{ localStorage.setItem('rb_token', r.token); }catch(e){}
     pendingAuth={mode:'login',email:r.email,name:r.name};
     updateCustBack();
     document.getElementById('c-auth').classList.remove('on');
     document.getElementById('c-flow').classList.add('on');
-    renderClasses(); custStep('class');
+    renderClasses(); customerNavAction('home');
     toast('Welcome back!','Passkey');
   }catch(e){
     if(e.name==='NotAllowedError'){ toast('Passkey sign-in cancelled','Passkey'); return; }
@@ -4789,7 +5333,7 @@ async function onGoogleCredential(resp){
     const r=await api('/auth/google',{method:'POST',
       body:{credential:resp.credential, phone:typedPhone.trim(), remember:true}});
     authToken=r.token;
-    state.user={email:r.email,name:r.name};
+    state.user={email:r.email,name:r.name,phone:r.phone||'',profile_photo:r.profile_photo||''};
     state.credits=r.credits||0;
     try{ localStorage.setItem('rb_token', r.token); }catch(e){}
     if(r.needs_phone){
@@ -4803,7 +5347,7 @@ async function onGoogleCredential(resp){
     updateCustBack();
     document.getElementById('c-auth').classList.remove('on');
     document.getElementById('c-flow').classList.add('on');
-    renderClasses(); custStep('class');
+    renderClasses(); customerNavAction('home');
     toast(r.new_account?'Welcome to Rebalance 🌿':'Welcome back!','Account');
   }catch(e){
     if(String(e.message).includes('2FA_REQUIRED')){
@@ -4825,7 +5369,7 @@ async function restoreSession(){
       const r=await api('/me',{token:tok});
       if(r && r.ok){
         authToken=tok;
-        state.user={email:r.email,name:r.name};
+        state.user={email:r.email,name:r.name,phone:r.phone||'',profile_photo:r.profile_photo||''};
         state.credits=r.credits||0;
         custTwofaOn=!!r.twofa;
         // skip the login screen — they're already signed in
@@ -4833,7 +5377,7 @@ async function restoreSession(){
         if(auth && flow){
           auth.classList.remove('on');
           flow.classList.add('on');
-          renderClasses(); custStep('class');
+          renderClasses(); customerNavAction('home');
         }
         updateCustBack();
       }
