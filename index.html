@@ -939,6 +939,7 @@
   }
 </style>
 <link rel="stylesheet" href="motion.css">
+<link rel="stylesheet" href="trainer-dashboard.css">
 </head>
 <body>
 
@@ -1428,18 +1429,29 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
       </div>
 
       <div class="ppanel on" id="tp-sched">
-        <div class="daybar" id="tDaybar" style="max-width:none"></div>
-        <div class="tgrid-head" style="margin-top:18px">
-          <h3 id="tDayLabel">Today</h3>
-          <button class="refresh-btn" id="tRefresh" onclick="refreshSchedule()" title="Check for new bookings">↻ Refresh</button>
-          <div class="legend">
-            <span><i style="background:linear-gradient(165deg,#fbeae6,#f3ddd6)"></i> Booked spot</span>
-            <span><i style="background:#fff;border:1px dashed var(--mut)"></i> Free</span>
-            <span><i style="background:rgba(42,42,44,.12)"></i> Held / closed</span>
+        <div class="trainer-kpis" id="trainerKpis"></div>
+        <div class="week-shell">
+          <div class="week-toolbar">
+            <div><h3>Week at a glance</h3><p>Choose any session to open its bookings and attendance.</p></div>
+            <div class="week-legend">
+              <span><i style="background:#e8899b"></i> GESY</span>
+              <span><i style="background:#8f7bb8"></i> Private</span>
+              <span><i style="background:#63a9a6"></i> Available</span>
+              <span><i style="background:#d96f70"></i> Full</span>
+              <span><i style="background:#aaa1a5"></i> Closed</span>
+            </div>
           </div>
+          <div class="week-scroll"><div class="week-calendar" id="tWeekCalendar"></div></div>
         </div>
-        <div class="tslots" id="tSlots"></div>
-        <p style="font-size:12.5px;color:var(--mut);margin-top:22px">Each class is 1 hour with 5 reformers. Hold individual spots for friends, or close a whole class. Add walk-ins to any free spot and record Cash or Card. Booked clients can be cancelled on their behalf — they'll get an email. Changes sync to your Google Calendar.</p>
+        <div class="schedule-detail" id="scheduleDetail">
+          <div class="daybar" id="tDaybar" style="max-width:none"></div>
+          <div class="tgrid-head" style="margin-top:18px">
+            <h3 id="tDayLabel">Today</h3>
+            <button class="refresh-btn" id="tRefresh" onclick="refreshSchedule()" title="Check for new bookings">↻ Refresh week</button>
+          </div>
+          <div class="tslots" id="tSlots"></div>
+          <p class="schedule-help">Tap a client to record attendance. Free places can be held or assigned to a walk-in. Pink sessions are covered by GESY; purple sessions reserve the whole hour for a private client.</p>
+        </div>
       </div>
 
       <div class="ppanel" id="tp-clients">
@@ -3745,9 +3757,9 @@ function enterTrainerPortal(){
   document.getElementById('t-auth').classList.remove('on');
   document.getElementById('t-app').classList.add('on');
   const tb=document.getElementById('trainerBack'); if(tb) tb.textContent='← Sign out';
-  renderTDays();renderTSlots();renderClients();
-  // load the real bookings from the server
-  syncTrainerDay(state.trainerDay).then(ok=>{ if(ok){ renderTSlots(); renderClients(); } });
+  renderTDays();renderTSlots();renderWeekOverview();renderClients();
+  // Load the complete week so the trainer gets a true calendar overview.
+  syncTrainerWeek().then(()=>{ renderTDays();renderTSlots();renderWeekOverview();renderClients(); });
   startSchedulePolling();
   toast('Welcome back, studio.','Trainer');
 }
@@ -3756,6 +3768,7 @@ function trainTab(t){document.querySelectorAll('#v-train .ptabs button').forEach
   document.getElementById('tp-clients').classList.toggle('on',t==='clients');
   document.getElementById('tp-earnings').classList.toggle('on',t==='earnings');
   document.getElementById('tp-manage').classList.toggle('on',t==='manage');
+  if(t==='sched'){renderTDays();renderTSlots();renderWeekOverview();}
   if(t==='earnings')renderEarnings();
   if(t==='manage')renderManage();}
 
@@ -3882,8 +3895,58 @@ function renderTDays(){
       <span class="dow">${i===0?'Today':dow[d.getDay()]}</span><span class="dn">${d.getDate()}</span></div>`).join('');
 }
 async function setTDay(i){
-  state.trainerDay=i; renderTDays(); renderTSlots();
-  if(await syncTrainerDay(i)){ renderTSlots(); renderClients(); }
+  state.trainerDay=i; renderTDays(); renderTSlots(); renderWeekOverview();
+  if(await syncTrainerDay(i)){ renderTSlots(); renderWeekOverview(); renderClients(); }
+}
+
+function isGhsBooking(s){
+  return !!(s && typeof s==='object' && (s.ghs || s.gesy || s.is_ghs || s.ghs_covered));
+}
+function sessionKind(c){
+  if(!c) return 'closed';
+  const booked=spotsBooked(c);
+  if(c.closed) return 'closed';
+  if(c.spots.some(isGhsBooking)) return 'ghs';
+  if(c.private && booked) return 'private';
+  if(spotsFree(c)===0) return 'full';
+  return 'available';
+}
+function renderTrainerSummary(){
+  const box=document.getElementById('trainerKpis'); if(!box) return;
+  const day=store[state.trainerDay]||{};
+  const classes=TIMES.map(t=>day[t]).filter(Boolean);
+  const booked=classes.reduce((n,c)=>n+spotsBooked(c),0);
+  const ghs=classes.reduce((n,c)=>n+c.spots.filter(isGhsBooking).length,0);
+  const privateCount=classes.filter(c=>c.private&&spotsBooked(c)>0).length;
+  const free=classes.reduce((n,c)=>n+(c.closed?0:spotsFree(c)),0);
+  box.innerHTML=`
+    <div class="trainer-kpi" style="--kpi-color:#63a9a6"><div class="tk-label">Booked today</div><div class="tk-value">${booked}</div><div class="tk-note">client${booked===1?'':'s'} expected</div></div>
+    <div class="trainer-kpi" style="--kpi-color:#e8899b"><div class="tk-label">GESY</div><div class="tk-value">${ghs}</div><div class="tk-note">covered session${ghs===1?'':'s'}</div></div>
+    <div class="trainer-kpi" style="--kpi-color:#8f7bb8"><div class="tk-label">Private</div><div class="tk-value">${privateCount}</div><div class="tk-note">full-hour booking${privateCount===1?'':'s'}</div></div>
+    <div class="trainer-kpi" style="--kpi-color:#e9b84b"><div class="tk-label">Free places</div><div class="tk-value">${free}</div><div class="tk-note">still available</div></div>`;
+}
+function renderWeekOverview(){
+  const cal=document.getElementById('tWeekCalendar'); if(!cal) return;
+  cal.style.gridTemplateColumns=`74px repeat(${DAYS.length},minmax(132px,1fr))`;
+  cal.style.minWidth=`${74 + DAYS.length*132}px`;
+  let html='<div class="week-corner"></div>';
+  DAYS.forEach((d,i)=>{
+    html+=`<div class="week-day ${i===0?'today':''} ${i===state.trainerDay?'selected':''}" onclick="setTDay(${i});document.getElementById('scheduleDetail').scrollIntoView({behavior:'smooth',block:'start'})"><div class="wd-name">${i===0?'Today':dow[d.getDay()]}</div><div class="wd-date">${d.getDate()}</div></div>`;
+  });
+  TIMES.forEach(t=>{
+    html+=`<div class="week-time">${t}</div>`;
+    DAYS.forEach((d,di)=>{
+      const c=(store[di]||{})[t];
+      if(!c){ html+='<div class="week-cell"></div>'; return; }
+      const booked=spotsBooked(c),free=spotsFree(c),kind=sessionKind(c);
+      const label=kind==='ghs'?'GESY':kind==='private'?'Private':kind==='closed'?'Closed':kind==='full'?'Full':'Available';
+      html+=`<div class="week-cell ${di===state.trainerDay?'selected':''}" onclick="setTDay(${di});document.getElementById('scheduleDetail').scrollIntoView({behavior:'smooth',block:'start'})">
+        <div class="week-event ${kind}"><div class="we-top"><span class="we-time">${t}</span><span class="we-count">${booked}/${CAP}</span></div><div class="we-name">${c.cls||'Session'}</div><div class="we-tag">${label}${kind==='available'?' · '+free+' free':''}</div></div>
+      </div>`;
+    });
+  });
+  cal.innerHTML=html;
+  renderTrainerSummary();
 }
 
 function paytag(pay){
@@ -3922,11 +3985,16 @@ async function syncTrainerDay(di){
     return false;
   }
 }
+async function syncTrainerWeek(){
+  if(!BACKEND || !trainerToken){ renderWeekOverview(); return; }
+  await Promise.all(DAYS.map((_,i)=>syncTrainerDay(i)));
+  renderWeekOverview();
+}
 async function refreshSchedule(){
   const btn=document.getElementById('tRefresh');
   if(btn){ btn.disabled=true; btn.textContent='↻ Checking…'; }
-  const ok=await syncTrainerDay(state.trainerDay);
-  if(ok){ renderTSlots(); renderClients(); }
+  await syncTrainerWeek();
+  renderTSlots(); renderWeekOverview(); renderClients();
   if(btn){ btn.disabled=false; btn.textContent='↻ Refresh'; }
   if(!BACKEND) toast('Live sync works once the site is online','Schedule');
 }
@@ -3950,6 +4018,7 @@ function renderTSlots(){
     const c=day[t];
     const free=spotsFree(c), booked=spotsBooked(c);
     let head, spotRows='', classCtrl='';
+    const ghsSession=c.spots.some(isGhsBooking);
     if(c.private && booked>0){
       // Private booking — whole class is held for one client.
       const client=c.spots.find(s=>s&&typeof s==='object');
@@ -3959,7 +4028,7 @@ function renderTSlots(){
       spotRows=`<div class="spot-row taken private-row ${pHere?'is-here':''} ${pAbsent?'is-absent':''}">
         <div class="sp-top">
           <span class="sp-i">🌙</span>
-          <span class="sp-name">${client.name} · Private session</span>
+          <span class="sp-name">${client.name} · Private session ${isGhsBooking(client)?'<span class="ghs-tag">GESY</span>':''}</span>
           ${paytag(client.pay)}
           <button class="sp-x" title="Cancel booking" onclick="tCancelSpot(${di},'${t}',${si})">✕</button>
         </div>
@@ -3970,7 +4039,7 @@ function renderTSlots(){
       </div>
         <div class="private-note">All ${CAP} reformers are reserved for this client — no one else can book this time.</div>`;
       classCtrl='';
-      return `<div class="classcard is-private">${head}<div class="spot-list">${spotRows}</div>${classCtrl}</div>`;
+      return `<div class="classcard is-private ${ghsSession?'is-ghs':''}">${head}<div class="spot-list">${spotRows}</div>${classCtrl}</div>`;
     }
     if(c.closed){
       head=`<div class="cl-head"><div><span class="cl-time">${t}</span><span class="cl-name">${c.cls}</span></div><span class="cl-count closed">Class closed</span></div>`;
@@ -3990,7 +4059,7 @@ function renderTSlots(){
           return `<div class="spot-row taken ${here?'is-here':''} ${absent?'is-absent':''}">
             <div class="sp-top">
               <span class="sp-i">${si+1}</span>
-              <span class="sp-name">${s.name} ${regTag}</span>
+              <span class="sp-name">${s.name} ${isGhsBooking(s)?'<span class="ghs-tag">GESY</span>':''} ${regTag}</span>
               ${paytag(s.pay)}
               <button class="sp-x" title="Cancel booking" onclick="tCancelSpot(${di},'${t}',${si})">✕</button>
             </div>
@@ -4006,7 +4075,7 @@ function renderTSlots(){
         <button class="danger" onclick="tCloseClass(${di},'${t}')">Close whole class</button>
       </div>`;
     }
-    return `<div class="classcard ${c.closed?'is-closed':''}">${head}<div class="spot-list">${spotRows}</div>${classCtrl}</div>`;
+    return `<div class="classcard ${c.closed?'is-closed':''} ${ghsSession?'is-ghs':''}">${head}<div class="spot-list">${spotRows}</div>${classCtrl}</div>`;
   }).join('');
 }
 
@@ -4856,7 +4925,8 @@ async function restoreSession(){
         auth.classList.remove('on');
         app.classList.add('on');
         const tb=document.getElementById('trainerBack'); if(tb) tb.textContent='← Sign out';
-        renderTDays(); renderTSlots(); renderClients();
+        renderTDays(); renderTSlots(); renderWeekOverview(); renderClients();
+        await syncTrainerWeek(); renderTSlots(); renderWeekOverview(); renderClients();
       }
     }catch(e){
       try{ localStorage.removeItem('rb_ttoken'); }catch(e2){}
