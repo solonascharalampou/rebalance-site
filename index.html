@@ -1277,7 +1277,7 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
       </div>
 
       <div class="flow" id="cs-pay">
-        <button class="back" onclick="custStep('slots')">← Time</button>
+        <button class="back" onclick="backToSlots()">← Time</button>
         <div class="pay">
           <div class="repeat-box" id="repeatBox">
             <label class="rp-toggle">
@@ -3355,11 +3355,13 @@ function renderCSlots(){
       if(!c) return '';
       free=spotsFree(c); booked=spotsBooked(c); closed=c.closed; priv=c.private;
     }
-    const avail = priv ? false : (wantSolo ? (!closed && booked===0) : (!closed && free>0));
+    const past = isPastSlot(state.dayIdx,t);
+    const avail = !past && (priv ? false : (wantSolo ? (!closed && booked===0) : (!closed && free>0)));
     // a FULL (but not closed/private) group class can be joined via waitlist
-    const canWait = !wantSolo && !priv && !closed && free===0;
+    const canWait = !past && !wantSolo && !priv && !closed && free===0;
     let label;
-    if(priv) label='Private — booked';
+    if(past) label='Time passed';
+    else if(priv) label='Private — booked';
     else if(closed) label='Closed';
     else if(wantSolo) label = booked===0 ? 'Available' : 'Taken';
     else label = free>0 ? free+' of '+CAP+' left' : 'Full';
@@ -3369,10 +3371,18 @@ function renderCSlots(){
         <div class="t">${t}</div>
         <div class="lft">${on?'✓ On waitlist':'Full · join list'}</div></div>`;
     }
-    return `<div class="slot ${avail?'':'full'} ${state.slot===t?'on':''}" ${avail?`onclick="pickSlot('${t}')"`:''}>
+    return `<div class="slot ${avail?'':'full'} ${past?'past':''} ${state.slot===t?'on':''}" ${avail?`onclick="pickSlot('${t}')"`:''}>
       <div class="t">${t}</div>
       <div class="lft">${label}</div></div>`;
   }).join('');
+}
+function isPastSlot(dayIndex,time){
+  const day=DAYS[dayIndex];
+  if(!day) return false;
+  const [hour,minute]=time.split(':').map(Number);
+  const slot=new Date(day);
+  slot.setHours(hour,minute,0,0);
+  return slot.getTime()<=Date.now();
 }
 /* ---------- waitlist ---------- */
 let WAITLIST=[]; // demo: {day, time}
@@ -3395,6 +3405,7 @@ async function toggleWaitlist(t){
   renderCSlots();
 }
 function pickSlot(t){state.slot=t;renderCSlots();setTimeout(()=>{buildReceipt();custStep('pay');},200);}
+function backToSlots(){state.slot=null;custStep('slots');renderCSlots();}
 
 // price: credit covers a CLASS spot; private is always its own price
 function applyPromo(){
