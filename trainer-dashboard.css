@@ -5,7 +5,7 @@
 #t-app>.phead{display:flex;align-items:end;justify-content:space-between;padding:4px 2px 20px;border-bottom:1px solid var(--td-line)}
 #t-app>.phead h1{font-size:clamp(2rem,4vw,3.35rem);margin-top:5px}
 #t-app>.phead::after{content:"Aphrodite · Studio owner";font-size:12px;color:var(--td-muted);background:var(--td-panel);border:1px solid var(--td-line);padding:9px 14px;border-radius:99px}
-#t-app .ptabs{position:sticky;top:70px;z-index:120;display:grid;grid-template-columns:repeat(4,minmax(110px,1fr));gap:6px;margin:18px 0 22px;padding:6px;background:rgba(255,253,250,.9);backdrop-filter:blur(16px);border:1px solid var(--td-line);border-radius:16px;box-shadow:0 14px 45px -38px rgba(58,38,47,.55)}
+#t-app .ptabs{position:sticky;top:70px;z-index:120;display:grid;grid-template-columns:repeat(4,minmax(110px,1fr));gap:6px;margin:18px 0 22px;padding:6px;background:#fffdfa;border:1px solid var(--td-line);border-radius:16px}
 #t-app .ptabs button{border:0;border-radius:11px;padding:12px 16px;background:transparent;color:var(--td-muted);font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;transition:.2s}
 #t-app .ptabs button::before{margin-right:8px;font-size:14px}#t-app .ptabs button[data-tp=sched]::before{content:"▦"}#t-app .ptabs button[data-tp=clients]::before{content:"♙"}#t-app .ptabs button[data-tp=earnings]::before{content:"◎"}#t-app .ptabs button[data-tp=manage]::before{content:"⚙"}
 #t-app .ptabs button.on{background:var(--td-text);color:#fff;box-shadow:0 8px 18px -12px rgba(53,45,49,.8)}
@@ -37,10 +37,12 @@
 .week-cell:hover .week-event{transform:translateY(-2px);box-shadow:0 9px 20px -16px rgba(53,45,49,.6)}
 .we-top{display:flex;justify-content:space-between;gap:5px;align-items:start}.we-time{font-size:11px;font-weight:700}.we-count{font-size:9px;font-weight:700;background:rgba(255,255,255,.68);padding:2px 5px;border-radius:7px;white-space:nowrap}.we-name{font-size:11px;color:#5f5358;line-height:1.25}.we-tag{font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--event,var(--td-teal))}
 .week-event.ghs{--event:var(--td-pink);--event-bg:var(--td-pink-soft)}.week-event.private{--event:var(--td-purple);--event-bg:var(--td-purple-soft)}.week-event.closed{--event:#aaa1a5;--event-bg:#f3f0f1;opacity:.72}.week-event.full{--event:var(--td-red);--event-bg:#fff0f0}.week-event.available{--event:var(--td-teal);--event-bg:var(--td-teal-soft)}
+.week-event.complete{--event:var(--td-green);--event-bg:#edf8ef}.week-event.noshow{--event:var(--td-yellow);--event-bg:var(--td-yellow-soft)}
 
 .schedule-detail{background:var(--td-panel);border:1px solid var(--td-line);border-radius:20px;padding:20px;box-shadow:0 22px 60px -48px rgba(53,45,49,.65)}
 .schedule-detail .tgrid-head{margin:0 0 16px;padding-bottom:15px;border-bottom:1px solid var(--td-line)}
 .schedule-detail .refresh-btn{margin-left:auto;border:1px solid var(--td-line);background:#fff;border-radius:10px;padding:9px 13px;font-size:11px;color:var(--td-text)}
+.schedule-detail .refresh-btn.primary{margin-left:auto;background:var(--td-text);border-color:var(--td-text);color:#fff}.schedule-detail .refresh-btn.primary+#tRefresh{margin-left:6px}
 .schedule-detail .legend{display:none}
 .schedule-detail .tslots{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:0}
 .schedule-detail .classcard{border-color:var(--td-line);background:#fff;border-radius:15px;box-shadow:0 12px 28px -28px rgba(53,45,49,.7)}
@@ -59,3 +61,8 @@
 @media(max-width:900px){.trainer-kpis{grid-template-columns:repeat(2,1fr)}.schedule-detail .tslots{grid-template-columns:1fr}#tp-manage.on{grid-template-columns:1fr}#tp-manage .manage-sec{grid-column:1!important}}
 @media(max-width:640px){#v-train .portal.wrap{padding-inline:14px}#t-app>.phead::after{display:none}#t-app .ptabs{top:64px;grid-template-columns:repeat(4,1fr);gap:3px;padding:4px}#t-app .ptabs button{padding:10px 4px;font-size:9px}#t-app .ptabs button::before{display:block;margin:0 0 3px}.trainer-kpis{grid-template-columns:1fr 1fr;gap:8px}.trainer-kpi{padding:13px;min-height:84px}.trainer-kpi .tk-value{font-size:1.55rem}.week-toolbar{align-items:flex-start;flex-direction:column}.week-legend{gap:10px}.schedule-detail{padding:14px}#tp-clients,#tp-earnings,#tp-manage{padding:14px!important}}
 @media(prefers-reduced-motion:reduce){.week-event,.week-cell,.week-day,#t-app .ptabs button{transition:none!important}}
+
+/* The portal is a working tool: prioritize immediate response over decoration. */
+#v-train *,#v-train *::before,#v-train *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}
+#v-train .week-event,#v-train .week-cell,#v-train .week-day,#v-train button{transition:none!important}
+#v-train .week-cell:hover .week-event{transform:none;box-shadow:none}
