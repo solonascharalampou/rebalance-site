@@ -3319,8 +3319,9 @@ async function chooseType(mode){
   state.bookMode=mode;
   state.dayIdx=0;state.slot=null;
   renderCDays();
-  await loadAvail();
+  document.getElementById('slots').innerHTML='<div class="empty" style="grid-column:1/-1">Checking availability…</div>';
   custStep('slots');
+  await loadAvail();
 }
 function renderCDays(){
   document.getElementById('daybar').innerHTML=DAYS.map((d,i)=>`
@@ -3340,12 +3341,19 @@ async function loadAvail(){
 }
 function renderCSlots(){
   const wantSolo=state.bookMode==='solo';
-  document.getElementById('slots').innerHTML=TIMES.map(t=>{
+  // The API is authoritative. Studio settings can briefly contain a newly-added
+  // time that the backend has not adopted yet; omit it instead of crashing.
+  const visibleTimes=(BACKEND && availCache)
+    ? TIMES.filter(t=>availCache[t])
+    : TIMES.filter(t=>(store[state.dayIdx]||{})[t]);
+  document.getElementById('slots').innerHTML=visibleTimes.map(t=>{
     let free,booked,closed,priv;
     if(BACKEND && availCache && availCache[t]){
       const a=availCache[t]; free=a.free; booked=a.booked; closed=a.closed; priv=a.private;
     }else{
-      const c=store[state.dayIdx][t]; free=spotsFree(c); booked=spotsBooked(c); closed=c.closed; priv=c.private;
+      const c=(store[state.dayIdx]||{})[t];
+      if(!c) return '';
+      free=spotsFree(c); booked=spotsBooked(c); closed=c.closed; priv=c.private;
     }
     const avail = priv ? false : (wantSolo ? (!closed && booked===0) : (!closed && free>0));
     // a FULL (but not closed/private) group class can be joined via waitlist
@@ -3933,7 +3941,8 @@ function renderWeekOverview(){
   DAYS.forEach((d,i)=>{
     html+=`<div class="week-day ${i===0?'today':''} ${i===state.trainerDay?'selected':''}" onclick="setTDay(${i});document.getElementById('scheduleDetail').scrollIntoView({behavior:'smooth',block:'start'})"><div class="wd-name">${i===0?'Today':dow[d.getDay()]}</div><div class="wd-date">${d.getDate()}</div></div>`;
   });
-  TIMES.forEach(t=>{
+  const calendarTimes=TIMES.filter(t=>DAYS.some((_,di)=>(store[di]||{})[t]));
+  calendarTimes.forEach(t=>{
     html+=`<div class="week-time">${t}</div>`;
     DAYS.forEach((d,di)=>{
       const c=(store[di]||{})[t];
@@ -4014,7 +4023,8 @@ function stopSchedulePolling(){ if(schedPoll){ clearInterval(schedPoll); schedPo
 function renderTSlots(){
   const di=state.trainerDay,day=store[di];
   const d=DAYS[di];document.getElementById('tDayLabel').textContent=(di===0?'Today · ':'')+d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
-  document.getElementById('tSlots').innerHTML=TIMES.map(t=>{
+  const dayTimes=TIMES.filter(t=>day&&day[t]);
+  document.getElementById('tSlots').innerHTML=dayTimes.map(t=>{
     const c=day[t];
     const free=spotsFree(c), booked=spotsBooked(c);
     let head, spotRows='', classCtrl='';
