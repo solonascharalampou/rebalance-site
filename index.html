@@ -939,7 +939,7 @@
   }
 </style>
 <link rel="stylesheet" href="motion.css?v=20261111-2">
-<link rel="stylesheet" href="trainer-dashboard.css?v=20261111-1">
+<link rel="stylesheet" href="trainer-dashboard.css?v=20261111-2">
 </head>
 <body>
 
@@ -1437,7 +1437,8 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
               <span><i style="background:#e8899b"></i> GESY</span>
               <span><i style="background:#8f7bb8"></i> Private</span>
               <span><i style="background:#63a9a6"></i> Available</span>
-              <span><i style="background:#d96f70"></i> Full</span>
+              <span><i style="background:#69a275"></i> Complete</span>
+              <span><i style="background:#e9b84b"></i> No-show</span>
               <span><i style="background:#aaa1a5"></i> Closed</span>
             </div>
           </div>
@@ -1447,6 +1448,7 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
           <div class="daybar" id="tDaybar" style="max-width:none"></div>
           <div class="tgrid-head" style="margin-top:18px">
             <h3 id="tDayLabel">Today</h3>
+            <button class="refresh-btn primary" onclick="openQuickBooking()">+ Add caller / walk-in</button>
             <button class="refresh-btn" id="tRefresh" onclick="refreshSchedule()" title="Check for new bookings">↻ Refresh week</button>
           </div>
           <div class="tslots" id="tSlots"></div>
@@ -1560,13 +1562,18 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
   <div class="row"><button class="btn ghost" style="flex:1" onclick="closeModal()">Keep it</button><button class="btn" style="flex:1" id="mConfirm"></button></div>
 </div></div>
 <div class="modal" id="walkinModal"><div class="sheet">
-  <h3>Add walk-in</h3><p>Book this spot for an in-person client and record how they paid.</p>
+  <h3>Add appointment</h3><p>Record a booking made by phone or a client arriving in person.</p>
   <div class="wi-target" id="wiClassLabel"></div>
+  <div class="row">
+    <label style="flex:1">Day<select id="wiDate" onchange="refreshWalkinTimes()"></select></label>
+    <label style="flex:1">Time<select id="wiTime" onchange="refreshWalkinTarget()"></select></label>
+  </div>
   <label>Client name</label><input id="wiName" placeholder="e.g. Maria K.">
-  <label>Payment</label>
+  <label>Booking / payment type</label>
   <select id="wiPay">
     <option value="cash">Cash — paid in studio</option>
     <option value="card">Card — paid in studio</option>
+    <option value="ghs">GESY — covered session</option>
   </select>
   <div class="row">
     <button class="btn ghost" style="flex:1" onclick="document.getElementById('walkinModal').classList.remove('show')">Cancel</button>
@@ -3919,13 +3926,16 @@ async function setTDay(i){
 }
 
 function isGhsBooking(s){
-  return !!(s && typeof s==='object' && (s.ghs || s.gesy || s.is_ghs || s.ghs_covered));
+  return !!(s && typeof s==='object' && (s.pay==='ghs' || s.ghs || s.gesy || s.is_ghs || s.ghs_covered));
 }
 function sessionKind(c){
   if(!c) return 'closed';
   const booked=spotsBooked(c);
   if(c.closed) return 'closed';
   if(c.spots.some(isGhsBooking)) return 'ghs';
+  const clients=c.spots.filter(s=>s&&typeof s==='object');
+  if(clients.length && clients.every(s=>s.attended===true)) return 'complete';
+  if(clients.length && clients.every(s=>s.attended!==undefined) && clients.some(s=>s.attended===false)) return 'noshow';
   if(c.private && booked) return 'private';
   if(spotsFree(c)===0) return 'full';
   return 'available';
@@ -3959,7 +3969,7 @@ function renderWeekOverview(){
       const c=(store[di]||{})[t];
       if(!c){ html+='<div class="week-cell"></div>'; return; }
       const booked=spotsBooked(c),free=spotsFree(c),kind=sessionKind(c);
-      const label=kind==='ghs'?'GESY':kind==='private'?'Private':kind==='closed'?'Closed':kind==='full'?'Full':'Available';
+      const label=kind==='ghs'?'GESY':kind==='private'?'Private':kind==='complete'?'Complete':kind==='noshow'?'No-show':kind==='closed'?'Closed':kind==='full'?'Full':'Available';
       html+=`<div class="week-cell ${di===state.trainerDay?'selected':''}" onclick="setTDay(${di});document.getElementById('scheduleDetail').scrollIntoView({behavior:'smooth',block:'start'})">
         <div class="week-event ${kind}"><div class="we-top"><span class="we-time">${t}</span><span class="we-count">${booked}/${CAP}</span></div><div class="we-name">${c.cls||'Session'}</div><div class="we-tag">${label}${kind==='available'?' · '+free+' free':''}</div></div>
       </div>`;
@@ -4321,15 +4331,22 @@ async function removeClosure(i){
 }
 
 /* whole-class controls */
-function tCloseClass(di,t){const c=store[di][t];
+async function tCloseClass(di,t){const c=store[di][t];
   if(spotsBooked(c)>0){toast('Cancel booked clients first, then close the class','Schedule');return;}
-  c.closed=true;c.spots=c.spots.map(()=> 'held');renderTSlots();renderClients();toast('Whole class closed · blocked on Google Calendar','Schedule');}
-function tOpenClass(di,t){const c=store[di][t];c.closed=false;c.spots=c.spots.map(()=>null);renderTSlots();renderClients();toast('Class re-opened — all '+CAP+' spots bookable','Schedule');}
-function tHoldAll(di,t){const c=store[di][t];c.spots=c.spots.map(s=>s===null?'held':s);renderTSlots();toast('Held all free spots','Schedule');}
+  if(BACKEND&&trainerToken){try{await api('/trainer/hold',{method:'POST',token:trainerToken,body:{date:isoDate(DAYS[di]),hour:t}});}catch(e){toast(e.message,'Schedule');return;}}
+  c.closed=true;c.spots=c.spots.map(()=> 'held');renderTSlots();renderWeekOverview();renderClients();toast('Whole class closed','Schedule');}
+async function tOpenClass(di,t){const c=store[di][t];
+  if(BACKEND&&trainerToken){try{await api('/trainer/free',{method:'POST',token:trainerToken,body:{date:isoDate(DAYS[di]),hour:t}});}catch(e){toast(e.message,'Schedule');return;}}
+  c.closed=false;c.spots=c.spots.map(()=>null);renderTSlots();renderWeekOverview();renderClients();toast('Class re-opened — all '+CAP+' spots bookable','Schedule');}
+function tHoldAll(di,t){return tCloseClass(di,t);}
 
 /* individual spot controls */
-function tHold(di,t,si){store[di][t].spots[si]='held';renderTSlots();toast('Spot '+(si+1)+' held for you','Schedule');}
-function tFree(di,t,si){store[di][t].spots[si]=null;renderTSlots();toast('Spot '+(si+1)+' freed — bookable again','Schedule');}
+async function tHold(di,t,si){
+  if(BACKEND&&trainerToken){try{await api('/trainer/hold',{method:'POST',token:trainerToken,body:{date:isoDate(DAYS[di]),hour:t,spot:si}});}catch(e){toast(e.message,'Schedule');return;}}
+  store[di][t].spots[si]='held';renderTSlots();renderWeekOverview();toast('Spot '+(si+1)+' held for you','Schedule');}
+async function tFree(di,t,si){
+  if(BACKEND&&trainerToken){try{await api('/trainer/free',{method:'POST',token:trainerToken,body:{date:isoDate(DAYS[di]),hour:t,spot:si}});}catch(e){toast(e.message,'Schedule');return;}}
+  store[di][t].spots[si]=null;renderTSlots();renderWeekOverview();toast('Spot '+(si+1)+' freed — bookable again','Schedule');}
 function tMarkCash(di,t,si){const sp=store[di][t].spots[si];if(sp&&typeof sp==='object'){sp.pay='cash';renderTSlots();renderClients();toast('Cash recorded for '+sp.name,'Payment');}}
 // mark a client present / no-show (tap again to clear)
 async function tAttend(di,t,si,here){
@@ -4344,7 +4361,7 @@ function tAttendLocal(di,t,si,here){
   const s=store[di][t].spots[si];
   if(!s || typeof s!=='object') return;
   s.attended = (s.attended===here) ? undefined : here;
-  renderTSlots(); renderClients();
+  renderTSlots(); renderWeekOverview(); renderClients();
   if(s.attended===true) toast(s.name+' marked present','Attendance');
   else if(s.attended===false) toast(s.name+' marked no-show','Attendance');
 }
@@ -4428,18 +4445,41 @@ function tWalkin(di,t,si){
   walkinTarget={di,t,si};
   document.getElementById('wiName').value='';
   document.getElementById('wiPay').value='cash';
-  const c=store[di][t];
-  document.getElementById('wiClassLabel').textContent=c.cls+' · '+t+' · spot '+(si+1);
+  document.getElementById('wiDate').innerHTML=DAYS.map((d,i)=>`<option value="${i}" ${i===di?'selected':''}>${d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</option>`).join('');
+  refreshWalkinTimes(t);
   document.getElementById('walkinModal').classList.add('show');
 }
-function saveWalkin(){
+function openQuickBooking(){
+  const di=state.trainerDay;
+  const t=TIMES.find(x=>{const c=(store[di]||{})[x];return c&&!c.closed&&!c.private&&c.spots.some(s=>s===null||s==='held');});
+  if(!t){toast('No free place on this day','Schedule');return;}
+  const si=store[di][t].spots.findIndex(s=>s===null||s==='held');
+  tWalkin(di,t,si);
+}
+function refreshWalkinTimes(preferred){
+  const di=+document.getElementById('wiDate').value;
+  const options=TIMES.filter(t=>{const c=(store[di]||{})[t];return c&&!c.closed&&!c.private&&c.spots.some(s=>s===null||s==='held');});
+  const pick=options.includes(preferred)?preferred:options[0];
+  document.getElementById('wiTime').innerHTML=options.map(t=>`<option value="${t}" ${t===pick?'selected':''}>${t}</option>`).join('');
+  refreshWalkinTarget();
+}
+function refreshWalkinTarget(){
+  const di=+document.getElementById('wiDate').value,t=document.getElementById('wiTime').value;
+  const c=(store[di]||{})[t];
+  if(!c){document.getElementById('wiClassLabel').textContent='No free place';return;}
+  const si=c.spots.findIndex(s=>s===null||s==='held');
+  walkinTarget={di,t,si};
+  document.getElementById('wiClassLabel').textContent=c.cls+' · '+t+' · spot '+(si+1);
+}
+async function saveWalkin(){
   const {di,t,si}=walkinTarget;
   const name=document.getElementById('wiName').value.trim()||'Walk-in';
-  const pay=document.getElementById('wiPay').value; // 'cash' | 'viva'
-  store[di][t].spots[si]={name,pay};
+  const pay=document.getElementById('wiPay').value;
+  if(BACKEND&&trainerToken){try{await api('/trainer/walkin',{method:'POST',token:trainerToken,body:{date:isoDate(DAYS[di]),hour:t,spot:si,name,pay}});}catch(e){toast(e.message,'Appointment');return;}}
+  store[di][t].spots[si]={name,pay,ghs:pay==='ghs'};
   document.getElementById('walkinModal').classList.remove('show');
-  renderTSlots();renderClients();
-  toast('Walk-in booked · '+pay+' recorded for '+name,'Payment');
+  state.trainerDay=di;renderTDays();renderTSlots();renderWeekOverview();renderClients();
+  toast(name+' added · '+(pay==='ghs'?'GESY':pay+' recorded'),'Appointment');
 }
 
 async function syncClients(){
