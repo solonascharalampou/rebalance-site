@@ -17,6 +17,9 @@ body.motion-ready::after{
   animation:rbGrain .28s steps(2) infinite;
 }
 
+/* Keep the choreography without continuously repainting the full viewport. */
+body.motion-ready::before,body.motion-ready::after{display:none}
+
 .rb-progress{position:fixed;top:0;left:0;width:100%;height:3px;z-index:4000;transform-origin:left;transform:scaleX(0);background:linear-gradient(90deg,var(--rust),var(--clay),var(--olive));box-shadow:0 1px 12px rgba(193,110,110,.35)}
 .rb-loader{position:fixed;inset:0;z-index:6000;display:grid;place-items:center;background:var(--oat);pointer-events:none;transition:clip-path 1.05s var(--ease-out),visibility 1.05s}
 .rb-loader.done{clip-path:inset(0 0 100% 0);visibility:hidden}
@@ -26,7 +29,7 @@ body.motion-ready::after{
 
 .motion-ready nav{transform:translateY(-110%);animation:rbNavIn .8s var(--ease-out) .55s forwards}
 .motion-ready .hero .eyebrow,.motion-ready .hero h1,.motion-ready .hero p,.motion-ready .hero-actions,.motion-ready .hero-stat{
-  opacity:0;transform:translateY(34px);filter:blur(8px);animation:rbHeroIn .95s var(--ease-out) forwards
+  opacity:0;transform:translateY(34px);animation:rbHeroIn .95s var(--ease-out) forwards
 }
 .motion-ready .hero .eyebrow{animation-delay:.54s}.motion-ready .hero h1{animation-delay:.64s}
 .motion-ready .hero p{animation-delay:.76s}.motion-ready .hero-actions{animation-delay:.88s}.motion-ready .hero-stat{animation-delay:1s}
@@ -40,7 +43,7 @@ body.motion-ready::after{
 .motion-ready .word-rise>span{display:inline-block;transform:translateY(115%);opacity:0;transition:transform .85s var(--ease-out),opacity .6s ease;transition-delay:calc(var(--i) * 55ms)}
 .motion-ready .word-rise.in>span{transform:none;opacity:1}
 
-.motion-ready .reveal{opacity:0;transform:translateY(52px) scale(.985);filter:blur(7px);transition:opacity .95s var(--ease-out),transform .95s var(--ease-out),filter .8s ease}
+.motion-ready .reveal{opacity:0;transform:translateY(52px) scale(.985);transition:opacity .95s var(--ease-out),transform .95s var(--ease-out)}
 .motion-ready .reveal.in{opacity:1;transform:none;filter:none}
 .motion-ready .stagger-child{opacity:0;transform:translateY(28px);transition:opacity .72s var(--ease-out),transform .72s var(--ease-out);transition-delay:calc(var(--i) * 90ms)}
 .motion-ready .in .stagger-child,.motion-ready .stagger-child.in{opacity:1;transform:none}
