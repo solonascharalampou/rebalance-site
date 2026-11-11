@@ -939,7 +939,7 @@
   }
 </style>
 <link rel="stylesheet" href="motion.css?v=20261111-2">
-<link rel="stylesheet" href="trainer-dashboard.css?v=20261111-2">
+<link rel="stylesheet" href="trainer-dashboard.css?v=20261111-3">
 </head>
 <body>
 
@@ -1436,9 +1436,8 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
             <div class="week-legend">
               <span><i style="background:#e8899b"></i> GESY</span>
               <span><i style="background:#8f7bb8"></i> Private</span>
-              <span><i style="background:#63a9a6"></i> Available</span>
-              <span><i style="background:#69a275"></i> Complete</span>
-              <span><i style="background:#e9b84b"></i> No-show</span>
+              <span><i style="background:#69a275"></i> Booked</span>
+              <span><i style="background:#63a9a6"></i> Empty / available</span>
               <span><i style="background:#aaa1a5"></i> Closed</span>
             </div>
           </div>
@@ -3933,11 +3932,8 @@ function sessionKind(c){
   const booked=spotsBooked(c);
   if(c.closed) return 'closed';
   if(c.spots.some(isGhsBooking)) return 'ghs';
-  const clients=c.spots.filter(s=>s&&typeof s==='object');
-  if(clients.length && clients.every(s=>s.attended===true)) return 'complete';
-  if(clients.length && clients.every(s=>s.attended!==undefined) && clients.some(s=>s.attended===false)) return 'noshow';
   if(c.private && booked) return 'private';
-  if(spotsFree(c)===0) return 'full';
+  if(booked>0) return 'booked';
   return 'available';
 }
 function renderTrainerSummary(){
@@ -3969,7 +3965,7 @@ function renderWeekOverview(){
       const c=(store[di]||{})[t];
       if(!c){ html+='<div class="week-cell"></div>'; return; }
       const booked=spotsBooked(c),free=spotsFree(c),kind=sessionKind(c);
-      const label=kind==='ghs'?'GESY':kind==='private'?'Private':kind==='complete'?'Complete':kind==='noshow'?'No-show':kind==='closed'?'Closed':kind==='full'?'Full':'Available';
+      const label=kind==='ghs'?'GESY':kind==='private'?'Private':kind==='booked'?'Booked':kind==='closed'?'Closed':'Available';
       html+=`<div class="week-cell ${di===state.trainerDay?'selected':''}" onclick="setTDay(${di});document.getElementById('scheduleDetail').scrollIntoView({behavior:'smooth',block:'start'})">
         <div class="week-event ${kind}"><div class="we-top"><span class="we-time">${t}</span><span class="we-count">${booked}/${CAP}</span></div><div class="we-name">${c.cls||'Session'}</div><div class="we-tag">${label}${kind==='available'?' · '+free+' free':''}</div></div>
       </div>`;
