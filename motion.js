@@ -77,53 +77,9 @@
   }, { passive: true });
   paintScroll();
 
-  let pointerTick = false;
-  addEventListener('pointermove', event => {
-    if (pointerTick) return;
-    pointerTick = true;
-    requestAnimationFrame(() => {
-      document.documentElement.style.setProperty('--mouse-x', `${event.clientX}px`);
-      document.documentElement.style.setProperty('--mouse-y', `${event.clientY}px`);
-      pointerTick = false;
-    });
-  }, { passive: true });
-
   home.querySelectorAll('.btn').forEach(button => {
     button.classList.add('magnetic');
-    button.addEventListener('pointermove', event => {
-      if (event.pointerType === 'touch') return;
-      const rect = button.getBoundingClientRect();
-      const x = (event.clientX - rect.left - rect.width / 2) * .12;
-      const y = (event.clientY - rect.top - rect.height / 2) * .18;
-      button.style.transform = `translate(${x}px,${y - 2}px)`;
-    });
-    button.addEventListener('pointerleave', () => button.style.transform = '');
   });
-
-  home.querySelectorAll('.approach .c').forEach(card => {
-    card.addEventListener('pointermove', event => {
-      if (event.pointerType === 'touch') return;
-      const r = card.getBoundingClientRect();
-      const rx = ((event.clientY - r.top) / r.height - .5) * -5;
-      const ry = ((event.clientX - r.left) / r.width - .5) * 5;
-      card.style.transform = `perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
-    });
-    card.addEventListener('pointerleave', () => card.style.transform = '');
-  });
-
-  const visit = home.querySelector('.visit-card');
-  if (visit) {
-    visit.addEventListener('pointermove', event => {
-      if (event.pointerType === 'touch') return;
-      const r = visit.getBoundingClientRect();
-      visit.style.setProperty('--tilt-x', `${((event.clientX-r.left)/r.width-.5)*3.5}deg`);
-      visit.style.setProperty('--tilt-y', `${((event.clientY-r.top)/r.height-.5)*-3.5}deg`);
-    });
-    visit.addEventListener('pointerleave', () => {
-      visit.style.setProperty('--tilt-x', '0deg');
-      visit.style.setProperty('--tilt-y', '0deg');
-    });
-  }
 
   const counters = home.querySelectorAll('.hero-stat .k');
   counters.forEach(counter => {
