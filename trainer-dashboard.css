@@ -37,7 +37,7 @@
 .week-cell:hover .week-event{transform:translateY(-2px);box-shadow:0 9px 20px -16px rgba(53,45,49,.6)}
 .we-top{display:flex;justify-content:space-between;gap:5px;align-items:start}.we-time{font-size:11px;font-weight:700}.we-count{font-size:9px;font-weight:700;background:rgba(255,255,255,.68);padding:2px 5px;border-radius:7px;white-space:nowrap}.we-name{font-size:11px;color:#5f5358;line-height:1.25}.we-tag{font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--event,var(--td-teal))}
 .week-event.ghs{--event:var(--td-pink);--event-bg:var(--td-pink-soft)}.week-event.private{--event:var(--td-purple);--event-bg:var(--td-purple-soft)}.week-event.closed{--event:#aaa1a5;--event-bg:#f3f0f1;opacity:.72}.week-event.full{--event:var(--td-red);--event-bg:#fff0f0}.week-event.available{--event:var(--td-teal);--event-bg:var(--td-teal-soft)}
-.week-event.complete{--event:var(--td-green);--event-bg:#edf8ef}.week-event.noshow{--event:var(--td-yellow);--event-bg:var(--td-yellow-soft)}
+.week-event.booked{--event:var(--td-green);--event-bg:#edf8ef}
 
 .schedule-detail{background:var(--td-panel);border:1px solid var(--td-line);border-radius:20px;padding:20px;box-shadow:0 22px 60px -48px rgba(53,45,49,.65)}
 .schedule-detail .tgrid-head{margin:0 0 16px;padding-bottom:15px;border-bottom:1px solid var(--td-line)}
