@@ -939,7 +939,7 @@
   }
 </style>
 <link rel="stylesheet" href="motion.css?v=20261111-2">
-<link rel="stylesheet" href="trainer-dashboard.css?v=20261112-1">
+<link rel="stylesheet" href="trainer-dashboard.css?v=20261112-2">
 </head>
 <body>
 
@@ -1438,6 +1438,8 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
             <button class="refresh-btn primary" onclick="openQuickBooking()">+ Add caller / walk-in</button>
             <button class="refresh-btn" id="tRefresh" onclick="refreshSchedule()" title="Check for new bookings">↻ Refresh week</button>
           </div>
+          <div class="day-calendar" id="tDayCalendar"></div>
+          <div class="day-detail-title"><span>Appointment details</span><small>Client cards for the selected day</small></div>
           <div class="tslots" id="tSlots"></div>
           <p class="schedule-help">This diary shows appointments for the selected day only. Tap Here or No-show to record attendance. Use “Show open times” when you need to hold a place or add a walk-in.</p>
         </div>
@@ -4012,7 +4014,7 @@ function renderTrainerSummary(){
     <div class="trainer-kpi" style="--kpi-color:#e9b84b"><div class="tk-label">Free places</div><div class="tk-value">${free}</div><div class="tk-note">still available</div></div>`;
 }
 function renderWeekOverview(){
-  const cal=document.getElementById('tWeekCalendar'); if(!cal){renderTrainerSummary();return;}
+  const cal=document.getElementById('tWeekCalendar'); if(!cal){renderTrainerSummary();renderDailyCalendar();return;}
   cal.style.gridTemplateColumns=`74px repeat(${DAYS.length},minmax(132px,1fr))`;
   cal.style.minWidth=`${74 + DAYS.length*132}px`;
   let html='<div class="week-corner"></div>';
@@ -4034,6 +4036,28 @@ function renderWeekOverview(){
   });
   cal.innerHTML=html;
   renderTrainerSummary();
+}
+
+function renderDailyCalendar(){
+  const cal=document.getElementById('tDayCalendar');if(!cal)return;
+  const di=state.trainerDay,day=store[di]||{};
+  const rows=TIMES.filter(t=>day[t]).map(t=>{
+    const c=day[t],booked=spotsBooked(c),free=spotsFree(c),kind=sessionKind(c);
+    const clients=c.spots.filter(s=>s&&typeof s==='object');
+    let status=kind;
+    if(clients.length&&clients.every(s=>s.attended===true))status='complete';
+    else if(clients.some(s=>s.attended===false))status='noshow';
+    const names=clients.map(s=>s.name).join(', ');
+    const label=status==='ghs'?'GESY':status==='private'?'Private':status==='complete'?'Complete':status==='noshow'?'No-show':booked?'Booked':'Open';
+    return `<div class="dc-time">${t}</div>
+      <div class="dc-track">
+        ${booked?`<button class="dc-event ${status}" onclick="document.querySelector('.classcard[data-time=\"${t}\"]')?.scrollIntoView({behavior:'smooth',block:'center'})">
+          <span class="dc-main"><b>${c.cls}</b><small>${names}</small></span>
+          <span class="dc-meta"><b>${booked}/${CAP}</b><small>${label}</small></span>
+        </button>`:`<div class="dc-open"><span>${c.closed?'Closed':free+' places available'}</span></div>`}
+      </div>`;
+  }).join('');
+  cal.innerHTML=rows||'<div class="empty">No scheduled times for this day.</div>';
 }
 
 let trainerShowOpen=false;
@@ -4113,7 +4137,7 @@ function renderTSlots(){
   const target=document.getElementById('tSlots');
   if(!dayTimes.length){
     target.innerHTML='<div class="empty trainer-day-empty"><b>No appointments this day</b><span>Choose another date, or show open times to add a caller or walk-in.</span></div>';
-    renderTrainerSummary();
+    renderTrainerSummary();renderDailyCalendar();
     return;
   }
   target.innerHTML=dayTimes.map(t=>{
@@ -4141,7 +4165,7 @@ function renderTSlots(){
       </div>
         <div class="private-note">All ${CAP} reformers are reserved for this client — no one else can book this time.</div>`;
       classCtrl='';
-      return `<div class="classcard is-private ${ghsSession?'is-ghs':''}">${head}<div class="spot-list">${spotRows}</div>${classCtrl}</div>`;
+      return `<div class="classcard is-private ${ghsSession?'is-ghs':''}" data-time="${t}">${head}<div class="spot-list">${spotRows}</div>${classCtrl}</div>`;
     }
     if(c.closed){
       head=`<div class="cl-head"><div><span class="cl-time">${t}</span><span class="cl-name">${c.cls}</span></div><span class="cl-count closed">Class closed</span></div>`;
@@ -4177,9 +4201,9 @@ function renderTSlots(){
         <button class="danger" onclick="tCloseClass(${di},'${t}')">Close whole class</button>
       </div>`;
     }
-    return `<div class="classcard ${c.closed?'is-closed':''} ${ghsSession?'is-ghs':''}">${head}<div class="spot-list">${spotRows}</div>${classCtrl}</div>`;
+    return `<div class="classcard ${c.closed?'is-closed':''} ${ghsSession?'is-ghs':''}" data-time="${t}">${head}<div class="spot-list">${spotRows}</div>${classCtrl}</div>`;
   }).join('');
-  renderTrainerSummary();
+  renderTrainerSummary();renderDailyCalendar();
 }
 
 /* ---------- refunds ---------- */
