@@ -939,7 +939,7 @@
   }
 </style>
 <link rel="stylesheet" href="motion.css?v=20261111-2">
-<link rel="stylesheet" href="trainer-dashboard.css?v=20261111-3">
+<link rel="stylesheet" href="trainer-dashboard.css?v=20261112-1">
 </head>
 <body>
 
@@ -1430,28 +1430,16 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
 
       <div class="ppanel on" id="tp-sched">
         <div class="trainer-kpis" id="trainerKpis"></div>
-        <div class="week-shell">
-          <div class="week-toolbar">
-            <div><h3>Week at a glance</h3><p>Choose any session to open its bookings and attendance.</p></div>
-            <div class="week-legend">
-              <span><i style="background:#e8899b"></i> GESY</span>
-              <span><i style="background:#8f7bb8"></i> Private</span>
-              <span><i style="background:#69a275"></i> Booked</span>
-              <span><i style="background:#63a9a6"></i> Empty / available</span>
-              <span><i style="background:#aaa1a5"></i> Closed</span>
-            </div>
-          </div>
-          <div class="week-scroll"><div class="week-calendar" id="tWeekCalendar"></div></div>
-        </div>
         <div class="schedule-detail" id="scheduleDetail">
           <div class="daybar" id="tDaybar" style="max-width:none"></div>
           <div class="tgrid-head" style="margin-top:18px">
             <h3 id="tDayLabel">Today</h3>
+            <button class="refresh-btn" id="tViewToggle" onclick="toggleTrainerOpenTimes()">Show open times</button>
             <button class="refresh-btn primary" onclick="openQuickBooking()">+ Add caller / walk-in</button>
             <button class="refresh-btn" id="tRefresh" onclick="refreshSchedule()" title="Check for new bookings">↻ Refresh week</button>
           </div>
           <div class="tslots" id="tSlots"></div>
-          <p class="schedule-help">Tap a client to record attendance. Free places can be held or assigned to a walk-in. Pink sessions are covered by GESY; purple sessions reserve the whole hour for a private client.</p>
+          <p class="schedule-help">This diary shows appointments for the selected day only. Tap Here or No-show to record attendance. Use “Show open times” when you need to hold a place or add a walk-in.</p>
         </div>
       </div>
 
@@ -4024,7 +4012,7 @@ function renderTrainerSummary(){
     <div class="trainer-kpi" style="--kpi-color:#e9b84b"><div class="tk-label">Free places</div><div class="tk-value">${free}</div><div class="tk-note">still available</div></div>`;
 }
 function renderWeekOverview(){
-  const cal=document.getElementById('tWeekCalendar'); if(!cal) return;
+  const cal=document.getElementById('tWeekCalendar'); if(!cal){renderTrainerSummary();return;}
   cal.style.gridTemplateColumns=`74px repeat(${DAYS.length},minmax(132px,1fr))`;
   cal.style.minWidth=`${74 + DAYS.length*132}px`;
   let html='<div class="week-corner"></div>';
@@ -4046,6 +4034,14 @@ function renderWeekOverview(){
   });
   cal.innerHTML=html;
   renderTrainerSummary();
+}
+
+let trainerShowOpen=false;
+function toggleTrainerOpenTimes(){
+  trainerShowOpen=!trainerShowOpen;
+  const b=document.getElementById('tViewToggle');
+  if(b)b.textContent=trainerShowOpen?'Appointments only':'Show open times';
+  renderTSlots();
 }
 
 function paytag(pay){
@@ -4113,8 +4109,14 @@ function stopSchedulePolling(){ if(schedPoll){ clearInterval(schedPoll); schedPo
 function renderTSlots(){
   const di=state.trainerDay,day=store[di];
   const d=DAYS[di];document.getElementById('tDayLabel').textContent=(di===0?'Today · ':'')+d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
-  const dayTimes=TIMES.filter(t=>day&&day[t]);
-  document.getElementById('tSlots').innerHTML=dayTimes.map(t=>{
+  const dayTimes=TIMES.filter(t=>day&&day[t]&&(trainerShowOpen||spotsBooked(day[t])>0));
+  const target=document.getElementById('tSlots');
+  if(!dayTimes.length){
+    target.innerHTML='<div class="empty trainer-day-empty"><b>No appointments this day</b><span>Choose another date, or show open times to add a caller or walk-in.</span></div>';
+    renderTrainerSummary();
+    return;
+  }
+  target.innerHTML=dayTimes.map(t=>{
     const c=day[t];
     const free=spotsFree(c), booked=spotsBooked(c);
     let head, spotRows='', classCtrl='';
@@ -4177,6 +4179,7 @@ function renderTSlots(){
     }
     return `<div class="classcard ${c.closed?'is-closed':''} ${ghsSession?'is-ghs':''}">${head}<div class="spot-list">${spotRows}</div>${classCtrl}</div>`;
   }).join('');
+  renderTrainerSummary();
 }
 
 /* ---------- refunds ---------- */
