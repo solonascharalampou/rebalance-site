@@ -1963,7 +1963,7 @@ let CAP=5; // reformers per class (editable)
 const dow=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const DAYS=[];for(let i=0;i<6;i++){const d=new Date();d.setDate(d.getDate()+i);DAYS.push(d);}
 let TIMES=['08:00','09:00','10:00','11:00','17:00','18:00','19:00'];
-let PROMOS={ 'FIRST20':{off:0.20,label:'20% off'}, 'WELCOME10':{off:0.10,label:'10% off'} };
+let PROMOS={ 'FIRST20':{off:0.20,label:'20% off'}, 'WELCOME10':{off:0.10,label:'10% off'}, 'ECRU10':{off:0.10,label:'Écru partner · 10% off'} };
 
 // ---- persistence: save/load all editable settings (survives refresh when hosted) ----
 let TRAINERS=[{id:'t1',name:'Aphrodite',role:'Physiotherapist · Owner'}];
@@ -3296,9 +3296,10 @@ function renderClasses(){
     </div>`).join('');
 }
 function chooseClass(id){
-  state.cls=CLASSES.find(c=>c.id===id);state.slot=null;state.dayIdx=0;state.bookMode=null;state.promo=null;
+  state.cls=CLASSES.find(c=>c.id===id);state.slot=null;state.dayIdx=0;state.bookMode=null;
+  state.promo=hasEcruOffer()?'ECRU10':null;
   const rp=document.getElementById('rpOn'); if(rp){rp.checked=false;document.getElementById('rpWeeks').style.display='none';}
-  const pi=document.getElementById('promoInput'); if(pi)pi.value='';
+  const pi=document.getElementById('promoInput'); if(pi)pi.value=state.promo||'';
   custStep('type');
 }
 
@@ -3438,6 +3439,9 @@ function currentPrice(){
   if(p>0 && state.promo && PROMOS[state.promo]) p=Math.round(p*(1-PROMOS[state.promo].off));
   return p;
 }
+function hasEcruOffer(){
+  try{return localStorage.getItem('rb_ecru_offer')==='1';}catch(e){return false;}
+}
 function repeatWeeks(){
   const on=document.getElementById('rpOn');
   if(!on || !on.checked) return 1;
@@ -3493,7 +3497,7 @@ async function custPay(){
   if(BACKEND){
     try{
       const r=await api('/book',{method:'POST',token:authToken,
-        body:{class_key:state.cls.id,date:isoDate(d),hour:state.slot,private:solo}});
+        body:{class_key:state.cls.id,date:isoDate(d),hour:state.slot,private:solo,promo:state.promo||null}});
       if(r.amount===0) state.credits=Math.max(0,state.credits-1);
       await loadMyBookings();
       showReceipt({no:r.receipt_no, cls:state.cls.name, solo, d, time:state.slot,
@@ -4734,8 +4738,11 @@ custTab('login');
 applyLang();  // paint the site in the phone's language (or their saved choice)
 // Printed collaboration flyers use ?join=ecru. Open the account screen
 // immediately so scanning the QR never drops visitors on the homepage.
-const joinCampaign=new URLSearchParams(location.search).get('join');
-if(joinCampaign==='ecru'){
+const joinParams=new URLSearchParams(location.search);
+const joinCampaign=joinParams.get('join');
+if(joinCampaign==='ecru' || joinParams.has('e')){
+  try{localStorage.setItem('rb_ecru_offer','1');}catch(e){}
+  if(!PROMOS.ECRU10) PROMOS.ECRU10={off:.10,label:'Écru partner · 10% off'};
   openCustomer();
   custTab('signup');
   const authCard=document.getElementById('c-authcard');
