@@ -4732,6 +4732,22 @@ applyClosuresToSchedule();
 syncClosures();
 custTab('login');
 applyLang();  // paint the site in the phone's language (or their saved choice)
+// Printed collaboration flyers use ?join=ecru. Open the account screen
+// immediately so scanning the QR never drops visitors on the homepage.
+const joinCampaign=new URLSearchParams(location.search).get('join');
+if(joinCampaign==='ecru'){
+  openCustomer();
+  custTab('signup');
+  const authCard=document.getElementById('c-authcard');
+  if(authCard && !document.getElementById('joinCampaignNote')){
+    const note=document.createElement('div');
+    note.id='joinCampaignNote';
+    note.className='credit-banner';
+    note.style.marginBottom='16px';
+    note.innerHTML='<b>REBALANCE × ÉCRU</b><br><span style="font-size:12px">Create your account to book Pilates & Pour-Overs. Already registered? Choose Log in.</span>';
+    authCard.insertBefore(note,authCard.firstChild);
+  }
+}
 loadServerSettings();  // when live, the server's settings win
 restoreSession();      // "remember me" — sign back in if we have a saved token
 setupGoogleSignIn();   // show the Google button if the server has it configured
