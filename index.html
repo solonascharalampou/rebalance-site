@@ -4809,6 +4809,7 @@ applyLang();  // paint the site in the phone's language (or their saved choice)
 // immediately so scanning the QR never drops visitors on the homepage.
 const joinParams=new URLSearchParams(location.search);
 const joinCampaign=joinParams.get('join');
+if(joinParams.get('trainer')==='1') openTrainer();
 if(joinCampaign==='ecru' || joinParams.has('e')){
   if(hasEcruOffer()){openCustomer();custTab('signup');}
   else setTimeout(()=>document.getElementById('ecruCodeModal').classList.add('show'),150);
