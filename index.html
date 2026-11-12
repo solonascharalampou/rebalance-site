@@ -1498,6 +1498,16 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
         </div>
 
         <div class="manage-sec">
+          <div class="ms-head"><h3>Écru welcome cards</h3><span class="reg-count" id="ecruCodeCount"></span></div>
+          <p class="ms-note">Generate unique codes to hand out in person. Each code unlocks 10% off one new customer's first booking and can only be used once.</p>
+          <div class="row">
+            <button class="btn ghost" style="flex:1" onclick="generateEcruCodes()">Generate 50 codes</button>
+            <button class="btn ghost" style="flex:1" onclick="downloadEcruCodes()">Download CSV</button>
+          </div>
+          <div id="mgEcruCodes" style="margin-top:12px"></div>
+        </div>
+
+        <div class="manage-sec">
           <div class="ms-head"><h3>First-session offer</h3></div>
           <p class="ms-note">A special price for someone's very first class, to bring new people in.</p>
           <label class="mg-check" style="margin-bottom:12px">
@@ -1578,6 +1588,17 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
     <button class="btn ghost" style="flex:1" onclick="document.getElementById('walkinModal').classList.remove('show')">Cancel</button>
     <button class="btn" style="flex:1" onclick="saveWalkin()">Book + record</button>
   </div>
+</div></div>
+<div class="modal" id="ecruCodeModal"><div class="sheet" style="text-align:center">
+  <div style="font-size:11px;letter-spacing:.18em;color:var(--rust);margin-bottom:10px">ÉCRU × REBALANCE</div>
+  <h3>Unlock your welcome offer</h3>
+  <p>Enter the single-use code on the card given to you at Écru.</p>
+  <input id="ecruCodeInput" placeholder="ECRU-XXXXXX" maxlength="11"
+    style="text-align:center;text-transform:uppercase;letter-spacing:.14em;font-weight:600"
+    oninput="this.value=this.value.toUpperCase()">
+  <p id="ecruCodeError" style="display:none;color:#a84646;font-size:12px;margin-top:8px"></p>
+  <button class="btn" id="ecruCodeBtn" style="width:100%;margin-top:14px" onclick="claimEcruCode()">Continue to sign up</button>
+  <button class="back" style="margin:16px auto 0" onclick="document.getElementById('ecruCodeModal').classList.remove('show')">Maybe later</button>
 </div></div>
 <!-- Animated receipt (prints out after payment) -->
 <div class="receipt-overlay" id="receiptOverlay">
@@ -3297,7 +3318,7 @@ function renderClasses(){
 }
 function chooseClass(id){
   state.cls=CLASSES.find(c=>c.id===id);state.slot=null;state.dayIdx=0;state.bookMode=null;
-  state.promo=hasEcruOffer()?'ECRU10':null;
+  state.promo=getEcruCode();
   const rp=document.getElementById('rpOn'); if(rp){rp.checked=false;document.getElementById('rpWeeks').style.display='none';}
   const pi=document.getElementById('promoInput'); if(pi)pi.value=state.promo||'';
   custStep('type');
@@ -3436,11 +3457,33 @@ function currentPrice(){
   // GHS pays the studio directly — the customer is charged nothing
   if(ghsAppliesToBooking()) return 0;
   let p=basePrice();
-  if(p>0 && state.promo && PROMOS[state.promo]) p=Math.round(p*(1-PROMOS[state.promo].off));
+  if(p>0 && state.promo && state.promo.startsWith('ECRU-')) p=Math.round(p*.90);
+  else if(p>0 && state.promo && PROMOS[state.promo]) p=Math.round(p*(1-PROMOS[state.promo].off));
   return p;
 }
 function hasEcruOffer(){
-  try{return localStorage.getItem('rb_ecru_offer')==='1';}catch(e){return false;}
+  return !!getEcruCode();
+}
+function getEcruCode(){
+  try{return (localStorage.getItem('rb_ecru_code')||'').toUpperCase()||null;}catch(e){return null;}
+}
+async function claimEcruCode(){
+  const input=document.getElementById('ecruCodeInput');
+  const err=document.getElementById('ecruCodeError');
+  const btn=document.getElementById('ecruCodeBtn');
+  const code=(input.value||'').trim().toUpperCase();
+  err.style.display='none';
+  if(!code){err.textContent='Enter the code printed on your card.';err.style.display='block';return;}
+  btn.disabled=true;btn.textContent='Checking…';
+  try{
+    if(!BACKEND) throw new Error('The offer service is temporarily unavailable');
+    const r=await api('/campaign/validate',{method:'POST',body:{code}});
+    localStorage.setItem('rb_ecru_code',r.code);
+    document.getElementById('ecruCodeModal').classList.remove('show');
+    openCustomer();custTab('signup');
+    toast('Code accepted · 10% off your first booking','Écru × Rebalance');
+  }catch(e){err.textContent=e.message||'That code is invalid or already used.';err.style.display='block';}
+  finally{btn.disabled=false;btn.textContent='Continue to sign up';}
 }
 function repeatWeeks(){
   const on=document.getElementById('rpOn');
@@ -3829,7 +3872,7 @@ function editFirstOffer(){
 function renderManage(){
   renderMgClasses(); renderMgTimes();
   document.getElementById('mgCap').textContent=CAP;
-  renderMgPackages(); renderMgPromos(); renderMgTrainers(); renderMgRegulars(); renderMgGhs(); renderMgClosures(); renderRefunds();
+  renderMgPackages(); renderMgPromos(); renderMgEcruCodes(); renderMgTrainers(); renderMgRegulars(); renderMgGhs(); renderMgClosures(); renderRefunds();
   Promise.all([syncAllGhs(),syncRegulars(),syncClosures()]).then(()=>{
     renderMgGhs(); renderMgRegulars(); renderMgClosures();
   });
@@ -3917,6 +3960,32 @@ function editPromo(code,pct){ PROMOS[code]={off:Math.max(0,Math.min(100,pct))/10
 function renamePromo(oldc,newc){ newc=newc.toUpperCase().trim(); if(!newc||newc===oldc)return; PROMOS[newc]=PROMOS[oldc]; delete PROMOS[oldc]; saveSettings(); renderMgPromos(); }
 function addPromo(){ let n=1; while(PROMOS['CODE'+n])n++; PROMOS['CODE'+n]={off:0.10,label:'10% off'}; saveSettings(); renderMgPromos(); }
 function removePromo(code){ delete PROMOS[code]; saveSettings(); renderMgPromos(); }
+
+let ECRU_CODES=[];
+async function renderMgEcruCodes(){
+  const box=document.getElementById('mgEcruCodes');if(!box)return;
+  if(!BACKEND||!trainerToken){box.innerHTML='<p class="ms-empty">Sign in online to manage codes.</p>';return;}
+  try{
+    const r=await api('/trainer/campaign-codes',{token:trainerToken});
+    ECRU_CODES=r.codes||[];
+    const unused=ECRU_CODES.filter(x=>!x.used_by).length;
+    document.getElementById('ecruCodeCount').textContent=unused+' unused';
+    box.innerHTML=ECRU_CODES.length
+      ? '<p class="ms-note">'+ECRU_CODES.length+' total · '+(ECRU_CODES.length-unused)+' redeemed. Download the CSV to print or distribute the unused codes.</p>'
+      : '<p class="ms-empty">No codes generated yet.</p>';
+  }catch(e){box.innerHTML='<p class="ms-empty">Could not load codes.</p>';}
+}
+async function generateEcruCodes(){
+  try{
+    await api('/trainer/campaign-codes/generate',{method:'POST',token:trainerToken,body:{count:50}});
+    await renderMgEcruCodes();toast('50 unique Écru codes created','Campaign');
+  }catch(e){toast(e.message,'Campaign');}
+}
+function downloadEcruCodes(){
+  const rows=[['code','status','used_by','used_at'],...ECRU_CODES.map(x=>[x.code,x.used_by?'used':'unused',x.used_by||'',x.used_at||''])];
+  const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='ecru-welcome-codes.csv';a.click();URL.revokeObjectURL(a.href);
+}
 
 function renderTDays(){
   document.getElementById('tDaybar').innerHTML=DAYS.map((d,i)=>`
@@ -4741,19 +4810,8 @@ applyLang();  // paint the site in the phone's language (or their saved choice)
 const joinParams=new URLSearchParams(location.search);
 const joinCampaign=joinParams.get('join');
 if(joinCampaign==='ecru' || joinParams.has('e')){
-  try{localStorage.setItem('rb_ecru_offer','1');}catch(e){}
-  if(!PROMOS.ECRU10) PROMOS.ECRU10={off:.10,label:'Écru partner · 10% off'};
-  openCustomer();
-  custTab('signup');
-  const authCard=document.getElementById('c-authcard');
-  if(authCard && !document.getElementById('joinCampaignNote')){
-    const note=document.createElement('div');
-    note.id='joinCampaignNote';
-    note.className='credit-banner';
-    note.style.marginBottom='16px';
-    note.innerHTML='<b>REBALANCE × ÉCRU</b><br><span style="font-size:12px">Create your account to book Pilates & Pour-Overs. Already registered? Choose Log in.</span>';
-    authCard.insertBefore(note,authCard.firstChild);
-  }
+  if(hasEcruOffer()){openCustomer();custTab('signup');}
+  else setTimeout(()=>document.getElementById('ecruCodeModal').classList.add('show'),150);
 }
 loadServerSettings();  // when live, the server's settings win
 restoreSession();      // "remember me" — sign back in if we have a saved token
