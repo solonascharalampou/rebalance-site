@@ -2940,7 +2940,8 @@ async function syncAllGhs(){
   if(!BACKEND || !trainerToken) return;
   try{
     const r=await api('/ghs/all',{token:trainerToken});
-    GHS_LIST=(r.requests||[]).map(x=>({email:x.email,name:x.name,ref:x.ref,status:x.status}));
+    GHS_LIST=(r.requests||[]).map(x=>({email:x.email,name:x.name,ref:x.ref,status:x.status,
+      expires:x.expires||'',session_limit:x.session_limit,sessions_used:x.sessions_used||0}));
   }catch(e){}
 }
 function myGhsStatus(){
@@ -3027,19 +3028,21 @@ function renderMgGhs(){
     return `<div class="reg-card ${r.status}">
       <div class="reg-info">
         <div class="reg-name">${r.name||r.email}${badge}</div>
-        <div class="reg-when">${r.ref? 'Ref: '+r.ref : 'No reference given'}</div>
+        <div class="reg-when">${r.ref? 'Ref: '+r.ref : 'No reference given'}${r.expires?' · Expires '+r.expires:''}${r.session_limit?' · '+Math.max(0,r.session_limit-(r.sessions_used||0))+'/'+r.session_limit+' remaining':''}</div>
       </div>
       <div class="reg-actions">${actions}</div>
     </div>`;
   }).join('');
 }
-async function setGhsStatus(i,status,msg){
+async function setGhsStatus(i,status,msg,options={}){
   const list=loadGhs();
   if(!list[i]) return;
   if(BACKEND){
     try{
-      await api(`/ghs/decide?email=${encodeURIComponent(list[i].email)}&status=${status}`,
-                {method:'POST',token:trainerToken});
+      const params=new URLSearchParams({email:list[i].email,status});
+      if(options.expires)params.set('expires',options.expires);
+      if(options.session_limit)params.set('session_limit',options.session_limit);
+      await api('/ghs/decide?'+params.toString(),{method:'POST',token:trainerToken});
       await syncAllGhs();
     }catch(e){ toast(e.message,'GHS'); return; }
   }else{
@@ -3048,7 +3051,13 @@ async function setGhsStatus(i,status,msg){
   renderMgGhs();
   toast(msg,'GHS');
 }
-function approveGhs(i){ setGhsStatus(i,'approved','GHS approved — their physiotherapy and Pilates bookings are now free'); }
+function approveGhs(i){
+  const expires=prompt('GHS approval expiry date (YYYY-MM-DD). Leave blank for no expiry:','')||'';
+  const raw=prompt('Maximum covered sessions. Leave blank for unlimited:','')||'';
+  const session_limit=raw?parseInt(raw,10):null;
+  if(raw&&(!session_limit||session_limit<1)){toast('Enter a valid session limit','GHS');return;}
+  setGhsStatus(i,'approved','GHS approved — covered bookings are now free',{expires,session_limit});
+}
 function declineGhs(i){ setGhsStatus(i,'declined','GHS request declined'); }
 function revokeGhs(i){ setGhsStatus(i,'declined','GHS cover removed'); }
 let REGULARS=[];
