@@ -153,7 +153,7 @@
       box.className='mg-card';
       box.style.marginTop='18px';
       box.innerHTML=`<div class="ms-head"><h3>Data protection & exports</h3></div>
-        <p class="ms-note">Daily encrypted-server backups are retained for 30 days. Downloads require the trainer session.</p>
+        <p class="ms-note">Daily protected server backups are retained for 30 days. Downloads require the trainer session.</p>
         <div style="display:flex;flex-wrap:wrap;gap:10px">
           <button class="btn ghost sm" id="downloadBackup" type="button">Download database backup</button>
           <button class="btn ghost sm" id="downloadGhsClaims" type="button">Export GHS claims</button>
