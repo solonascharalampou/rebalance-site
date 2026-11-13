@@ -107,6 +107,22 @@
   'use strict';
   let trainerRefresh = null;
 
+  // The original implementation requested every day at once. Each schedule
+  // request may create missing SQLite rows, so six concurrent writes can wait
+  // on one another until the browser's 45-second timeout. Load days in sequence:
+  // it is fast on this local server and cannot deadlock the diary on first open.
+  if (typeof window.syncTrainerDay === 'function') {
+    window.syncTrainerWeek = async function () {
+      if (!window.BACKEND && typeof BACKEND !== 'undefined' && !BACKEND) {
+        window.renderWeekOverview?.();
+        return;
+      }
+      const days = (typeof DAYS !== 'undefined' && DAYS) || [];
+      for (let i = 0; i < days.length; i++) await window.syncTrainerDay(i);
+      window.renderWeekOverview?.();
+    };
+  }
+
   const loading = (id, message) => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = `<div class="empty"><b>${message}</b><span>Please wait a moment.</span></div>`;
