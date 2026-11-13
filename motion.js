@@ -97,3 +97,56 @@
     requestAnimationFrame(animate);
   });
 })();
+
+/* Trainer portal data bootstrap.
+   The portal used to render its tabs before the live schedule request finished,
+   so Schedule, Clients and Earnings looked empty until the trainer changed the
+   selected date. Keep one shared refresh in flight and repaint every data-backed
+   tab only after the API has populated the browser store. */
+(() => {
+  'use strict';
+  let trainerRefresh = null;
+
+  const loading = (id, message) => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = `<div class="empty"><b>${message}</b><span>Please wait a moment.</span></div>`;
+  };
+
+  const refreshTrainerData = () => {
+    if (trainerRefresh) return trainerRefresh;
+    if (typeof window.syncTrainerWeek !== 'function') return Promise.resolve();
+    trainerRefresh = Promise.resolve(window.syncTrainerWeek())
+      .then(() => {
+        window.renderTDays?.();
+        window.renderTSlots?.();
+        window.renderWeekOverview?.();
+        window.renderClients?.();
+        window.renderEarnings?.();
+      })
+      .finally(() => { trainerRefresh = null; });
+    return trainerRefresh;
+  };
+
+  const originalEnter = window.enterTrainerPortal;
+  if (typeof originalEnter === 'function') {
+    window.enterTrainerPortal = function (...args) {
+      const result = originalEnter.apply(this, args);
+      loading('tSlots', 'Loading today’s appointments…');
+      loading('tDayCalendar', 'Loading today’s calendar…');
+      loading('tClients', 'Loading clients…');
+      refreshTrainerData();
+      return result;
+    };
+  }
+
+  const originalTab = window.trainTab;
+  if (typeof originalTab === 'function') {
+    window.trainTab = function (tab, ...args) {
+      const result = originalTab.call(this, tab, ...args);
+      if (tab === 'sched') loading('tSlots', 'Refreshing appointments…');
+      if (tab === 'clients') loading('tClients', 'Refreshing clients…');
+      if (tab === 'sched' || tab === 'clients' || tab === 'earnings') refreshTrainerData();
+      return result;
+    };
+  }
+})();
