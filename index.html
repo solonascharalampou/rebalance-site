@@ -3510,7 +3510,7 @@ function buildReceipt(){
     ${weeks>1?`<div class="rr"><span class="k">Repeats</span><span>Weekly × ${weeks}</span></div>`:''}
     ${solo||weeks>1?'':`<div class="rr"><span class="k">Your spot</span><span>${spotsBooked(c)+1} of ${CAP}</span></div>`}
     ${usingCredit?`<div class="rr"><span class="k">Credits</span><span>${state.credits} available</span></div>`:''}
-    ${ghsAppliesToBooking()?`<div class="rr ghs-line"><span class="k">🏥 GHS (ΓΕΣΥ) covered</span><span>Paid by GHS · €${state.cls.solo} claimed</span></div>`:''}
+    ${ghsAppliesToBooking()?`<div class="rr ghs-line"><span class="k">🏥 GHS (ΓΕΣΥ) covered</span><span>You pay €0 · €${solo?state.cls.solo:state.cls.price} claimed from GHS</span></div>`:''}
     ${isFirstSession()&&!solo&&!ghsAppliesToBooking()?`<div class="rr intro"><span class="k">✦ First-session offer</span><span>€${FIRST_OFFER.price} instead of €${state.cls.price}</span></div>`:''}
     ${promoActive?`<div class="rr"><span class="k">Promo ${state.promo}</span><span>−€${(base-unit)*weeks}.00</span></div>`:''}
     ${weeks>1?`<div class="rr"><span class="k">Per class</span><span>€${unit}.00</span></div>`:''}
@@ -3538,10 +3538,13 @@ async function custPay(){
     try{
       const r=await api('/book',{method:'POST',token:authToken,
         body:{class_key:state.cls.id,date:isoDate(d),hour:state.slot,private:solo,promo:state.promo||null}});
-      if(r.amount===0) state.credits=Math.max(0,state.credits-1);
+      if(String(r.method).toLowerCase()==='package') state.credits=Math.max(0,state.credits-1);
       await loadMyBookings();
+      const customerTotal=Number(r.customer_pays ?? r.amount ?? 0);
+      const receiptMethod=r.ghs_covered?'GHS (ΓΕΣΥ) — covered'
+        :(String(r.method).toLowerCase()==='package'?'Package credit':'Viva Wallet');
       showReceipt({no:r.receipt_no, cls:state.cls.name, solo, d, time:state.slot,
-                   total:r.amount, method:r.amount===0?'Package credit':'Viva Wallet'});
+                   total:customerTotal, method:receiptMethod});
     }catch(e){toast(e.message,'Booking');return;}
     return;
   }
