@@ -1535,7 +1535,7 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
 
         <div class="manage-sec">
           <div class="ms-head"><h3>GHS (ΓΕΣΥ) cover</h3><span class="reg-count" id="ghsCount"></span></div>
-          <p class="ms-note">Clients whose physiotherapy is covered by GHS. Approving means their <b>private Clinical Rehab</b> sessions are free to them — the fee is recorded separately for you to claim.</p>
+          <p class="ms-note">Clients whose care is covered by GHS. Approving means their <b>physiotherapy and Pilates sessions</b> are free to them — each normal fee is recorded separately for you to claim.</p>
           <div id="mgGhs"></div>
         </div>
 
@@ -2950,11 +2950,9 @@ function myGhsStatus(){
   return r ? r.status : null;
 }
 function isGhsCovered(){ return myGhsStatus()==='approved'; }
-// GHS only covers physio-led rehab, and only as a private session
+// Trainer-approved GHS cover applies to every physiotherapy and Pilates booking.
 function ghsAppliesToBooking(){
-  if(!isGhsCovered()) return false;
-  if(state.bookMode!=='solo') return false;
-  return !!(state.cls && state.cls.ghs);
+  return isGhsCovered() && !!state.cls;
 }
 async function requestGhs(){
   if(!state.user){ toast('Sign in first','GHS'); return; }
@@ -2986,8 +2984,8 @@ function renderGhsCard(){
   card.className='ghs-card '+(st||'none');
   if(st==='approved'){
     badge.textContent='Covered'; badge.className='ghs-badge ok';
-    body.innerHTML='<p>✓ Your private Clinical Rehab sessions are covered by GHS — '
-      +'you won\u2019t be charged for them.</p>';
+    body.innerHTML='<p>✓ Your physiotherapy and Pilates sessions are covered by GHS — '
+      +'you won\u2019t be charged when you book.</p>';
   }else if(st==='pending'){
     badge.textContent='Waiting'; badge.className='ghs-badge pending';
     body.innerHTML='<p>The studio is checking your GHS cover. We\u2019ll confirm shortly.</p>';
@@ -2998,7 +2996,7 @@ function renderGhsCard(){
   }else{
     badge.textContent=''; badge.className='ghs-badge';
     body.innerHTML='<p>If your physiotherapy is covered by GHS (ΓΕΣΥ), tell us and '
-      +'we\u2019ll check it — covered private rehab sessions are free to you.</p>'
+      +'we\u2019ll check it — once approved, physiotherapy and Pilates bookings are free to you.</p>'
       +'<input id="ghsRef" placeholder="GHS / referral number (optional)">'
       +'<button class="btn ghost" style="width:100%;margin-top:10px" onclick="requestGhs()">Request GHS cover</button>';
   }
@@ -3050,7 +3048,7 @@ async function setGhsStatus(i,status,msg){
   renderMgGhs();
   toast(msg,'GHS');
 }
-function approveGhs(i){ setGhsStatus(i,'approved','GHS cover approved — their private rehab is now free'); }
+function approveGhs(i){ setGhsStatus(i,'approved','GHS approved — their physiotherapy and Pilates bookings are now free'); }
 function declineGhs(i){ setGhsStatus(i,'declined','GHS request declined'); }
 function revokeGhs(i){ setGhsStatus(i,'declined','GHS cover removed'); }
 let REGULARS=[];
