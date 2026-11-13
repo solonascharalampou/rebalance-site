@@ -3659,12 +3659,12 @@ async function loadMyBookings(){
   if(!BACKEND) return;
   try{
     const rows=await api('/my-bookings',{token:authToken});
-    state.bookings=rows.filter(r=>r.status==='confirmed').map(r=>{
+    state.bookings=rows.map(r=>{
       const start=new Date(r.date+'T'+r.hour+':00');
       return {id:r.id,cls:(CLASSES.find(c=>c.id===r.class_key)||{}).name+(r.private?' · Private':''),
         price:r.amount,dayIdx:0,time:r.hour,date:r.date,spotIdx:r.spot,
         when:start.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})+' · '+r.hour,
-        start,status:'confirmed',paidBy:r.pay};
+        start,status:(r.status||'confirmed'),attended:r.attended,paidBy:r.pay};
     });
   }catch(e){/* ignore */}
 }
@@ -3676,12 +3676,19 @@ function renderMine(){
   document.getElementById('myList').innerHTML=state.bookings.map(b=>{
     let pill,cd='',act='';
     const series=b.series?`<span class="series-tag">Weekly ${b.series}</span>`:'';
+    const past=b.start<new Date();
     if(b.status==='lost')pill='<span class="pill lost">Session lost</span>';
     else if(b.status==='rescheduled')pill='<span class="pill resc">Rescheduled</span>';
-    else{
+    else if(b.status==='cancelled'){
+      pill='<span class="pill lost">Cancelled</span>';
+      act=`<div class="bact"><button onclick="rebook(${b.id})">↻ Book again</button></div>`;
+    }else if(past){
+      pill=`<span class="pill ${b.attended===false?'lost':'ok'}">${b.attended===false?'No-show':'Completed'}</span>`;
+      act=`<div class="bact"><button onclick="rebook(${b.id})">↻ Book again</button></div>`;
+    }else{
       pill='<span class="pill ok">Confirmed</span>';
       const can=hoursUntil(b.start)>4;
-      cd=`<div class="cd">${can?'✦ <b>Free to reschedule</b> — more than 4 hours away':'✦ <b>Within 4 hours</b> — cancelling means losing the session'}</div>`;
+      cd=`<div class="cd">${can?'✦ <b>Free to reschedule</b> — more than 4 hours away':'✦ <b>Within 4 hours</b> — call the studio if you need help'}</div>`;
       act=`<div class="bact">
         <button onclick="addToCalendar(${b.id})">📅 Add to calendar</button>
         <button onclick="rebook(${b.id})">↻ Book again</button>
@@ -3815,23 +3822,26 @@ function trainerBackAction(){
     show('home');
   }
 }
-function enterTrainerPortal(){
+async function enterTrainerPortal(){
   document.getElementById('t-auth').classList.remove('on');
   document.getElementById('t-app').classList.add('on');
   const tb=document.getElementById('trainerBack'); if(tb) tb.textContent='← Sign out';
-  renderTDays();renderTSlots();renderWeekOverview();renderClients();
-  // Load the complete week so the trainer gets a true calendar overview.
-  syncTrainerWeek().then(()=>{ renderTDays();renderTSlots();renderWeekOverview();renderClients(); });
+  renderTDays();
+  await Promise.all([syncTrainerDay(state.trainerDay),syncClients(),syncEarnings()]);
+  renderTSlots();renderWeekOverview();renderClients();renderEarnings();
+  // Fill the other days quietly, one at a time, without blocking the portal.
+  (async()=>{for(let i=0;i<DAYS.length;i++)if(i!==state.trainerDay)await syncTrainerDay(i);renderWeekOverview();})();
   startSchedulePolling();
   toast('Welcome back, studio.','Trainer');
 }
-function trainTab(t){document.querySelectorAll('#v-train .ptabs button').forEach(b=>b.classList.toggle('on',b.dataset.tp===t));
+async function trainTab(t){document.querySelectorAll('#v-train .ptabs button').forEach(b=>b.classList.toggle('on',b.dataset.tp===t));
   document.getElementById('tp-sched').classList.toggle('on',t==='sched');
   document.getElementById('tp-clients').classList.toggle('on',t==='clients');
   document.getElementById('tp-earnings').classList.toggle('on',t==='earnings');
   document.getElementById('tp-manage').classList.toggle('on',t==='manage');
-  if(t==='sched'){renderTDays();renderTSlots();renderWeekOverview();}
-  if(t==='earnings')renderEarnings();
+  if(t==='sched'){await syncTrainerDay(state.trainerDay);renderTDays();renderTSlots();renderWeekOverview();}
+  if(t==='clients'){await syncClients();renderClients();}
+  if(t==='earnings'){await syncEarnings();renderEarnings();}
   if(t==='manage')renderManage();}
 
 /* ===================== MANAGE (edit everything, no code) ===================== */
@@ -4578,54 +4588,47 @@ async function saveWalkin(){
   toast(name+' added · '+(pay==='ghs'?'GESY':pay+' recorded'),'Appointment');
 }
 
+let SERVER_CLIENTS=null;
 async function syncClients(){
   if(!BACKEND || !trainerToken) return null;
-  try{ const r=await api('/trainer/clients',{token:trainerToken}); return r.clients||[]; }
-  catch(e){ return null; }
+  try{
+    const r=await api('/trainer/clients',{token:trainerToken});
+    SERVER_CLIENTS=r.clients||[];
+    return SERVER_CLIENTS;
+  }catch(e){
+    console.error('Could not load clients:',e);
+    return null;
+  }
 }
 function renderClients(){
-  const rows=[];
-  DAYS.forEach((d,di)=>TIMES.forEach(t=>{const c=store[di][t];c.spots.forEach((s,si)=>{if(s&&typeof s==='object')rows.push({di,t,d,si,name:s.name,pay:s.pay,cls:c.cls,attended:s.attended,priv:!!(c.private||s.private)});});}));
-  if(!rows.length){document.getElementById('tClients').innerHTML='<div class="empty">No booked clients yet.</div>';return;}
-
-  // group every booking by client name
-  const byName={};
-  rows.forEach(r=>{ (byName[r.name]=byName[r.name]||[]).push(r); });
-
-  const html=Object.keys(byName).sort().map(name=>{
-    const list=byName[name].sort((a,b)=>a.d-b.d);
-    const total=list.length;
-    const here=list.filter(x=>x.attended===true).length;
-    const noshow=list.filter(x=>x.attended===false).length;
-    const spend=list.reduce((sum,x)=>sum+priceFor(x.cls,x.priv),0);
-    const rate = (here+noshow)>0 ? Math.round(here/(here+noshow)*100) : null;
-    const warn = noshow>=2;
-    const history=list.map(x=>{
-      const badge = x.attended===true?'<i class="h-ok">✓</i>' : x.attended===false?'<i class="h-no">✗</i>' : '<i class="h-q">·</i>';
-      return `<li>${badge}<span>${x.d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})} · ${x.t}</span>
-              <span class="h-cls">${x.cls}${x.priv?' · Private':''}</span>${paytag(x.pay)}</li>`;
+  const target=document.getElementById('tClients'); if(!target)return;
+  if(SERVER_CLIENTS===null){
+    target.innerHTML='<div class="empty"><b>Loading clients…</b><span>Please wait a moment.</span></div>';
+    return;
+  }
+  if(!SERVER_CLIENTS.length){target.innerHTML='<div class="empty">No booked clients yet.</div>';return;}
+  target.innerHTML=SERVER_CLIENTS.map(client=>{
+    const list=(client.bookings||[]);
+    const confirmed=list.filter(x=>x.status==='confirmed');
+    const here=confirmed.filter(x=>x.attended===1||x.attended===true).length;
+    const noshow=confirmed.filter(x=>x.attended===0||x.attended===false).length;
+    const spend=confirmed.reduce((sum,x)=>sum+Number(x.amount||0),0);
+    const history=list.slice(0,30).map(x=>{
+      const badge=x.status==='cancelled'?'<i class="h-no">×</i>':(x.attended===1||x.attended===true)?'<i class="h-ok">✓</i>':(x.attended===0||x.attended===false)?'<i class="h-no">✗</i>':'<i class="h-q">·</i>';
+      return `<li>${badge}<span>${new Date(x.date+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} · ${x.hour}</span><span class="h-cls">${x.class||x.class_key||'Session'}${x.private?' · Private':''}</span>${paytag(x.pay)}</li>`;
     }).join('');
-    return `<div class="client-card ${warn?'warn':''}">
+    const safeName=String(client.name||'Client').replace(/</g,'&lt;');
+    const noteKey=String(client.email||client.name||'Client');
+    return `<div class="client-card ${noshow>=2?'warn':''}">
       <div class="cc-head" onclick="this.parentElement.classList.toggle('open')">
-        <div>
-          <h3>${name}</h3>
-          <div class="cc-meta">${total} session${total!==1?'s':''} · €${spend} total${rate!==null?` · ${rate}% attendance`:''}</div>
-        </div>
-        <div class="cc-right">
-          ${noshow>0?`<span class="cc-noshow">${noshow} no-show${noshow!==1?'s':''}</span>`:''}
-          <span class="cc-arrow">⌄</span>
-        </div>
+        <div><h3>${safeName}</h3><div class="cc-meta">${confirmed.length} session${confirmed.length===1?'':'s'} · €${spend.toFixed(2)} total${client.email?' · '+client.email:''}${client.phone?' · '+client.phone:''}</div></div>
+        <div class="cc-right">${noshow?'<span class="cc-noshow">'+noshow+' no-show'+(noshow===1?'':'s')+'</span>':''}<span class="cc-arrow">⌄</span></div>
       </div>
-      <ul class="cc-history">${history}</ul>
-      <div class="cc-notes">
-        <label>Private notes <span>— visible only to studio staff</span></label>
-        <textarea rows="3" placeholder="Injuries, goals, GHS referral, things to watch…"
-          onchange="saveNote('${name.replace(/'/g,"\\'")}', this.value)">${(NOTES[name]||'').replace(/</g,'&lt;')}</textarea>
-        <p class="cc-gdpr">⚠︎ Health information. Keep it minimal, factual, and only what you need for safe treatment. The client can ask to see or delete it.</p>
-      </div>
+      <ul class="cc-history">${history||'<li>No booking history</li>'}</ul>
+      <div class="cc-notes"><label>Private notes <span>— visible only to studio staff</span></label>
+      <textarea rows="3" placeholder="Injuries, goals, GESY referral, things to watch…" onchange="saveNote(${JSON.stringify(noteKey)},this.value)">${(NOTES[noteKey]||'').replace(/</g,'&lt;')}</textarea></div>
     </div>`;
   }).join('');
-  document.getElementById('tClients').innerHTML=html;
 }
 /* ---------- client notes (trainer only — special-category data, handle with care) ---------- */
 let NOTES={};
@@ -4663,6 +4666,7 @@ function collectEarnings(){
   return rows;
 }
 let earnPeriodMode='all';
+let SERVER_EARNINGS=null;
 function setEarnPeriod(m){ earnPeriodMode=m; renderEarnings(); }
 function periodRange(){
   const now=new Date();
@@ -4684,13 +4688,16 @@ async function syncEarnings(){
   if(!BACKEND || !trainerToken) return null;
   const r=periodRange();
   try{
-    const q=[]; if(r.from) q.push('date_from='+r.from); if(r.to) q.push('date_to='+r.to);
-    return await api('/trainer/earnings-detail'+(q.length?'?'+q.join('&'):''),{token:trainerToken});
-  }catch(e){ return null; }
+    const iso=d=>d&&d.toISOString().slice(0,10);
+    const q=[]; if(r.from) q.push('date_from='+encodeURIComponent(iso(r.from))); if(r.to) q.push('date_to='+encodeURIComponent(iso(r.to)));
+    const result=await api('/trainer/earnings-detail'+(q.length?'?'+q.join('&'):''),{token:trainerToken});
+    SERVER_EARNINGS=(result.rows||[]).map(x=>({d:new Date(x.date+'T00:00:00'),date:new Date(x.date+'T00:00:00'),time:x.hour,client:x.name,amount:Number(x.amount||0),method:x.pay==='credit'?'viva':(x.pay||'viva'),cls:x.class||x.class_key,private:!!x.private,ghs:x.pay==='ghs'}));
+    return SERVER_EARNINGS;
+  }catch(e){console.error('Could not load earnings:',e);return null;}
 }
 function renderEarnings(){
   const range=periodRange();
-  let rows=collectEarnings();
+  let rows=SERVER_EARNINGS===null?collectEarnings():SERVER_EARNINGS.slice();
   if(range.from) rows=rows.filter(r=>r.date>=range.from && r.date<=range.to);
   const totals={viva:0,card:0,cash:0,ghs:0,count:0};
   rows.forEach(r=>{totals[r.method]=(totals[r.method]||0)+r.amount;totals.count++;});
