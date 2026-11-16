@@ -236,24 +236,31 @@
     const client=session?.spots?.[index];
     if(!client||typeof client!=='object')return;
     let modal=document.getElementById('trainerClientDrawer');
-    if(!modal){
-      modal=document.createElement('div');
-      modal.id='trainerClientDrawer';
-      modal.className='trainer-client-drawer';
-      document.body.appendChild(modal);
-    }
+    if(!modal){modal=document.createElement('div');modal.id='trainerClientDrawer';modal.className='trainer-client-drawer';document.body.appendChild(modal);}
     const attendance=client.attended===true?'Here':client.attended===false?'No-show':'Not recorded';
     const payment=client.pay==='ghs'?'GESY':client.pay==='viva'?'Viva Wallet':client.pay==='cash'?'Cash':client.pay==='credit'?'Package':client.pay||'Paid';
+    const history=[];
+    if(typeof store!=='undefined'&&typeof DAYS!=='undefined'){
+      DAYS.forEach((date,di)=>Object.entries(store[di]||{}).forEach(([hour,item])=>(item.spots||[]).forEach(person=>{
+        if(person&&typeof person==='object'&&((client.email&&person.email===client.email)||(!client.email&&person.name===client.name))){
+          history.push({date,hour,cls:item.cls,private:!!item.private,attended:person.attended});
+        }
+      })));
+    }
+    const historyHtml=history.slice(-6).reverse().map(h=>'<li><span>'+esc(h.date.toLocaleDateString('en-GB',{day:'numeric',month:'short'}))+' · '+esc(h.hour)+'</span><b>'+esc(h.cls||'Session')+'</b><em>'+esc(h.attended===true?'Here':h.attended===false?'No-show':h.private?'Private':'Booked')+'</em></li>').join('');
     modal.innerHTML='<button class="drawer-backdrop" aria-label="Close client details"></button><aside role="dialog" aria-modal="true" aria-label="Client details">'+
       '<div class="drawer-head"><div><small>CLIENT RECORD</small><h2>'+esc(client.name||'Client')+'</h2></div><button class="drawer-close" aria-label="Close">×</button></div>'+
+      '<div class="drawer-actions">'+(client.phone?'<a href="tel:'+esc(client.phone)+'">Call</a>':'')+(client.email?'<a href="mailto:'+esc(client.email)+'">Email</a>':'')+'</div>'+
       '<div class="drawer-session"><span>'+esc(time)+'</span><b>'+esc(session.cls||'Session')+'</b><em>'+(session.private?'Private':'Group')+'</em></div>'+
       '<dl class="drawer-facts">'+
-      (client.email?'<div><dt>Email</dt><dd><a href="mailto:'+esc(client.email)+'">'+esc(client.email)+'</a></dd></div>':'')+
-      (client.phone?'<div><dt>Phone</dt><dd><a href="tel:'+esc(client.phone)+'">'+esc(client.phone)+'</a></dd></div>':'')+
-      '<div><dt>Payment</dt><dd>'+esc(payment)+'</dd></div><div><dt>Attendance</dt><dd>'+esc(attendance)+'</dd></div></dl>'+
-      '<p>Close this panel to return to the appointment.</p></aside>';
+      (client.email?'<div><dt>Email</dt><dd>'+esc(client.email)+'</dd></div>':'')+
+      (client.phone?'<div><dt>Phone</dt><dd>'+esc(client.phone)+'</dd></div>':'')+
+      '<div><dt>Cover</dt><dd>'+esc(payment)+'</dd></div><div><dt>Attendance</dt><dd>'+esc(attendance)+'</dd></div></dl>'+
+      (historyHtml?'<section class="drawer-history"><h3>Recent sessions</h3><ul>'+historyHtml+'</ul></section>':'')+
+      '<button type="button" class="drawer-open-clients">Open full client record</button></aside>';
     modal.classList.add('open');
     modal.querySelectorAll('.drawer-close,.drawer-backdrop').forEach(el=>el.onclick=()=>modal.classList.remove('open'));
+    modal.querySelector('.drawer-open-clients').onclick=()=>{modal.classList.remove('open');window.trainTab?.('clients');setTimeout(()=>{const q=document.getElementById('trainerClientSearch');if(q){q.value=client.email||client.name||'';q.dispatchEvent(new Event('input'));}},0);};
   }
 
   function bind(){
@@ -362,4 +369,25 @@
       if(button&&!button.classList.contains('cooling')){button.disabled=false;button.textContent='Send code';}
     }
   };
+})();
+
+
+/* Connection health and global recovery feedback. */
+(() => {
+  const mount=()=>{
+    if(document.getElementById('rbConnection'))return;
+    const bar=document.createElement('div');bar.id='rbConnection';bar.className='rb-connection';bar.setAttribute('role','status');bar.innerHTML='<span></span><button type="button">Retry</button>';document.body.appendChild(bar);
+    const check=async()=>{
+      if(!navigator.onLine){bar.querySelector('span').textContent='You are offline. Changes may not save.';bar.classList.add('show');return;}
+      const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),7000);
+      try{const response=await fetch(BACKEND+'/health',{signal:ctrl.signal,cache:'no-store'});if(!response.ok)throw new Error();bar.classList.remove('show');}
+      catch(e){bar.querySelector('span').textContent='The booking server is not responding.';bar.classList.add('show');}
+      finally{clearTimeout(timer);}
+    };
+    bar.querySelector('button').onclick=check;
+    addEventListener('online',check);addEventListener('offline',check);
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)check();});
+    setTimeout(check,1200);setInterval(check,120000);
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
 })();
