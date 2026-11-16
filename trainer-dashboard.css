@@ -144,3 +144,11 @@
 .drawer-client-list>button{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;width:100%;padding:15px;border:1px solid var(--td-line);border-radius:12px;background:#fff;text-align:left;color:var(--td-text)}
 .drawer-client-list>button:hover{background:var(--td-pink-soft);border-color:#edc7cf}
 .drawer-client-list span{font-weight:600}.drawer-client-list small{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--td-muted)}.drawer-client-list b{font-size:11px}
+
+
+/* Password recovery feedback stays beside the form instead of appearing as a hidden toast. */
+.reset-status{margin:11px 0 0;padding:10px 12px;border-radius:10px;background:#f4efeb;color:#6f6267;font-size:12px;line-height:1.4;text-align:left}
+.reset-status.working::before{content:"";display:inline-block;width:8px;height:8px;margin-right:8px;border:2px solid #c97b7b;border-right-color:transparent;border-radius:50%;animation:reset-spin .7s linear infinite}
+.reset-status.success{background:#edf7ef;color:#356044}.reset-status.error{background:#fff0f1;color:#9b3d4b}
+#c-forgot .btn:disabled{opacity:.68;cursor:wait}
+@keyframes reset-spin{to{transform:rotate(360deg)}}
