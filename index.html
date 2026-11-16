@@ -4635,7 +4635,8 @@ function renderClients(){
     const confirmed=list.filter(x=>x.status==='confirmed');
     const here=confirmed.filter(x=>x.attended===1||x.attended===true).length;
     const noshow=confirmed.filter(x=>x.attended===0||x.attended===false).length;
-    const spend=confirmed.reduce((sum,x)=>sum+Number(x.amount||0),0);
+    const spend=confirmed.reduce((sum,x)=>sum+((String(x.pay||'').toLowerCase()==='ghs'||String(x.pay||'').toLowerCase()==='package'||String(x.pay||'').toLowerCase()==='credit')?0:Number(x.amount||0)),0);
+    const ghsClaim=confirmed.reduce((sum,x)=>sum+(String(x.pay||'').toLowerCase()==='ghs'?Number(x.amount||0):0),0);
     const history=list.slice(0,30).map(x=>{
       const badge=x.status==='cancelled'?'<i class="h-no">×</i>':(x.attended===1||x.attended===true)?'<i class="h-ok">✓</i>':(x.attended===0||x.attended===false)?'<i class="h-no">✗</i>':'<i class="h-q">·</i>';
       return `<li>${badge}<span>${new Date(x.date+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} · ${x.hour}</span><span class="h-cls">${x.class||x.class_key||'Session'}${x.private?' · Private':''}</span>${paytag(x.pay)}</li>`;
@@ -4644,7 +4645,7 @@ function renderClients(){
     const noteKey=String(client.email||client.name||'Client');
     return `<div class="client-card ${noshow>=2?'warn':''}">
       <div class="cc-head" onclick="this.parentElement.classList.toggle('open')">
-        <div><h3>${safeName}</h3><div class="cc-meta">${confirmed.length} session${confirmed.length===1?'':'s'} · €${spend.toFixed(2)} total${client.email?' · '+client.email:''}${client.phone?' · '+client.phone:''}</div></div>
+        <div><h3>${safeName}</h3><div class="cc-meta">${confirmed.length} session${confirmed.length===1?'':'s'} · Customer paid €${spend.toFixed(2)}${ghsClaim?' · GHS claim €'+ghsClaim.toFixed(2):''}${client.email?' · '+client.email:''}${client.phone?' · '+client.phone:''}</div></div>
         <div class="cc-right">${noshow?'<span class="cc-noshow">'+noshow+' no-show'+(noshow===1?'':'s')+'</span>':''}<span class="cc-arrow">⌄</span></div>
       </div>
       <ul class="cc-history">${history||'<li>No booking history</li>'}</ul>
