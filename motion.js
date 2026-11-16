@@ -222,7 +222,7 @@
   }
 
   function showClient(time, index){
-    const session=(window.store?.[window.state?.trainerDay]||{})[time];
+    const day=(typeof store!=='undefined'&&typeof state!=='undefined')?(store[state.trainerDay]||{}):{};\n    const session=day[time];
     const client=session?.spots?.[index];
     if(!client||typeof client!=='object')return;
     let modal=document.getElementById('trainerClientDrawer');
