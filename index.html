@@ -940,7 +940,15 @@
 </style>
 <link rel="stylesheet" href="motion.css?v=20261111-2">
 <link rel="stylesheet" href="trainer-dashboard.css?v=20261112-2">
-</head>
+<style id="trainerSchedulePolish">
+#trainerCalendarTools{position:sticky;top:72px;z-index:12;background:rgba(251,244,240,.96);padding:10px;border:1px solid var(--line);border-radius:16px;backdrop-filter:blur(10px)}
+#tDayCalendar{background:var(--paper)}
+.dc-open span{color:#6f6062;font-weight:500}
+.dc-event .dc-meta b{min-width:64px;text-align:right}
+.classcard{scroll-margin-top:155px}
+#tp-sched .trainer-day-empty{min-height:150px}
+@media(max-width:700px){#trainerCalendarTools{top:58px}.dc-main small{max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+</style></head>
 <body>
 
 <!-- ============ NAV ============ -->
@@ -3844,7 +3852,10 @@ async function enterTrainerPortal(){
   startSchedulePolling();
   toast('Welcome back, studio.','Trainer');
 }
-async function trainTab(t){document.querySelectorAll('#v-train .ptabs button').forEach(b=>b.classList.toggle('on',b.dataset.tp===t));
+async function trainTab(t){
+  const heading=document.querySelector('#t-app > h1, #t-app h1');
+  if(heading) heading.textContent=({sched:'Studio schedule',clients:'Clients',earnings:'Earnings',manage:'Manage studio'}[t]||'Trainer portal');
+  document.querySelectorAll('#v-train .ptabs button').forEach(b=>b.classList.toggle('on',b.dataset.tp===t));
   document.getElementById('tp-sched').classList.toggle('on',t==='sched');
   document.getElementById('tp-clients').classList.toggle('on',t==='clients');
   document.getElementById('tp-earnings').classList.toggle('on',t==='earnings');
@@ -4050,7 +4061,7 @@ function renderWeekOverview(){
       const booked=spotsBooked(c),free=spotsFree(c),kind=sessionKind(c);
       const label=kind==='ghs'?'GESY':kind==='private'?'Private':kind==='booked'?'Booked':kind==='closed'?'Closed':'Available';
       html+=`<div class="week-cell ${di===state.trainerDay?'selected':''}" onclick="setTDay(${di});document.getElementById('scheduleDetail').scrollIntoView({behavior:'smooth',block:'start'})">
-        <div class="week-event ${kind}"><div class="we-top"><span class="we-time">${t}</span><span class="we-count">${booked}/${CAP}</span></div><div class="we-name">${c.cls||'Session'}</div><div class="we-tag">${label}${kind==='available'?' · '+free+' free':''}</div></div>
+        <div class="week-event ${kind}"><div class="we-top"><span class="we-time">${t}</span><span class="we-count">${c.private&&booked?'Private':booked+'/'+CAP}</span></div><div class="we-name">${c.cls||'Session'}</div><div class="we-tag">${label}${kind==='available'?' · '+free+' free':''}</div></div>
       </div>`;
     });
   });
@@ -4061,7 +4072,7 @@ function renderWeekOverview(){
 function renderDailyCalendar(){
   const cal=document.getElementById('tDayCalendar');if(!cal)return;
   const di=state.trainerDay,day=store[di]||{};
-  const rows=TIMES.filter(t=>day[t]).map(t=>{
+  const rows=TIMES.filter(t=>day[t]&&(trainerShowOpen||spotsBooked(day[t])>0||day[t].closed)).map(t=>{
     const c=day[t],booked=spotsBooked(c),free=spotsFree(c),kind=sessionKind(c);
     const clients=c.spots.filter(s=>s&&typeof s==='object');
     let status=kind;
@@ -4073,7 +4084,7 @@ function renderDailyCalendar(){
       <div class="dc-track">
         ${booked?`<button class="dc-event ${status}" onclick="document.querySelector('.classcard[data-time=\"${t}\"]')?.scrollIntoView({behavior:'smooth',block:'center'})">
           <span class="dc-main"><b>${c.cls}</b><small>${names}</small></span>
-          <span class="dc-meta"><b>${booked}/${CAP}</b><small>${label}</small></span>
+          <span class="dc-meta"><b>${c.private&&booked?'Private':booked+'/'+CAP}</b><small>${label}</small></span>
         </button>`:`<div class="dc-open"><span>${c.closed?'Closed':free+' places available'}</span></div>`}
       </div>`;
   }).join('');
@@ -4086,10 +4097,12 @@ function toggleTrainerOpenTimes(){
   const b=document.getElementById('tViewToggle');
   if(b)b.textContent=trainerShowOpen?'Appointments only':'Show open times';
   renderTSlots();
+  renderDailyCalendar();
 }
 
 function paytag(pay){
-  return pay==='viva' ? '<span class="paytag viva">Viva</span>'
+  return pay==='ghs' ? '<span class="paytag ghs-tag">GESY</span>'
+    : pay==='viva' ? '<span class="paytag viva">Viva</span>'
     : pay==='cash' ? '<span class="paytag cash">Cash</span>'
     : pay==='card' ? '<span class="paytag card">Card</span>'
     : pay==='credit' ? '<span class="paytag pkg">Package</span>'
@@ -4183,7 +4196,7 @@ function renderTSlots(){
           <button class="att-btn no ${pAbsent?'on':''}" onclick="tAttend(${di},'${t}',${si},false)">✗ No-show</button>
         </div>
       </div>
-        <div class="private-note">All ${CAP} reformers are reserved for this client — no one else can book this time.</div>`;
+        <div class="private-note">This private appointment reserves the complete hour for this client.</div>`;
       classCtrl='';
       return `<div class="classcard is-private ${ghsSession?'is-ghs':''}" data-time="${t}">${head}<div class="spot-list">${spotRows}</div>${classCtrl}</div>`;
     }
