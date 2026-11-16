@@ -77,3 +77,32 @@
 #v-train *,#v-train *::before,#v-train *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}
 #v-train .week-event,#v-train .week-cell,#v-train .week-day,#v-train button{transition:none!important}
 #v-train .week-cell:hover .week-event{transform:none;box-shadow:none}
+
+
+/* 2026 diary redesign: one calm workspace instead of stacked dashboard boxes. */
+#t-app>.phead{padding:0 2px 12px;align-items:center}
+#t-app>.phead h1{font-size:clamp(1.8rem,3vw,2.7rem);margin:0}
+#t-app>.phead .eyebrow{display:none}
+#t-app .ptabs{top:0;margin:10px 0 12px;padding:4px;border-radius:13px;box-shadow:0 8px 28px -25px rgba(53,45,49,.65)}
+#t-app .ptabs button{padding:10px 12px}
+.schedule-detail{padding:0 18px 18px;border-radius:18px;box-shadow:0 18px 50px -44px rgba(53,45,49,.55)}
+.trainer-kpis{display:flex;align-items:center;gap:0;margin:0 0 12px;padding:0 18px;border:1px solid var(--td-line);border-radius:14px;background:var(--td-panel);overflow-x:auto}
+.trainer-kpi{display:flex;align-items:baseline;gap:7px;min-height:0;padding:12px 20px 12px 0;margin-right:20px;border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible;white-space:nowrap}
+.trainer-kpi::after{display:none}.trainer-kpi .tk-label{font-size:9px}.trainer-kpi .tk-value{font:600 15px/1.1 inherit;margin:0;order:-1}.trainer-kpi .tk-note{display:none}
+.schedule-detail .daybar{display:flex;gap:6px;padding:13px 0 10px;overflow-x:auto}
+.schedule-detail .daybar .day{min-width:72px;padding:8px 12px;border:1px solid transparent;border-radius:10px;background:#faf6f3;text-align:left}
+.schedule-detail .daybar .day.on{background:var(--td-text);border-color:var(--td-text);color:#fff}
+.schedule-detail .daybar .dow{font-size:9px;letter-spacing:.1em}.schedule-detail .daybar .dn{font-size:18px;margin-top:2px}
+.schedule-detail .tgrid-head{display:grid;grid-template-columns:minmax(220px,1fr) auto auto auto;gap:7px;margin:0;padding:12px 0;align-items:center}
+.schedule-detail .tgrid-head h3{font-size:1.25rem;margin:0}.schedule-detail .refresh-btn,.schedule-detail .refresh-btn.primary,.schedule-detail #tViewToggle,.schedule-detail #tViewToggle+.primary,.schedule-detail .refresh-btn.primary+#tRefresh{margin:0}
+.day-calendar{grid-template-columns:64px 1fr;margin:0 0 16px;border-radius:13px}
+.day-calendar:has(>.empty){display:none}
+.dc-track{min-height:68px}.dc-event{min-height:58px;padding:9px 12px}.dc-time{padding:13px 7px}
+.day-detail-title{margin:0 2px 9px;padding-top:2px}.day-detail-title span{font-size:1.05rem}.day-detail-title small{font-size:10px}
+.schedule-detail .tslots{display:grid;grid-template-columns:1fr;gap:10px}
+.schedule-detail .classcard{margin:0;padding:15px;border-radius:13px;box-shadow:none}
+.schedule-detail .cl-head{margin-bottom:10px}.schedule-detail .spot-row{border-radius:10px}
+.trainer-day-empty{min-height:150px;border:0;border-radius:12px;background:#faf7f4!important}.trainer-day-empty::before{content:"○";font-size:26px;color:#cbbdc2}.trainer-day-empty b{font-size:1.2rem}.trainer-day-empty span{max-width:360px;text-align:center;line-height:1.45}
+.schedule-detail .sp-name .ghs-tag{display:none}
+.schedule-help{display:none}
+@media(max-width:760px){#t-app>.phead{display:none}#t-app .ptabs{top:0;margin-top:0}.schedule-detail{padding:0 12px 14px}.trainer-kpis{padding-inline:12px}.trainer-kpi{padding-right:13px;margin-right:13px}.schedule-detail .tgrid-head{grid-template-columns:1fr 1fr 1fr}.schedule-detail .tgrid-head h3{grid-column:1/-1}.schedule-detail .refresh-btn{padding:9px 7px;font-size:9px}.schedule-detail .daybar .day{min-width:59px;padding:7px 9px}.day-detail-title small{display:none}}
