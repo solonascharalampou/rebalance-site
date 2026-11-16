@@ -210,15 +210,24 @@
 
   function openAppointment(time, button){
     selectedTime=time;
-    const box=slotsBox(), title=detailsTitle();
-    if(!box||!title)return;
-    box.classList.add('context-open');
-    title.classList.add('context-open');
-    title.innerHTML='<span><b>'+esc(time)+'</b> appointment</span><button type="button" class="context-close" aria-label="Close appointment">×</button>';
-    box.querySelectorAll('.classcard').forEach(card=>card.hidden=card.dataset.time!==time);
     document.querySelectorAll('#tDayCalendar .dc-event').forEach(item=>item.classList.toggle('selected',item===button));
-    title.querySelector('.context-close').onclick=closeAppointment;
-    requestAnimationFrame(()=>title.scrollIntoView({block:'nearest'}));
+    const day=(typeof store!=='undefined'&&typeof state!=='undefined')?(store[state.trainerDay]||{}):{};
+    const session=day[time];
+    const clients=(session?.spots||[]).map((client,index)=>({client,index})).filter(x=>x.client&&typeof x.client==='object');
+    closeAppointment();
+    if(clients.length===1){
+      showClient(time,clients[0].index);
+      return;
+    }
+    if(!clients.length)return;
+    let modal=document.getElementById('trainerClientDrawer');
+    if(!modal){modal=document.createElement('div');modal.id='trainerClientDrawer';modal.className='trainer-client-drawer';document.body.appendChild(modal);}
+    modal.innerHTML='<button class="drawer-backdrop" aria-label="Close clients"></button><aside role="dialog" aria-modal="true" aria-label="Clients at '+esc(time)+'">'+
+      '<div class="drawer-head"><div><small>'+esc(time)+' · '+esc(session.cls||'SESSION')+'</small><h2>Choose a client</h2></div><button class="drawer-close" aria-label="Close">×</button></div>'+
+      '<div class="drawer-client-list">'+clients.map(x=>'<button type="button" data-client-index="'+x.index+'"><span>'+esc(x.client.name||'Client')+'</span><small>'+esc(x.client.pay==='ghs'?'GESY':x.client.pay||'Paid')+'</small><b>View →</b></button>').join('')+'</div></aside>';
+    modal.classList.add('open');
+    modal.querySelectorAll('.drawer-close,.drawer-backdrop').forEach(el=>el.onclick=()=>modal.classList.remove('open'));
+    modal.querySelectorAll('[data-client-index]').forEach(el=>el.onclick=()=>showClient(time,Number(el.dataset.clientIndex)));
   }
 
   function showClient(time, index){
