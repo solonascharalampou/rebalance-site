@@ -1,10 +1,10 @@
-const CACHE='rebalance-customer-v13';
+const CACHE='rebalance-customer-v14';
 const SHELL=['./app.html?app=customer','./app.html','./manifest.webmanifest','./app-icon.svg','./app-icon-180.png','./app-icon-512.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET'||new URL(event.request.url).origin!==self.location.origin)return;
-  event.respondWith(fetch(event.request).then(response=>{const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy));return response;}).catch(()=>caches.match(event.request).then(response=>response||caches.match('./app.html?app=customer'))));
+  event.respondWith(fetch(event.request,{cache:'no-store'}).then(response=>{const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy));return response;}).catch(()=>caches.match(event.request).then(response=>response||caches.match('./app.html?app=customer'))));
 });
 self.addEventListener('push',event=>{
   let data={};try{data=event.data?event.data.json():{};}catch(e){data={body:event.data?event.data.text():''};}
