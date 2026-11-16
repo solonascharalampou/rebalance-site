@@ -359,7 +359,7 @@
       setStatus(error.message||'Could not send the code. Please try again.','error');
     }finally{
       resetBusy=false;
-      if(button&&!button.dataset.cooldown){button.disabled=false;button.textContent='Send code';}
+      if(button&&!button.classList.contains('cooling')){button.disabled=false;button.textContent='Send code';}
     }
   };
 })();
