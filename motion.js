@@ -189,3 +189,104 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);
   else boot();
 })();
+
+
+/* Contextual trainer diary: time → clients → client record. */
+(() => {
+  'use strict';
+  let selectedTime = '';
+  const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+
+  function slotsBox(){ return document.getElementById('tSlots'); }
+  function detailsTitle(){ return document.querySelector('#tp-sched .day-detail-title'); }
+
+  function closeAppointment(){
+    selectedTime='';
+    slotsBox()?.classList.remove('context-open');
+    detailsTitle()?.classList.remove('context-open');
+    document.querySelectorAll('#tSlots .classcard').forEach(card=>card.hidden=true);
+    document.querySelectorAll('#tDayCalendar .dc-event').forEach(button=>button.classList.remove('selected'));
+  }
+
+  function openAppointment(time, button){
+    selectedTime=time;
+    const box=slotsBox(), title=detailsTitle();
+    if(!box||!title)return;
+    box.classList.add('context-open');
+    title.classList.add('context-open');
+    title.innerHTML='<span><b>'+esc(time)+'</b> appointment</span><button type="button" class="context-close" aria-label="Close appointment">×</button>';
+    box.querySelectorAll('.classcard').forEach(card=>card.hidden=card.dataset.time!==time);
+    document.querySelectorAll('#tDayCalendar .dc-event').forEach(item=>item.classList.toggle('selected',item===button));
+    title.querySelector('.context-close').onclick=closeAppointment;
+    requestAnimationFrame(()=>title.scrollIntoView({block:'nearest'}));
+  }
+
+  function showClient(time, index){
+    const session=(window.store?.[window.state?.trainerDay]||{})[time];
+    const client=session?.spots?.[index];
+    if(!client||typeof client!=='object')return;
+    let modal=document.getElementById('trainerClientDrawer');
+    if(!modal){
+      modal=document.createElement('div');
+      modal.id='trainerClientDrawer';
+      modal.className='trainer-client-drawer';
+      document.body.appendChild(modal);
+    }
+    const attendance=client.attended===true?'Here':client.attended===false?'No-show':'Not recorded';
+    const payment=client.pay==='ghs'?'GESY':client.pay==='viva'?'Viva Wallet':client.pay==='cash'?'Cash':client.pay==='credit'?'Package':client.pay||'Paid';
+    modal.innerHTML='<button class="drawer-backdrop" aria-label="Close client details"></button><aside role="dialog" aria-modal="true" aria-label="Client details">'+
+      '<div class="drawer-head"><div><small>CLIENT RECORD</small><h2>'+esc(client.name||'Client')+'</h2></div><button class="drawer-close" aria-label="Close">×</button></div>'+
+      '<div class="drawer-session"><span>'+esc(time)+'</span><b>'+esc(session.cls||'Session')+'</b><em>'+(session.private?'Private':'Group')+'</em></div>'+
+      '<dl class="drawer-facts">'+
+      (client.email?'<div><dt>Email</dt><dd><a href="mailto:'+esc(client.email)+'">'+esc(client.email)+'</a></dd></div>':'')+
+      (client.phone?'<div><dt>Phone</dt><dd><a href="tel:'+esc(client.phone)+'">'+esc(client.phone)+'</a></dd></div>':'')+
+      '<div><dt>Payment</dt><dd>'+esc(payment)+'</dd></div><div><dt>Attendance</dt><dd>'+esc(attendance)+'</dd></div></dl>'+
+      '<p>Close this panel to return to the appointment.</p></aside>';
+    modal.classList.add('open');
+    modal.querySelectorAll('.drawer-close,.drawer-backdrop').forEach(el=>el.onclick=()=>modal.classList.remove('open'));
+  }
+
+  function bind(){
+    const calendar=document.getElementById('tDayCalendar'), slots=slotsBox();
+    if(!calendar||!slots)return;
+    if(!calendar.dataset.contextBound){
+      calendar.dataset.contextBound='1';
+      calendar.addEventListener('click',event=>{
+        const button=event.target.closest('.dc-event');
+        if(!button)return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        const track=button.closest('.dc-track');
+        const time=track?.previousElementSibling?.textContent.trim();
+        if(time)openAppointment(time,button);
+      },true);
+    }
+    if(!slots.dataset.contextBound){
+      slots.dataset.contextBound='1';
+      slots.addEventListener('click',event=>{
+        const row=event.target.closest('.spot-row.taken');
+        if(!row||event.target.closest('button'))return;
+        const card=row.closest('.classcard'), time=card?.dataset.time;
+        const attendanceButton=row.querySelector('.att-btn');
+        const match=attendanceButton?.getAttribute('onclick')?.match(/,\s*(\d+)\s*,\s*true\s*\)/);
+        if(time&&match)showClient(time,Number(match[1]));
+      });
+    }
+    if(!selectedTime)closeAppointment();
+    else openAppointment(selectedTime,document.querySelector('#tDayCalendar .dc-event.selected'));
+  }
+
+  const observer=new MutationObserver(mutations=>{
+    if(mutations.some(m=>m.target.id==='tSlots'||m.target.id==='tDayCalendar')){
+      requestAnimationFrame(bind);
+    }
+  });
+  const start=()=>{
+    const root=document.getElementById('tp-sched');
+    if(!root)return;
+    observer.observe(root,{childList:true,subtree:true});
+    bind();
+    document.getElementById('tDaybar')?.addEventListener('click',()=>{selectedTime='';setTimeout(closeAppointment,0)});
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
