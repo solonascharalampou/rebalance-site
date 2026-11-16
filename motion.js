@@ -300,3 +300,66 @@
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
+
+
+/* Fast, explicit password recovery — no silent waiting or bottom toast dependency. */
+(() => {
+  'use strict';
+  const statusLine=()=>{
+    let line=document.getElementById('resetStatus');
+    if(!line){
+      line=document.createElement('div');
+      line.id='resetStatus';
+      line.className='reset-status';
+      document.getElementById('btnSendReset')?.insertAdjacentElement('afterend',line);
+    }
+    return line;
+  };
+  const setStatus=(message,type='working')=>{
+    const line=statusLine(); if(!line)return;
+    line.className='reset-status '+type;
+    line.textContent=message;
+  };
+  const request=async(path,body,timeout=15000)=>{
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),timeout);
+    try{
+      const response=await fetch(BACKEND+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:controller.signal});
+      let data={};try{data=await response.json();}catch(e){}
+      if(!response.ok)throw new Error(typeof data.detail==='string'?data.detail:'Request failed. Please try again.');
+      return data;
+    }catch(error){
+      if(error.name==='AbortError')throw new Error('The server did not respond. Please try again.');
+      throw error;
+    }finally{clearTimeout(timer);}
+  };
+
+  window.sendResetCode=async function(){
+    if(resetBusy)return;
+    const email=(document.getElementById('fp-email')?.value||'').trim();
+    if(!email){setStatus('Enter your email address.','error');document.getElementById('fp-email')?.focus();return;}
+    resetEmail=email;resetBusy=true;
+    const button=document.getElementById('btnSendReset');
+    if(button){button.disabled=true;button.textContent='Sending code…';}
+    setStatus('Contacting the secure account service…');
+    try{
+      let result={};
+      if(BACKEND)result=await request('/password/forgot',{email});
+      else{demoResetCode=String(Math.floor(100000+Math.random()*900000));result.test_code=demoResetCode;}
+      if(result.test_code)document.getElementById('fpDemo').innerHTML='Test code: <b>'+result.test_code+'</b>';
+      document.getElementById('fpEmailShown').textContent=email;
+      showAuthPane('c-reset');
+      let top=document.getElementById('resetFormStatus');
+      if(!top){top=document.createElement('div');top.id='resetFormStatus';top.className='reset-status success';document.querySelector('#c-reset .verify-sub')?.insertAdjacentElement('afterend',top);}
+      top.textContent='Code sent. Check your inbox and spam folder.';
+      document.querySelector('#resetInputs input')?.focus();
+      startCooldown('btnSendReset',30,'Send code');
+      startCooldown('btnResendReset',30,'Resend code');
+    }catch(error){
+      setStatus(error.message||'Could not send the code. Please try again.','error');
+    }finally{
+      resetBusy=false;
+      if(button&&!button.dataset.cooldown){button.disabled=false;button.textContent='Send code';}
+    }
+  };
+})();
