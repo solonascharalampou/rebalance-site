@@ -1434,6 +1434,10 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
             <button class="on" id="ct-login" onclick="custTab('login')" data-i18n="login">Log in</button>
             <button id="ct-signup" onclick="custTab('signup')" data-i18n="signup">Sign up</button>
           </div>
+          <div id="googleBtnHolder" style="display:none;margin-top:20px">
+            <div id="googleBtn"></div>
+          </div>
+          <div class="or-divider" id="googleDivider" style="display:none"><span>or continue with email</span></div>
           <div id="cf-name" style="display:none"><label>Full name</label><input id="ci-name" placeholder="Your full name"></div>
           <label>Email</label><input id="ci-email" type="email" placeholder="you@email.com">
           <label>Password</label><div class="pw-wrap"><input id="ci-pass" type="password" placeholder="••••••••"><button type="button" class="pw-eye" onclick="togglePw('ci-pass',this)" aria-label="Show password">👁</button></div>
@@ -1450,10 +1454,6 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
           <button class="btn" style="width:100%;margin-top:16px" id="cAuthBtn" onclick="custAuth()">Log in</button>
           <p class="auth-secure-note">Your account and health details stay protected</p>
 
-          <div class="or-divider" id="googleDivider" style="display:none"><span>or</span></div>
-          <div id="googleBtnHolder" style="display:none">
-            <div id="googleBtn"></div>
-          </div>
           <button class="btn ghost pk-btn" id="passkeyLoginBtn" style="display:none;width:100%;margin-top:10px" onclick="passkeyLogin()">
             🔑 Sign in with a passkey
           </button>
