@@ -427,6 +427,10 @@
     font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
   .or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--line)}
   #googleBtnHolder{display:flex;justify-content:center}
+  #shopBtnHolder{display:flex;justify-content:center;margin-top:10px}
+  .shop-login-btn{width:280px;min-height:44px;border:0;border-radius:999px;background:#5433EB;color:#fff;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:9px;transition:transform .2s,filter .2s}
+  .shop-login-btn:hover{transform:translateY(-1px);filter:brightness(1.06)}
+  .shop-login-mark{font-size:18px;font-weight:800;line-height:1}
 
   /* closing times off */
   .closure-sheet{max-width:440px}
@@ -940,15 +944,7 @@
 </style>
 <link rel="stylesheet" href="motion.css?v=20261111-2">
 <link rel="stylesheet" href="trainer-dashboard.css?v=20261112-2">
-<style id="trainerSchedulePolish">
-#trainerCalendarTools{position:sticky;top:72px;z-index:12;background:rgba(251,244,240,.96);padding:10px;border:1px solid var(--line);border-radius:16px;backdrop-filter:blur(10px)}
-#tDayCalendar{background:var(--paper)}
-.dc-open span{color:#6f6062;font-weight:500}
-.dc-event .dc-meta b{min-width:64px;text-align:right}
-.classcard{scroll-margin-top:155px}
-#tp-sched .trainer-day-empty{min-height:150px}
-@media(max-width:700px){#trainerCalendarTools{top:58px}.dc-main small{max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
-</style></head>
+</head>
 <body>
 
 <!-- ============ NAV ============ -->
@@ -1129,11 +1125,14 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
             <button class="on" id="ct-login" onclick="custTab('login')" data-i18n="login">Log in</button>
             <button id="ct-signup" onclick="custTab('signup')" data-i18n="signup">Sign up</button>
           </div>
-          <div id="cf-name" style="display:none"><label>Full name</label><input id="ci-name" placeholder="Your full name"></div>
-          <label>Email</label><input id="ci-email" type="email" placeholder="you@email.com">
-          <label>Password</label><div class="pw-wrap"><input id="ci-pass" type="password" placeholder="••••••••"><button type="button" class="pw-eye" onclick="togglePw('ci-pass',this)" aria-label="Show password">👁</button></div>
-          <div id="cf-phone" style="display:none"><label>Mobile number</label><input id="ci-phone" type="tel" inputmode="tel" placeholder="Your mobile number" autocomplete="tel"><p class="field-hint">So we can reach you quickly if a class changes.</p></div>
-          <div id="cf-ref" style="display:none"><label>Referral code (optional)</label><input id="ci-ref" placeholder="Enter code" oninput="this.value=this.value.toUpperCase()"></div>
+          <div id="googleBtnHolder" style="display:none;margin-top:20px"><div id="googleBtn"></div></div>
+          <div id="shopBtnHolder" style="display:none"><button type="button" class="shop-login-btn" onclick="shopSignIn()"><span class="shop-login-mark">S</span> Continue with Shop</button></div>
+          <div class="or-divider" id="googleDivider" style="display:none"><span>or continue with email</span></div>
+          <div id="cf-name" style="display:none"><label>Full name</label><input id="ci-name"></div>
+          <label>Email</label><input id="ci-email" type="email">
+          <label>Password</label><div class="pw-wrap"><input id="ci-pass" type="password"><button type="button" class="pw-eye" onclick="togglePw('ci-pass',this)" aria-label="Show password">👁</button></div>
+          <div id="cf-phone" style="display:none"><label>Mobile number</label><input id="ci-phone" type="tel" inputmode="tel" autocomplete="tel"><p class="field-hint">So we can reach you quickly if a class changes.</p></div>
+          <div id="cf-ref" style="display:none"><label>Referral code (optional)</label><input id="ci-ref" oninput="this.value=this.value.toUpperCase()"></div>
           <label class="consent-check" id="cConsentWrap" style="display:none">
             <input type="checkbox" id="ci-consent">
             <span>I agree to the <button type="button" class="linkbtn" onclick="openPrivacy()">Privacy Policy</button> and consent to my data being used to manage my bookings.</span>
@@ -1144,10 +1143,6 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
           </label>
           <button class="btn" style="width:100%;margin-top:16px" id="cAuthBtn" onclick="custAuth()">Log in</button>
 
-          <div class="or-divider" id="googleDivider" style="display:none"><span>or</span></div>
-          <div id="googleBtnHolder" style="display:none">
-            <div id="googleBtn"></div>
-          </div>
           <button class="btn ghost pk-btn" id="passkeyLoginBtn" style="display:none;width:100%;margin-top:10px" onclick="passkeyLogin()">
             🔑 Sign in with a passkey
           </button>
@@ -1543,7 +1538,7 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
 
         <div class="manage-sec">
           <div class="ms-head"><h3>GHS (ΓΕΣΥ) cover</h3><span class="reg-count" id="ghsCount"></span></div>
-          <p class="ms-note">Clients whose care is covered by GHS. Approving means their <b>physiotherapy and Pilates sessions</b> are free to them — each normal fee is recorded separately for you to claim.</p>
+          <p class="ms-note">Clients whose physiotherapy is covered by GHS. Approving means their <b>private Clinical Rehab</b> sessions are free to them — the fee is recorded separately for you to claim.</p>
           <div id="mgGhs"></div>
         </div>
 
@@ -2948,8 +2943,7 @@ async function syncAllGhs(){
   if(!BACKEND || !trainerToken) return;
   try{
     const r=await api('/ghs/all',{token:trainerToken});
-    GHS_LIST=(r.requests||[]).map(x=>({email:x.email,name:x.name,ref:x.ref,status:x.status,
-      expires:x.expires||'',session_limit:x.session_limit,sessions_used:x.sessions_used||0}));
+    GHS_LIST=(r.requests||[]).map(x=>({email:x.email,name:x.name,ref:x.ref,status:x.status}));
   }catch(e){}
 }
 function myGhsStatus(){
@@ -2959,9 +2953,11 @@ function myGhsStatus(){
   return r ? r.status : null;
 }
 function isGhsCovered(){ return myGhsStatus()==='approved'; }
-// Trainer-approved GHS cover applies to every physiotherapy and Pilates booking.
+// GHS only covers physio-led rehab, and only as a private session
 function ghsAppliesToBooking(){
-  return isGhsCovered() && !!state.cls;
+  if(!isGhsCovered()) return false;
+  if(state.bookMode!=='solo') return false;
+  return !!(state.cls && state.cls.ghs);
 }
 async function requestGhs(){
   if(!state.user){ toast('Sign in first','GHS'); return; }
@@ -2993,8 +2989,8 @@ function renderGhsCard(){
   card.className='ghs-card '+(st||'none');
   if(st==='approved'){
     badge.textContent='Covered'; badge.className='ghs-badge ok';
-    body.innerHTML='<p>✓ Your physiotherapy and Pilates sessions are covered by GHS — '
-      +'you won\u2019t be charged when you book.</p>';
+    body.innerHTML='<p>✓ Your private Clinical Rehab sessions are covered by GHS — '
+      +'you won\u2019t be charged for them.</p>';
   }else if(st==='pending'){
     badge.textContent='Waiting'; badge.className='ghs-badge pending';
     body.innerHTML='<p>The studio is checking your GHS cover. We\u2019ll confirm shortly.</p>';
@@ -3005,7 +3001,7 @@ function renderGhsCard(){
   }else{
     badge.textContent=''; badge.className='ghs-badge';
     body.innerHTML='<p>If your physiotherapy is covered by GHS (ΓΕΣΥ), tell us and '
-      +'we\u2019ll check it — once approved, physiotherapy and Pilates bookings are free to you.</p>'
+      +'we\u2019ll check it — covered private rehab sessions are free to you.</p>'
       +'<input id="ghsRef" placeholder="GHS / referral number (optional)">'
       +'<button class="btn ghost" style="width:100%;margin-top:10px" onclick="requestGhs()">Request GHS cover</button>';
   }
@@ -3036,21 +3032,19 @@ function renderMgGhs(){
     return `<div class="reg-card ${r.status}">
       <div class="reg-info">
         <div class="reg-name">${r.name||r.email}${badge}</div>
-        <div class="reg-when">${r.ref? 'Ref: '+r.ref : 'No reference given'}${r.expires?' · Expires '+r.expires:''}${r.session_limit?' · '+Math.max(0,r.session_limit-(r.sessions_used||0))+'/'+r.session_limit+' remaining':''}</div>
+        <div class="reg-when">${r.ref? 'Ref: '+r.ref : 'No reference given'}</div>
       </div>
       <div class="reg-actions">${actions}</div>
     </div>`;
   }).join('');
 }
-async function setGhsStatus(i,status,msg,options={}){
+async function setGhsStatus(i,status,msg){
   const list=loadGhs();
   if(!list[i]) return;
   if(BACKEND){
     try{
-      const params=new URLSearchParams({email:list[i].email,status});
-      if(options.expires)params.set('expires',options.expires);
-      if(options.session_limit)params.set('session_limit',options.session_limit);
-      await api('/ghs/decide?'+params.toString(),{method:'POST',token:trainerToken});
+      await api(`/ghs/decide?email=${encodeURIComponent(list[i].email)}&status=${status}`,
+                {method:'POST',token:trainerToken});
       await syncAllGhs();
     }catch(e){ toast(e.message,'GHS'); return; }
   }else{
@@ -3059,13 +3053,7 @@ async function setGhsStatus(i,status,msg,options={}){
   renderMgGhs();
   toast(msg,'GHS');
 }
-function approveGhs(i){
-  const expires=prompt('GHS approval expiry date (YYYY-MM-DD). Leave blank for no expiry:','')||'';
-  const raw=prompt('Maximum covered sessions. Leave blank for unlimited:','')||'';
-  const session_limit=raw?parseInt(raw,10):null;
-  if(raw&&(!session_limit||session_limit<1)){toast('Enter a valid session limit','GHS');return;}
-  setGhsStatus(i,'approved','GHS approved — covered bookings are now free',{expires,session_limit});
-}
+function approveGhs(i){ setGhsStatus(i,'approved','GHS cover approved — their private rehab is now free'); }
 function declineGhs(i){ setGhsStatus(i,'declined','GHS request declined'); }
 function revokeGhs(i){ setGhsStatus(i,'declined','GHS cover removed'); }
 let REGULARS=[];
@@ -3518,7 +3506,7 @@ function buildReceipt(){
     ${weeks>1?`<div class="rr"><span class="k">Repeats</span><span>Weekly × ${weeks}</span></div>`:''}
     ${solo||weeks>1?'':`<div class="rr"><span class="k">Your spot</span><span>${spotsBooked(c)+1} of ${CAP}</span></div>`}
     ${usingCredit?`<div class="rr"><span class="k">Credits</span><span>${state.credits} available</span></div>`:''}
-    ${ghsAppliesToBooking()?`<div class="rr ghs-line"><span class="k">🏥 GHS (ΓΕΣΥ) covered</span><span>You pay €0 · €${solo?state.cls.solo:state.cls.price} claimed from GHS</span></div>`:''}
+    ${ghsAppliesToBooking()?`<div class="rr ghs-line"><span class="k">🏥 GHS (ΓΕΣΥ) covered</span><span>Paid by GHS · €${state.cls.solo} claimed</span></div>`:''}
     ${isFirstSession()&&!solo&&!ghsAppliesToBooking()?`<div class="rr intro"><span class="k">✦ First-session offer</span><span>€${FIRST_OFFER.price} instead of €${state.cls.price}</span></div>`:''}
     ${promoActive?`<div class="rr"><span class="k">Promo ${state.promo}</span><span>−€${(base-unit)*weeks}.00</span></div>`:''}
     ${weeks>1?`<div class="rr"><span class="k">Per class</span><span>€${unit}.00</span></div>`:''}
@@ -3546,13 +3534,10 @@ async function custPay(){
     try{
       const r=await api('/book',{method:'POST',token:authToken,
         body:{class_key:state.cls.id,date:isoDate(d),hour:state.slot,private:solo,promo:state.promo||null}});
-      if(String(r.method).toLowerCase()==='package') state.credits=Math.max(0,state.credits-1);
+      if(r.amount===0) state.credits=Math.max(0,state.credits-1);
       await loadMyBookings();
-      const customerTotal=Number(r.customer_pays ?? r.amount ?? 0);
-      const receiptMethod=r.ghs_covered?'GHS (ΓΕΣΥ) — covered'
-        :(String(r.method).toLowerCase()==='package'?'Package credit':'Viva Wallet');
       showReceipt({no:r.receipt_no, cls:state.cls.name, solo, d, time:state.slot,
-                   total:customerTotal, method:receiptMethod});
+                   total:r.amount, method:r.amount===0?'Package credit':'Viva Wallet'});
     }catch(e){toast(e.message,'Booking');return;}
     return;
   }
@@ -3677,12 +3662,12 @@ async function loadMyBookings(){
   if(!BACKEND) return;
   try{
     const rows=await api('/my-bookings',{token:authToken});
-    state.bookings=rows.map(r=>{
+    state.bookings=rows.filter(r=>r.status==='confirmed').map(r=>{
       const start=new Date(r.date+'T'+r.hour+':00');
       return {id:r.id,cls:(CLASSES.find(c=>c.id===r.class_key)||{}).name+(r.private?' · Private':''),
         price:r.amount,dayIdx:0,time:r.hour,date:r.date,spotIdx:r.spot,
         when:start.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})+' · '+r.hour,
-        start,status:(r.status||'confirmed'),attended:r.attended,paidBy:r.pay};
+        start,status:'confirmed',paidBy:r.pay};
     });
   }catch(e){/* ignore */}
 }
@@ -3694,19 +3679,12 @@ function renderMine(){
   document.getElementById('myList').innerHTML=state.bookings.map(b=>{
     let pill,cd='',act='';
     const series=b.series?`<span class="series-tag">Weekly ${b.series}</span>`:'';
-    const past=b.start<new Date();
     if(b.status==='lost')pill='<span class="pill lost">Session lost</span>';
     else if(b.status==='rescheduled')pill='<span class="pill resc">Rescheduled</span>';
-    else if(b.status==='cancelled'){
-      pill='<span class="pill lost">Cancelled</span>';
-      act=`<div class="bact"><button onclick="rebook(${b.id})">↻ Book again</button></div>`;
-    }else if(past){
-      pill=`<span class="pill ${b.attended===false?'lost':'ok'}">${b.attended===false?'No-show':'Completed'}</span>`;
-      act=`<div class="bact"><button onclick="rebook(${b.id})">↻ Book again</button></div>`;
-    }else{
+    else{
       pill='<span class="pill ok">Confirmed</span>';
       const can=hoursUntil(b.start)>4;
-      cd=`<div class="cd">${can?'✦ <b>Free to reschedule</b> — more than 4 hours away':'✦ <b>Within 4 hours</b> — call the studio if you need help'}</div>`;
+      cd=`<div class="cd">${can?'✦ <b>Free to reschedule</b> — more than 4 hours away':'✦ <b>Within 4 hours</b> — cancelling means losing the session'}</div>`;
       act=`<div class="bact">
         <button onclick="addToCalendar(${b.id})">📅 Add to calendar</button>
         <button onclick="rebook(${b.id})">↻ Book again</button>
@@ -3840,29 +3818,51 @@ function trainerBackAction(){
     show('home');
   }
 }
+let trainerDataReady=false;
+let trainerLoadPromise=null;
+function trainerLoading(target,message){
+  const el=document.getElementById(target);
+  if(el)el.innerHTML=`<div class="empty"><b>${message||'Loading studio data…'}</b><span>Please wait a moment.</span></div>`;
+}
+async function loadTrainerPortalData(force=false){
+  if(trainerLoadPromise)return trainerLoadPromise;
+  if(trainerDataReady&&!force)return true;
+  trainerLoadPromise=(async()=>{
+    await syncTrainerWeek();
+    trainerDataReady=true;
+    renderTDays();renderTSlots();renderWeekOverview();renderClients();renderEarnings();
+    return true;
+  })().finally(()=>{trainerLoadPromise=null;});
+  return trainerLoadPromise;
+}
 async function enterTrainerPortal(){
   document.getElementById('t-auth').classList.remove('on');
   document.getElementById('t-app').classList.add('on');
   const tb=document.getElementById('trainerBack'); if(tb) tb.textContent='← Sign out';
   renderTDays();
-  await Promise.all([syncTrainerDay(state.trainerDay),syncClients(),syncEarnings()]);
-  renderTSlots();renderWeekOverview();renderClients();renderEarnings();
-  // Fill the other days quietly, one at a time, without blocking the portal.
-  (async()=>{for(let i=0;i<DAYS.length;i++)if(i!==state.trainerDay)await syncTrainerDay(i);renderWeekOverview();})();
+  trainerLoading('tSlots','Loading today’s appointments…');
+  trainerLoading('tDayCalendar','Loading today’s calendar…');
+  trainerLoading('tClients','Loading clients…');
+  // Do not paint empty tabs before the API has returned. Previously the first
+  // render happened against the blank browser store, so changing dates was the
+  // only action that made real appointments appear.
+  await loadTrainerPortalData(true);
   startSchedulePolling();
   toast('Welcome back, studio.','Trainer');
 }
-async function trainTab(t){
-  const heading=document.querySelector('#t-app > h1, #t-app h1');
-  if(heading) heading.textContent=({sched:'Studio schedule',clients:'Clients',earnings:'Earnings',manage:'Manage studio'}[t]||'Trainer portal');
-  document.querySelectorAll('#v-train .ptabs button').forEach(b=>b.classList.toggle('on',b.dataset.tp===t));
+async function trainTab(t){document.querySelectorAll('#v-train .ptabs button').forEach(b=>b.classList.toggle('on',b.dataset.tp===t));
   document.getElementById('tp-sched').classList.toggle('on',t==='sched');
   document.getElementById('tp-clients').classList.toggle('on',t==='clients');
   document.getElementById('tp-earnings').classList.toggle('on',t==='earnings');
   document.getElementById('tp-manage').classList.toggle('on',t==='manage');
-  if(t==='sched'){await syncTrainerDay(state.trainerDay);renderTDays();renderTSlots();renderWeekOverview();}
-  if(t==='clients'){await syncClients();renderClients();}
-  if(t==='earnings'){await syncEarnings();renderEarnings();}
+  if(t==='sched')trainerLoading('tSlots','Refreshing appointments…');
+  if(t==='clients')trainerLoading('tClients','Refreshing clients…');
+  // Always refresh before showing data-backed tabs. This keeps Schedule,
+  // Clients and Earnings consistent even when a booking was made elsewhere.
+  if(t==='sched'||t==='clients'||t==='earnings')await loadTrainerPortalData(true);
+  if(t==='sched'){renderTDays();renderTSlots();renderWeekOverview();}
+  if(t==='clients')renderClients();
+  if(t==='earnings')renderEarnings();
   if(t==='manage')renderManage();}
 
 /* ===================== MANAGE (edit everything, no code) ===================== */
@@ -4061,7 +4061,7 @@ function renderWeekOverview(){
       const booked=spotsBooked(c),free=spotsFree(c),kind=sessionKind(c);
       const label=kind==='ghs'?'GESY':kind==='private'?'Private':kind==='booked'?'Booked':kind==='closed'?'Closed':'Available';
       html+=`<div class="week-cell ${di===state.trainerDay?'selected':''}" onclick="setTDay(${di});document.getElementById('scheduleDetail').scrollIntoView({behavior:'smooth',block:'start'})">
-        <div class="week-event ${kind}"><div class="we-top"><span class="we-time">${t}</span><span class="we-count">${c.private&&booked?'Private':booked+'/'+CAP}</span></div><div class="we-name">${c.cls||'Session'}</div><div class="we-tag">${label}${kind==='available'?' · '+free+' free':''}</div></div>
+        <div class="week-event ${kind}"><div class="we-top"><span class="we-time">${t}</span><span class="we-count">${booked}/${CAP}</span></div><div class="we-name">${c.cls||'Session'}</div><div class="we-tag">${label}${kind==='available'?' · '+free+' free':''}</div></div>
       </div>`;
     });
   });
@@ -4072,7 +4072,7 @@ function renderWeekOverview(){
 function renderDailyCalendar(){
   const cal=document.getElementById('tDayCalendar');if(!cal)return;
   const di=state.trainerDay,day=store[di]||{};
-  const rows=TIMES.filter(t=>day[t]&&(trainerShowOpen||spotsBooked(day[t])>0||day[t].closed)).map(t=>{
+  const rows=TIMES.filter(t=>day[t]).map(t=>{
     const c=day[t],booked=spotsBooked(c),free=spotsFree(c),kind=sessionKind(c);
     const clients=c.spots.filter(s=>s&&typeof s==='object');
     let status=kind;
@@ -4084,7 +4084,7 @@ function renderDailyCalendar(){
       <div class="dc-track">
         ${booked?`<button class="dc-event ${status}" onclick="document.querySelector('.classcard[data-time=\"${t}\"]')?.scrollIntoView({behavior:'smooth',block:'center'})">
           <span class="dc-main"><b>${c.cls}</b><small>${names}</small></span>
-          <span class="dc-meta"><b>${c.private&&booked?'Private':booked+'/'+CAP}</b><small>${label}</small></span>
+          <span class="dc-meta"><b>${booked}/${CAP}</b><small>${label}</small></span>
         </button>`:`<div class="dc-open"><span>${c.closed?'Closed':free+' places available'}</span></div>`}
       </div>`;
   }).join('');
@@ -4097,12 +4097,10 @@ function toggleTrainerOpenTimes(){
   const b=document.getElementById('tViewToggle');
   if(b)b.textContent=trainerShowOpen?'Appointments only':'Show open times';
   renderTSlots();
-  renderDailyCalendar();
 }
 
 function paytag(pay){
-  return pay==='ghs' ? '<span class="paytag ghs-tag">GESY</span>'
-    : pay==='viva' ? '<span class="paytag viva">Viva</span>'
+  return pay==='viva' ? '<span class="paytag viva">Viva</span>'
     : pay==='cash' ? '<span class="paytag cash">Cash</span>'
     : pay==='card' ? '<span class="paytag card">Card</span>'
     : pay==='credit' ? '<span class="paytag pkg">Package</span>'
@@ -4196,7 +4194,7 @@ function renderTSlots(){
           <button class="att-btn no ${pAbsent?'on':''}" onclick="tAttend(${di},'${t}',${si},false)">✗ No-show</button>
         </div>
       </div>
-        <div class="private-note">This private appointment reserves the complete hour for this client.</div>`;
+        <div class="private-note">All ${CAP} reformers are reserved for this client — no one else can book this time.</div>`;
       classCtrl='';
       return `<div class="classcard is-private ${ghsSession?'is-ghs':''}" data-time="${t}">${head}<div class="spot-list">${spotRows}</div>${classCtrl}</div>`;
     }
@@ -4611,48 +4609,54 @@ async function saveWalkin(){
   toast(name+' added · '+(pay==='ghs'?'GESY':pay+' recorded'),'Appointment');
 }
 
-let SERVER_CLIENTS=null;
 async function syncClients(){
   if(!BACKEND || !trainerToken) return null;
-  try{
-    const r=await api('/trainer/clients',{token:trainerToken});
-    SERVER_CLIENTS=r.clients||[];
-    return SERVER_CLIENTS;
-  }catch(e){
-    console.error('Could not load clients:',e);
-    return null;
-  }
+  try{ const r=await api('/trainer/clients',{token:trainerToken}); return r.clients||[]; }
+  catch(e){ return null; }
 }
 function renderClients(){
-  const target=document.getElementById('tClients'); if(!target)return;
-  if(SERVER_CLIENTS===null){
-    target.innerHTML='<div class="empty"><b>Loading clients…</b><span>Please wait a moment.</span></div>';
-    return;
-  }
-  if(!SERVER_CLIENTS.length){target.innerHTML='<div class="empty">No booked clients yet.</div>';return;}
-  target.innerHTML=SERVER_CLIENTS.map(client=>{
-    const list=(client.bookings||[]);
-    const confirmed=list.filter(x=>x.status==='confirmed');
-    const here=confirmed.filter(x=>x.attended===1||x.attended===true).length;
-    const noshow=confirmed.filter(x=>x.attended===0||x.attended===false).length;
-    const spend=confirmed.reduce((sum,x)=>sum+((String(x.pay||'').toLowerCase()==='ghs'||String(x.pay||'').toLowerCase()==='package'||String(x.pay||'').toLowerCase()==='credit')?0:Number(x.amount||0)),0);
-    const ghsClaim=confirmed.reduce((sum,x)=>sum+(String(x.pay||'').toLowerCase()==='ghs'?Number(x.amount||0):0),0);
-    const history=list.slice(0,30).map(x=>{
-      const badge=x.status==='cancelled'?'<i class="h-no">×</i>':(x.attended===1||x.attended===true)?'<i class="h-ok">✓</i>':(x.attended===0||x.attended===false)?'<i class="h-no">✗</i>':'<i class="h-q">·</i>';
-      return `<li>${badge}<span>${new Date(x.date+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} · ${x.hour}</span><span class="h-cls">${x.class||x.class_key||'Session'}${x.private?' · Private':''}</span>${paytag(x.pay)}</li>`;
+  const rows=[];
+  DAYS.forEach((d,di)=>TIMES.forEach(t=>{const c=store[di][t];c.spots.forEach((s,si)=>{if(s&&typeof s==='object')rows.push({di,t,d,si,name:s.name,pay:s.pay,cls:c.cls,attended:s.attended,priv:!!(c.private||s.private)});});}));
+  if(!rows.length){document.getElementById('tClients').innerHTML='<div class="empty">No booked clients yet.</div>';return;}
+
+  // group every booking by client name
+  const byName={};
+  rows.forEach(r=>{ (byName[r.name]=byName[r.name]||[]).push(r); });
+
+  const html=Object.keys(byName).sort().map(name=>{
+    const list=byName[name].sort((a,b)=>a.d-b.d);
+    const total=list.length;
+    const here=list.filter(x=>x.attended===true).length;
+    const noshow=list.filter(x=>x.attended===false).length;
+    const spend=list.reduce((sum,x)=>sum+priceFor(x.cls,x.priv),0);
+    const rate = (here+noshow)>0 ? Math.round(here/(here+noshow)*100) : null;
+    const warn = noshow>=2;
+    const history=list.map(x=>{
+      const badge = x.attended===true?'<i class="h-ok">✓</i>' : x.attended===false?'<i class="h-no">✗</i>' : '<i class="h-q">·</i>';
+      return `<li>${badge}<span>${x.d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})} · ${x.t}</span>
+              <span class="h-cls">${x.cls}${x.priv?' · Private':''}</span>${paytag(x.pay)}</li>`;
     }).join('');
-    const safeName=String(client.name||'Client').replace(/</g,'&lt;');
-    const noteKey=String(client.email||client.name||'Client');
-    return `<div class="client-card ${noshow>=2?'warn':''}">
+    return `<div class="client-card ${warn?'warn':''}">
       <div class="cc-head" onclick="this.parentElement.classList.toggle('open')">
-        <div><h3>${safeName}</h3><div class="cc-meta">${confirmed.length} session${confirmed.length===1?'':'s'} · Customer paid €${spend.toFixed(2)}${ghsClaim?' · GHS claim €'+ghsClaim.toFixed(2):''}${client.email?' · '+client.email:''}${client.phone?' · '+client.phone:''}</div></div>
-        <div class="cc-right">${noshow?'<span class="cc-noshow">'+noshow+' no-show'+(noshow===1?'':'s')+'</span>':''}<span class="cc-arrow">⌄</span></div>
+        <div>
+          <h3>${name}</h3>
+          <div class="cc-meta">${total} session${total!==1?'s':''} · €${spend} total${rate!==null?` · ${rate}% attendance`:''}</div>
+        </div>
+        <div class="cc-right">
+          ${noshow>0?`<span class="cc-noshow">${noshow} no-show${noshow!==1?'s':''}</span>`:''}
+          <span class="cc-arrow">⌄</span>
+        </div>
       </div>
-      <ul class="cc-history">${history||'<li>No booking history</li>'}</ul>
-      <div class="cc-notes"><label>Private notes <span>— visible only to studio staff</span></label>
-      <textarea rows="3" placeholder="Injuries, goals, GESY referral, things to watch…" onchange="saveNote(${JSON.stringify(noteKey)},this.value)">${(NOTES[noteKey]||'').replace(/</g,'&lt;')}</textarea></div>
+      <ul class="cc-history">${history}</ul>
+      <div class="cc-notes">
+        <label>Private notes <span>— visible only to studio staff</span></label>
+        <textarea rows="3" placeholder="Injuries, goals, GHS referral, things to watch…"
+          onchange="saveNote('${name.replace(/'/g,"\\'")}', this.value)">${(NOTES[name]||'').replace(/</g,'&lt;')}</textarea>
+        <p class="cc-gdpr">⚠︎ Health information. Keep it minimal, factual, and only what you need for safe treatment. The client can ask to see or delete it.</p>
+      </div>
     </div>`;
   }).join('');
+  document.getElementById('tClients').innerHTML=html;
 }
 /* ---------- client notes (trainer only — special-category data, handle with care) ---------- */
 let NOTES={};
@@ -4690,7 +4694,6 @@ function collectEarnings(){
   return rows;
 }
 let earnPeriodMode='all';
-let SERVER_EARNINGS=null;
 function setEarnPeriod(m){ earnPeriodMode=m; renderEarnings(); }
 function periodRange(){
   const now=new Date();
@@ -4712,16 +4715,13 @@ async function syncEarnings(){
   if(!BACKEND || !trainerToken) return null;
   const r=periodRange();
   try{
-    const iso=d=>d&&d.toISOString().slice(0,10);
-    const q=[]; if(r.from) q.push('date_from='+encodeURIComponent(iso(r.from))); if(r.to) q.push('date_to='+encodeURIComponent(iso(r.to)));
-    const result=await api('/trainer/earnings-detail'+(q.length?'?'+q.join('&'):''),{token:trainerToken});
-    SERVER_EARNINGS=(result.rows||[]).map(x=>({d:new Date(x.date+'T00:00:00'),date:new Date(x.date+'T00:00:00'),time:x.hour,client:x.name,amount:Number(x.amount||0),method:x.pay==='credit'?'viva':(x.pay||'viva'),cls:x.class||x.class_key,private:!!x.private,ghs:x.pay==='ghs'}));
-    return SERVER_EARNINGS;
-  }catch(e){console.error('Could not load earnings:',e);return null;}
+    const q=[]; if(r.from) q.push('date_from='+r.from); if(r.to) q.push('date_to='+r.to);
+    return await api('/trainer/earnings-detail'+(q.length?'?'+q.join('&'):''),{token:trainerToken});
+  }catch(e){ return null; }
 }
 function renderEarnings(){
   const range=periodRange();
-  let rows=SERVER_EARNINGS===null?collectEarnings():SERVER_EARNINGS.slice();
+  let rows=collectEarnings();
   if(range.from) rows=rows.filter(r=>r.date>=range.from && r.date<=range.to);
   const totals={viva:0,card:0,cash:0,ghs:0,count:0};
   rows.forEach(r=>{totals[r.method]=(totals[r.method]||0)+r.amount;totals.count++;});
@@ -4875,6 +4875,8 @@ if(joinCampaign==='ecru' || joinParams.has('e')){
 loadServerSettings();  // when live, the server's settings win
 restoreSession();      // "remember me" — sign back in if we have a saved token
 setupGoogleSignIn();   // show the Google button if the server has it configured
+setupShopSignIn();     // show Continue with Shop if its OAuth app is configured
+handleShopCallback();  // finish Shop's secure redirect
 setupPasskeys();       // show passkey options if supported
 
 /* ---------- Google sign-in ----------
@@ -5079,6 +5081,52 @@ async function onGoogleCredential(resp){
     }
     toast(friendlyAuthError(e.message),'Google');
   }
+}
+
+/* ---------- Sign in with Shop ---------- */
+let SHOP_SIGNIN_ON=false;
+async function setupShopSignIn(){
+  if(!BACKEND) return;
+  try{
+    const cfg=await api('/auth/shop/config');
+    SHOP_SIGNIN_ON=!!(cfg&&cfg.enabled);
+    if(SHOP_SIGNIN_ON){
+      const holder=document.getElementById('shopBtnHolder');
+      if(holder) holder.style.display='flex';
+      const divider=document.getElementById('googleDivider');
+      if(divider) divider.style.display='flex';
+    }
+  }catch(e){}
+}
+function shopSignIn(){
+  if(!BACKEND||!SHOP_SIGNIN_ON){toast('Shop sign-in is not available yet','Shop');return;}
+  location.href=BACKEND+'/auth/shop/start';
+}
+async function handleShopCallback(){
+  if(!location.hash.startsWith('#shop_')) return;
+  const p=new URLSearchParams(location.hash.slice(1));
+  const err=p.get('shop_error');
+  history.replaceState(null,'',location.pathname+location.search);
+  if(err){
+    const messages={cancelled:'Shop sign-in was cancelled',expired:'That Shop sign-in expired — please try again',twofa:'Please sign in with your password and authenticator code',verification:'Shop could not verify that sign-in',server:'Shop sign-in could not be completed'};
+    toast(messages[err]||'Shop sign-in could not be completed','Shop'); return;
+  }
+  const token=p.get('shop_token'); if(!token) return;
+  authToken=token;
+  state.user={email:p.get('email')||'',name:p.get('name')||'',phone:'',profile_photo:''};
+  try{localStorage.setItem('rb_token',token)}catch(e){}
+  if(p.get('needs_phone')==='1'){
+    const phone=prompt('One last thing — your mobile number, so we can reach you if a class changes:');
+    if(phone&&phone.replace(/\D/g,'').length>=8){
+      try{await api('/me',{method:'PATCH',token,body:{name:state.user.name,phone:phone.trim()}});state.user.phone=phone.trim()}catch(e){}
+    }
+  }
+  pendingAuth={mode:p.get('new')==='1'?'signup':'login',email:state.user.email,name:state.user.name};
+  updateCustBack();
+  document.getElementById('c-auth').classList.remove('on');
+  document.getElementById('c-flow').classList.add('on');
+  renderClasses(); customerNavAction('home');
+  toast(p.get('new')==='1'?'Welcome to Rebalance 🌿':'Welcome back!','Shop');
 }
 
 // If "remember me" saved a token last time, validate it and sign the person
