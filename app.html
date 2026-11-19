@@ -1438,11 +1438,11 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
             <div id="googleBtn"></div>
           </div>
           <div class="or-divider" id="googleDivider" style="display:none"><span>or continue with email</span></div>
-          <div id="cf-name" style="display:none"><label>Full name</label><input id="ci-name" placeholder="Your full name"></div>
-          <label>Email</label><input id="ci-email" type="email" placeholder="you@email.com">
-          <label>Password</label><div class="pw-wrap"><input id="ci-pass" type="password" placeholder="••••••••"><button type="button" class="pw-eye" onclick="togglePw('ci-pass',this)" aria-label="Show password">👁</button></div>
-          <div id="cf-phone" style="display:none"><label>Mobile number</label><input id="ci-phone" type="tel" inputmode="tel" placeholder="Your mobile number" autocomplete="tel"><p class="field-hint">So we can reach you quickly if a class changes.</p></div>
-          <div id="cf-ref" style="display:none"><label>Referral code (optional)</label><input id="ci-ref" placeholder="Enter code" oninput="this.value=this.value.toUpperCase()"></div>
+          <div id="cf-name" style="display:none"><label>Full name</label><input id="ci-name"></div>
+          <label>Email</label><input id="ci-email" type="email">
+          <label>Password</label><div class="pw-wrap"><input id="ci-pass" type="password"><button type="button" class="pw-eye" onclick="togglePw('ci-pass',this)" aria-label="Show password">👁</button></div>
+          <div id="cf-phone" style="display:none"><label>Mobile number</label><input id="ci-phone" type="tel" inputmode="tel" autocomplete="tel"><p class="field-hint">So we can reach you quickly if a class changes.</p></div>
+          <div id="cf-ref" style="display:none"><label>Referral code (optional)</label><input id="ci-ref" oninput="this.value=this.value.toUpperCase()"></div>
           <label class="consent-check" id="cConsentWrap" style="display:none">
             <input type="checkbox" id="ci-consent">
             <span>I agree to the <button type="button" class="linkbtn" onclick="openPrivacy()">Privacy Policy</button> and consent to my details being used for patient records and booking management.</span>
