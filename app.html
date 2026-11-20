@@ -722,6 +722,18 @@
   .paytag.cash{background:rgba(94,138,128,.2);color:#3f6b60}
   .paytag.unpaid{background:rgba(201,138,92,.2);color:#9a5f2b}
   .paytag.card{background:rgba(110,138,154,.18);color:#4a6b78}
+  /* compact weekly trainer calendar */
+  .trainer-calendar-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;background:var(--paper);border:1px solid var(--line);padding:14px 16px;margin:16px 0 12px}
+  .trainer-week-nav,.trainer-view-switch{display:flex;align-items:center;gap:7px}.trainer-week-nav button,.trainer-view-switch button{border:1px solid var(--line);background:#fff;color:var(--ink);min-height:38px;padding:0 14px;font-size:12px}.trainer-week-nav button{width:40px;padding:0}.trainer-view-switch button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .trainer-week-label{min-width:210px;text-align:center;font-family:'Fraunces',serif;font-size:1.05rem}.trainer-calendar-scroll{overflow:auto;border:1px solid var(--line);background:var(--paper);box-shadow:0 18px 45px -38px rgba(72,46,51,.55)}
+  #tSlots.trainer-week-grid{display:grid;grid-template-columns:76px repeat(6,minmax(150px,1fr));gap:0;margin:0;min-width:1050px}
+  .cal-corner,.cal-day-head{position:sticky;top:0;z-index:3;background:#fbf7f4;border-bottom:1px solid var(--line);min-height:74px}.cal-corner{left:0;z-index:4;border-right:1px solid var(--line)}
+  .cal-day-head{display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid var(--line);gap:4px}.cal-day-head b{font:500 1.25rem 'Fraunces',serif}.cal-day-head span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}.cal-day-head.today{background:#f6e8e4;color:#8d5057}.cal-day-head.selected{box-shadow:inset 0 -3px #b56d76}
+  .cal-time{position:sticky;left:0;z-index:2;min-height:104px;padding:13px 10px;background:#fbf7f4;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font-size:12px;color:var(--mut);text-align:right}
+  .cal-cell{min-height:104px;padding:7px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:linear-gradient(to bottom,transparent 49%,rgba(113,86,90,.045) 50%,transparent 51%)}
+  .cal-event{width:100%;height:100%;min-height:88px;border:0;border-left:4px solid #b56d76;background:#f6e3df;color:var(--ink);padding:10px;text-align:left;cursor:pointer;transition:transform .16s,box-shadow .16s}.cal-event:hover{transform:translateY(-1px);box-shadow:0 9px 20px -15px rgba(75,45,51,.65)}.cal-event.private{background:#eee4f5;border-color:#8c6aa5}.cal-event.closed{background:#ece8e7;border-color:#8c8585;color:var(--mut)}.cal-event.empty{background:#f6f1eb;border-color:#c7a979}.cal-event-time{font-size:11px;color:var(--mut)}.cal-event-title{display:block;font-size:13px;margin:3px 0 6px;line-height:1.2}.cal-event-meta{font-size:11px;color:var(--mut);display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cal-event-avatars{display:flex;margin-top:7px}.cal-event-avatars .schedule-avatar{margin-right:-5px;border:2px solid #fff;width:23px;height:23px;font-size:9px}
+  .trainer-drawer-backdrop{position:fixed;inset:0;z-index:500;background:rgba(38,28,31,.24);opacity:0;visibility:hidden;transition:.2s}.trainer-drawer-backdrop.show{opacity:1;visibility:visible}.trainer-drawer{position:absolute;right:0;top:0;height:100%;width:min(440px,100%);overflow:auto;background:#fbf7f4;padding:28px;box-shadow:-25px 0 60px -38px rgba(30,20,23,.8);transform:translateX(100%);transition:transform .28s cubic-bezier(.2,.8,.2,1)}.trainer-drawer-backdrop.show .trainer-drawer{transform:none}.drawer-close{position:absolute;right:20px;top:18px;width:38px;height:38px;border:1px solid var(--line);background:#fff;font-size:19px}.drawer-kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#a45f67;margin-bottom:8px}.drawer-title{font-size:1.75rem;padding-right:45px}.drawer-sub{color:var(--mut);font-size:13px;margin:7px 0 22px}.drawer-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}.drawer-stat{padding:12px 8px;border:1px solid var(--line);background:#fff;text-align:center}.drawer-stat b{display:block;font-family:'Fraunces',serif;font-size:1.25rem}.drawer-stat span{font-size:10px;color:var(--mut)}.drawer-client{border:1px solid var(--line);background:#fff;padding:14px;margin-bottom:10px}.drawer-client-head{display:flex;align-items:center;gap:10px}.drawer-client-head .schedule-avatar{width:36px;height:36px}.drawer-client-name{flex:1;font-size:13px;font-weight:600}.drawer-client-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.drawer-client-actions button,.drawer-footer-actions button,.drawer-back{border:1px solid var(--line);background:#fff;padding:8px 11px;font-size:11px}.drawer-client-actions button.on{background:var(--ink);color:#fff}.drawer-client-actions button.danger{color:var(--bad)}.drawer-footer-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}.drawer-profile{text-align:center;padding:18px 0}.drawer-profile .schedule-avatar{width:78px;height:78px;margin:0 auto 13px;font-size:25px}.drawer-profile h3{font-size:1.5rem}.drawer-profile p{color:var(--mut);font-size:13px;margin-top:5px}.drawer-detail-list{border-top:1px solid var(--line);margin-top:18px}.drawer-detail-row{display:flex;justify-content:space-between;gap:18px;padding:13px 0;border-bottom:1px solid var(--line);font-size:13px}.drawer-detail-row span{color:var(--mut)}
+  @media(max-width:760px){.trainer-calendar-toolbar{align-items:stretch}.trainer-week-nav{justify-content:space-between}.trainer-week-label{min-width:0}.trainer-view-switch{width:100%}.trainer-view-switch button{flex:1}.trainer-drawer{padding:24px 20px}}
   /* earnings panel */
   .earn-head{margin-bottom:18px}
   .earn-sub{font-size:13px;color:var(--mut);margin-top:4px}
@@ -1851,19 +1863,15 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
       </div>
 
       <div class="ppanel on" id="tp-sched">
-        <div class="daybar" id="tDaybar" style="max-width:none"></div>
-        <div class="tgrid-head" style="margin-top:18px">
-          <h3 id="tDayLabel">Today</h3>
+        <div class="trainer-calendar-toolbar">
+          <div class="trainer-week-nav"><button onclick="shiftTrainerWeek(-1)" aria-label="Previous week">‹</button><div class="trainer-week-label" id="tDayLabel">This week</div><button onclick="shiftTrainerWeek(1)" aria-label="Next week">›</button></div>
+          <div class="trainer-view-switch"><button onclick="setTrainerCalendarView('day')">Day</button><button class="on" onclick="setTrainerCalendarView('week')">Week</button><button onclick="setTrainerCalendarView('month')">Month</button></div>
           <button class="refresh-btn" id="tRefresh" onclick="refreshSchedule()" title="Check for new bookings">↻ Refresh</button>
-          <div class="legend">
-            <span><i style="background:linear-gradient(165deg,#fbeae6,#f3ddd6)"></i> Booked spot</span>
-            <span><i style="background:#fff;border:1px dashed var(--mut)"></i> Free</span>
-            <span><i style="background:rgba(42,42,44,.12)"></i> Held / closed</span>
-          </div>
         </div>
-        <div class="tslots" id="tSlots"></div>
-        <p style="font-size:12.5px;color:var(--mut);margin-top:22px">Each class is 1 hour with 5 reformers. Hold individual spots for friends, or close a whole class. Add walk-ins to any free spot and record Cash or Card. Booked clients can be cancelled on their behalf — they'll get an email. Changes sync to your Google Calendar.</p>
+        <div class="trainer-calendar-scroll"><div class="tslots trainer-week-grid" id="tSlots"></div></div>
+        <p style="font-size:12.5px;color:var(--mut);margin-top:16px">Select any appointment to manage the client, attendance, payment or availability without leaving the calendar.</p>
       </div>
+      <div class="trainer-drawer-backdrop" id="trainerDrawerBackdrop" onclick="closeTrainerDrawer(event)"><aside class="trainer-drawer" onclick="event.stopPropagation()"><button class="drawer-close" onclick="closeTrainerDrawer()" aria-label="Close">×</button><div id="trainerDrawerContent"></div></aside></div>
 
       <div class="ppanel" id="tp-clients">
         <div class="client-tools"><div class="client-search"><input id="clientSearch" placeholder="Search by name, ID number, email or phone" oninput="filterClients()" aria-label="Search clients"></div><span class="client-count" id="clientCount"></span></div>
@@ -4275,7 +4283,7 @@ function enterTrainerPortal(){
   renderTDays();renderTSlots();renderClients();
   loadTrainerClients();
   // load the real bookings from the server
-  syncTrainerDay(state.trainerDay).then(ok=>{ if(ok){ renderTSlots(); renderClients(); } });
+  syncTrainerWeek().then(ok=>{ if(ok){ renderTSlots(); renderClients(); } });
   startSchedulePolling();
   toast('Welcome back, studio.','Trainer');
 }
@@ -4481,7 +4489,7 @@ async function syncTrainerDay(di){
 async function refreshSchedule(){
   const btn=document.getElementById('tRefresh');
   if(btn){ btn.disabled=true; btn.textContent='↻ Checking…'; }
-  const ok=await syncTrainerDay(state.trainerDay);
+  const ok=await syncTrainerWeek();
   if(ok){ renderTSlots(); renderClients(); }
   if(btn){ btn.disabled=false; btn.textContent='↻ Refresh'; }
   if(!BACKEND) toast('Live sync works once the site is online','Schedule');
@@ -4495,80 +4503,58 @@ function startSchedulePolling(){
     const panel=document.getElementById('tp-sched');
     if(!panel || !panel.classList.contains('on')) return;
     if(document.hidden) return;
-    if(await syncTrainerDay(state.trainerDay)){ renderTSlots(); }
+    if(await syncTrainerWeek()){ renderTSlots(); }
   }, 60000);
 }
 function stopSchedulePolling(){ if(schedPoll){ clearInterval(schedPoll); schedPoll=null; } }
-function renderTSlots(){
-  const di=state.trainerDay,day=store[di];
-  const d=DAYS[di];document.getElementById('tDayLabel').textContent=(di===0?'Today · ':'')+d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
-  const totalBooked=TIMES.reduce((n,t)=>n+spotsBooked(day[t]),0),totalFree=TIMES.reduce((n,t)=>n+spotsFree(day[t]),0),closed=TIMES.filter(t=>day[t].closed).length;
-  const overview=document.getElementById('trainerOverview');if(overview)overview.innerHTML=`<div class="overview-card"><span>Booked today</span><b>${totalBooked}</b></div><div class="overview-card"><span>Available places</span><b>${totalFree}</b></div><div class="overview-card"><span>Closed classes</span><b>${closed}</b></div>`;
-  document.getElementById('tSlots').innerHTML=TIMES.map(t=>{
-    const c=day[t];
-    const free=spotsFree(c), booked=spotsBooked(c);
-    let head, spotRows='', classCtrl='';
-    if(c.private && booked>0){
-      // Private booking — whole class is held for one client.
-      const client=c.spots.find(s=>s&&typeof s==='object');
-      const si=c.spots.findIndex(s=>s&&typeof s==='object');
-      head=`<div class="cl-head"><div><span class="cl-time">${t}</span><span class="cl-name">${c.cls}</span></div><span class="cl-count private">Private · full class held</span></div>`;
-      const pHere=client.attended===true, pAbsent=client.attended===false;
-      spotRows=`<div class="spot-row taken private-row ${pHere?'is-here':''} ${pAbsent?'is-absent':''}">
-        <div class="sp-top">
-          <span class="sp-i">🌙</span>
-          <span class="schedule-avatar">${client.profile_photo?`<img src="${clientEsc(client.profile_photo)}" alt="">`:clientEsc((client.name||'?').trim().charAt(0).toUpperCase())}</span>
-          <span class="sp-name">${client.name} · Private session</span>
-          ${paytag(client.pay)}
-          <button class="sp-x" title="Cancel booking" onclick="tCancelSpot(${di},'${t}',${si})">✕</button>
-        </div>
-        <div class="att-group">
-          <button class="att-btn ${pHere?'on':''}" onclick="tAttend(${di},'${t}',${si},true)">✓ Here</button>
-          <button class="att-btn no ${pAbsent?'on':''}" onclick="tAttend(${di},'${t}',${si},false)">✗ No-show</button>
-        </div>
-      </div>
-        <div class="private-note">All ${CAP} reformers are reserved for this client — no one else can book this time.</div>`;
-      classCtrl='';
-      return `<div class="classcard is-private">${head}<div class="spot-list">${spotRows}</div>${classCtrl}</div>`;
-    }
-    if(c.closed){
-      head=`<div class="cl-head"><div><span class="cl-time">${t}</span><span class="cl-name">${c.cls}</span></div><span class="cl-count closed">Class closed</span></div>`;
-      classCtrl=`<div class="cl-ctrl"><button onclick="tOpenClass(${di},'${t}')">Re-open class</button></div>`;
-    }else{
-      head=`<div class="cl-head"><div><span class="cl-time">${t}</span><span class="cl-name">${c.cls}</span></div><span class="cl-count">${booked}/${CAP} booked · ${free} free</span></div>`;
-      spotRows = c.spots.map((s,si)=>{
-        if(s===null){
-          return `<div class="spot-row free"><span class="sp-i">${si+1}</span><span class="sp-name">Free</span>
-            <span class="sp-act"><button onclick="tWalkin(${di},'${t}',${si})">+ Walk-in</button><button onclick="tHold(${di},'${t}',${si})">Hold</button></span></div>`;
-        }else if(s==='held'){
-          return `<div class="spot-row held"><span class="sp-i">${si+1}</span><span class="sp-name">Held / closed</span>
-            <span class="sp-act"><button onclick="tFree(${di},'${t}',${si})">Free up</button></span></div>`;
-        }else{
-          const here = s.attended===true, absent = s.attended===false;
-          const regTag = s.regular && !s.pay ? '<span class="reg-hold">⭐ Regular · unpaid hold</span>' : '';
-          return `<div class="spot-row taken ${here?'is-here':''} ${absent?'is-absent':''}">
-            <div class="sp-top">
-              <span class="sp-i">${si+1}</span>
-              <span class="schedule-avatar">${s.profile_photo?`<img src="${clientEsc(s.profile_photo)}" alt="">`:clientEsc((s.name||'?').trim().charAt(0).toUpperCase())}</span>
-              <span class="sp-name">${s.name} ${regTag}</span>
-              ${paytag(s.pay)}
-              <button class="sp-x" title="Cancel booking" onclick="tCancelSpot(${di},'${t}',${si})">✕</button>
-            </div>
-            <div class="att-group">
-              <button class="att-btn ${here?'on':''}" onclick="tAttend(${di},'${t}',${si},true)">✓ Here</button>
-              <button class="att-btn no ${absent?'on':''}" onclick="tAttend(${di},'${t}',${si},false)">✗ No-show</button>
-            </div>
-          </div>`;
-        }
-      }).join('');
-      classCtrl=`<div class="cl-ctrl">
-        <button onclick="tHoldAll(${di},'${t}')">Hold all free</button>
-        <button class="danger" onclick="tCloseClass(${di},'${t}')">Close whole class</button>
-      </div>`;
-    }
-    return `<div class="classcard ${c.closed?'is-closed':''}">${head}<div class="spot-list">${spotRows}</div>${classCtrl}</div>`;
-  }).join('');
+let trainerDrawerCtx=null;
+async function syncTrainerWeek(){
+  const results=await Promise.all(DAYS.map((_,i)=>syncTrainerDay(i)));
+  return results.some(Boolean);
 }
+function trainerAvatar(s){
+  const initial=clientEsc((s?.name||'?').trim().charAt(0).toUpperCase());
+  return `<span class="schedule-avatar">${s?.profile_photo?`<img src="${clientEsc(s.profile_photo)}" alt="">`:initial}</span>`;
+}
+function renderTSlots(){
+  const first=DAYS[0],last=DAYS[DAYS.length-1];
+  const label=document.getElementById('tDayLabel');
+  if(label) label.textContent=`${first.toLocaleDateString('en-GB',{day:'numeric',month:'short'})} – ${last.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`;
+  const selected=store[state.trainerDay];
+  const totalBooked=TIMES.reduce((n,t)=>n+spotsBooked(selected[t]),0),totalFree=TIMES.reduce((n,t)=>n+spotsFree(selected[t]),0),closed=TIMES.filter(t=>selected[t].closed).length;
+  const overview=document.getElementById('trainerOverview');if(overview)overview.innerHTML=`<div class="overview-card"><span>Booked today</span><b>${totalBooked}</b></div><div class="overview-card"><span>Available places</span><b>${totalFree}</b></div><div class="overview-card"><span>Closed classes</span><b>${closed}</b></div>`;
+  let html='<div class="cal-corner"></div>';
+  DAYS.forEach((d,di)=>{html+=`<button class="cal-day-head ${di===0?'today':''} ${di===state.trainerDay?'selected':''}" onclick="setTDay(${di})"><span>${dow[d.getDay()]}</span><b>${d.getDate()}</b></button>`});
+  TIMES.forEach(t=>{
+    html+=`<div class="cal-time">${t}</div>`;
+    DAYS.forEach((d,di)=>{
+      const c=store[di][t],clients=c.spots.filter(s=>s&&typeof s==='object'),booked=clients.length,free=spotsFree(c);
+      let cls=c.closed?'closed':c.private?'private':booked?'':'empty';
+      let meta=c.closed?'Closed':c.private?'Private session':booked?`${booked} booked · ${free} free`:`${free} places free`;
+      const names=clients.map(x=>clientEsc(x.name)).join(', ');
+      const avatars=clients.slice(0,3).map(trainerAvatar).join('');
+      html+=`<div class="cal-cell"><button class="cal-event ${cls}" onclick="openTrainerCalendarSlot(${di},'${t}')"><span class="cal-event-time">${t}</span><strong class="cal-event-title">${clientEsc(c.cls)}</strong><span class="cal-event-meta">${names||meta}</span>${avatars?`<span class="cal-event-avatars">${avatars}</span>`:''}</button></div>`;
+    });
+  });
+  document.getElementById('tSlots').innerHTML=html;
+}
+function openTrainerCalendarSlot(di,t){
+  state.trainerDay=di;trainerDrawerCtx={di,t};renderTDays();renderTSlots();
+  const c=store[di][t],clients=c.spots.map((s,si)=>({s,si})).filter(x=>x.s&&typeof x.s==='object'),free=spotsFree(c),held=c.spots.filter(s=>s==='held').length;
+  const date=DAYS[di].toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+  const rows=clients.map(({s,si})=>`<div class="drawer-client"><div class="drawer-client-head">${trainerAvatar(s)}<div class="drawer-client-name">${clientEsc(s.name||'Client')}</div>${paytag(s.pay)}</div><div class="drawer-client-actions"><button onclick="openTrainerCalendarClient(${di},'${t}',${si})">View client</button><button class="${s.attended===true?'on':''}" onclick="tAttend(${di},'${t}',${si},true);setTimeout(()=>openTrainerCalendarSlot(${di},'${t}'),0)">✓ Here</button><button class="${s.attended===false?'on':''}" onclick="tAttend(${di},'${t}',${si},false);setTimeout(()=>openTrainerCalendarSlot(${di},'${t}'),0)">No-show</button><button class="danger" onclick="tCancelSpot(${di},'${t}',${si})">Cancel</button></div></div>`).join('');
+  const firstFree=c.spots.findIndex(s=>s===null);
+  document.getElementById('trainerDrawerContent').innerHTML=`<div class="drawer-kicker">${clientEsc(date)} · ${t}</div><h2 class="drawer-title">${clientEsc(c.cls)}</h2><p class="drawer-sub">${c.private?'Private appointment — the complete hour is reserved.':'Manage this class without leaving the weekly calendar.'}</p><div class="drawer-summary"><div class="drawer-stat"><b>${clients.length}</b><span>Booked</span></div><div class="drawer-stat"><b>${free}</b><span>Free</span></div><div class="drawer-stat"><b>${held}</b><span>Held</span></div></div>${rows||'<div class="drawer-client"><p style="color:var(--mut);font-size:13px">No clients booked at this time.</p></div>'}<div class="drawer-footer-actions">${firstFree>=0&&!c.closed?`<button onclick="tWalkin(${di},'${t}',${firstFree})">+ Add walk-in</button><button onclick="tHold(${di},'${t}',${firstFree});openTrainerCalendarSlot(${di},'${t}')">Hold a place</button>`:''}${c.closed?`<button onclick="tOpenClass(${di},'${t}');openTrainerCalendarSlot(${di},'${t}')">Re-open class</button>`:`<button onclick="tHoldAll(${di},'${t}');openTrainerCalendarSlot(${di},'${t}')">Hold all free</button><button class="danger" onclick="tCloseClass(${di},'${t}')">Close class</button>`}</div>`;
+  document.getElementById('trainerDrawerBackdrop').classList.add('show');
+}
+function openTrainerCalendarClient(di,t,si){
+  const s=store[di][t].spots[si];if(!s||typeof s!=='object')return;
+  const full=(SERVER_CLIENTS||[]).find(x=>(s.email&&x.email===s.email)||(x.name&&s.name&&x.name===s.name))||s;
+  document.getElementById('trainerDrawerContent').innerHTML=`<button class="drawer-back" onclick="openTrainerCalendarSlot(${di},'${t}')">Back to appointment</button><div class="drawer-profile">${trainerAvatar(full)}<h3>${clientEsc(full.name||'Client')}</h3><p>${clientEsc(store[di][t].cls)} · ${clientEsc(t)}</p></div><div class="drawer-detail-list"><div class="drawer-detail-row"><span>Email</span><b>${clientEsc(full.email||'Not provided')}</b></div><div class="drawer-detail-row"><span>Phone</span><b>${clientEsc(full.phone||'Not provided')}</b></div><div class="drawer-detail-row"><span>Payment</span><b>${clientEsc(s.pay||'Paid')}</b></div><div class="drawer-detail-row"><span>Attendance</span><b>${s.attended===true?'Here':s.attended===false?'No-show':'Not marked'}</b></div></div><div class="drawer-footer-actions"><button onclick="tAttend(${di},'${t}',${si},true);openTrainerCalendarClient(${di},'${t}',${si})">✓ Mark here</button><button onclick="tAttend(${di},'${t}',${si},false);openTrainerCalendarClient(${di},'${t}',${si})">Mark no-show</button><button class="danger" onclick="tCancelSpot(${di},'${t}',${si})">Cancel booking</button></div>`;
+}
+function closeTrainerDrawer(){document.getElementById('trainerDrawerBackdrop')?.classList.remove('show');trainerDrawerCtx=null;}
+function setTrainerCalendarView(view){document.querySelectorAll('.trainer-view-switch button').forEach(b=>b.classList.toggle('on',b.textContent.trim().toLowerCase()===view));if(view!=='week')toast(`${view[0].toUpperCase()+view.slice(1)} view is coming next — weekly view stays open.`,'Calendar');}
+function shiftTrainerWeek(direction){toast(direction<0?'Previous-week navigation will load here.':'Next-week navigation will load here.','Calendar');}
 
 /* ---------- refunds ---------- */
 async function renderRefunds(){
