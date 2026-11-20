@@ -427,10 +427,11 @@
     font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
   .or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--line)}
   #googleBtnHolder{display:flex;justify-content:center}
-  #shopBtnHolder{display:flex;justify-content:center;margin-top:10px}
-  .shop-login-btn{width:280px;min-height:44px;border:0;border-radius:999px;background:#5433EB;color:#fff;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:9px;transition:transform .2s,filter .2s}
-  .shop-login-btn:hover{transform:translateY(-1px);filter:brightness(1.06)}
-  .shop-login-mark{font-size:18px;font-weight:800;line-height:1}
+  #shopBtnHolder{display:flex;justify-content:center;margin-top:12px}
+  .shop-login-btn{width:280px;height:46px;border:0;border-radius:999px;background:linear-gradient(105deg,#4f2ee8 0%,#6d45f5 48%,#8b63ff 100%);color:#fff;font-size:15px;font-weight:650;letter-spacing:-.01em;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 8px 22px rgba(84,51,235,.24),inset 0 1px 0 rgba(255,255,255,.26);transition:transform .2s,filter .2s,box-shadow .2s}
+  .shop-login-btn:hover{transform:translateY(-1px);filter:brightness(1.05);box-shadow:0 11px 28px rgba(84,51,235,.3),inset 0 1px 0 rgba(255,255,255,.3)}
+  .shop-login-btn:active{transform:translateY(0);filter:brightness(.98)}
+  .shop-login-logo{width:25px;height:25px;display:block;flex:0 0 25px;filter:drop-shadow(0 1px 1px rgba(25,13,78,.18))}
 
   /* closing times off */
   .closure-sheet{max-width:440px}
@@ -1126,7 +1127,7 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
             <button id="ct-signup" onclick="custTab('signup')" data-i18n="signup">Sign up</button>
           </div>
           <div id="googleBtnHolder" style="display:none;margin-top:20px"><div id="googleBtn"></div></div>
-          <div id="shopBtnHolder" style="display:none"><button type="button" class="shop-login-btn" onclick="shopSignIn()"><span class="shop-login-mark">S</span> Continue with Shop</button></div>
+          <div id="shopBtnHolder" style="display:none"><button type="button" class="shop-login-btn" onclick="shopSignIn()" aria-label="Continue with Shop"><svg class="shop-login-logo" viewBox="0 0 32 32" aria-hidden="true"><path fill="#fff" d="M8.7 10.7h14.6l1.6 16.1c.1 1.2-.8 2.2-2 2.2H9.1c-1.2 0-2.1-1-2-2.2l1.6-16.1Z"/><path fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" d="M11.5 12V9.2a4.5 4.5 0 0 1 9 0V12"/><path fill="#6541ef" d="M18.9 15.5c-.8-.4-1.6-.6-2.4-.6-1.1 0-1.7.4-1.7 1.1 0 .6.6.9 1.7 1.3 1.8.6 3 1.4 3 3.2 0 2.2-1.8 3.6-4.6 3.6-1.2 0-2.6-.3-3.5-.9l.8-2.1c.8.5 1.8.8 2.8.8 1.1 0 1.8-.4 1.8-1.1 0-.6-.5-.9-1.8-1.4-1.7-.6-2.9-1.4-2.9-3.1 0-2.1 1.7-3.5 4.5-3.5 1.1 0 2.2.2 3.1.7l-.8 2Z"/></svg><span>Continue with Shop</span></button></div>
           <div class="or-divider" id="googleDivider" style="display:none"><span>or continue with email</span></div>
           <div id="cf-name" style="display:none"><label>Full name</label><input id="ci-name"></div>
           <label>Email</label><input id="ci-email" type="email">
