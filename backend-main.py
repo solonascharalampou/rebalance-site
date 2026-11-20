@@ -1397,10 +1397,16 @@ def campaign_codes_list(_=Depends(require_trainer)):
 def trainer_schedule(date: str, _=Depends(require_trainer)):
     out = []
     with db() as c:
+        photos = {str(r["email"]).strip().lower(): (r["profile_photo"] or "")
+                  for r in c.execute("SELECT email,profile_photo FROM users").fetchall()}
         for hour in CLASS_HOURS:
             slot, spots = get_or_make_slot(c, date, hour)
             # show places held for approved regulars, and honour closures
             spots = apply_regular_holds(c, date, hour, spots)
+            for spot in spots:
+                if isinstance(spot, dict):
+                    spot["profile_photo"] = photos.get(
+                        str(spot.get("email") or "").strip().lower(), "")
             closed = bool(slot["closed"]) or is_closed(c, date, hour)
             out.append({"hour": hour, "class_key": slot["class_key"],
                         "class": CLASSES[slot["class_key"]]["name"],
