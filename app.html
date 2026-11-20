@@ -1288,10 +1288,18 @@
     .customer-nav button{
       width:66px;
       min-width:66px;
-      min-height:60px;
-      padding:4px 6px;
+      height:66px;
+      min-height:66px;
+      padding:2px 6px;
+      display:grid;
+      grid-template-rows:44px 14px;
+      justify-items:center;
+      align-items:center;
+      row-gap:4px;
     }
-    .customer-nav button.on:not(.loyalty-nav){background:transparent;color:var(--app-ink);padding:4px 6px}
+    .customer-nav button>.nav-icon,.customer-nav button>.nav-icon-wrap{grid-row:1;align-self:center;justify-self:center}
+    .customer-nav button>.nav-label{grid-row:2;align-self:start;line-height:14px;text-align:center}
+    .customer-nav button.on:not(.loyalty-nav){background:transparent;color:var(--app-ink);padding:2px 6px}
     .customer-nav button.on:not(.loyalty-nav) .nav-icon{width:42px;height:42px;padding:10px;border-radius:50%;box-sizing:border-box;background:var(--app-ink);color:#fff;transform:none}
     .customer-nav .loyalty-nav{transform:none}
     .customer-nav .loyalty-nav .nav-icon-wrap{width:42px;height:42px;background:transparent;color:var(--app-muted);box-shadow:none}
