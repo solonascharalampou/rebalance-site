@@ -1270,6 +1270,35 @@
     #c-authcard #googleBtnHolder,#c-authcard #shopBtnHolder{max-width:420px;margin-inline:auto}
     #c-authcard .shop-login-btn{width:100%}
   }
+  @media(min-width:1000px){
+    #c-auth .authwrap{width:min(1080px,calc(100vw - 96px));max-width:1080px;margin:18px auto 56px}
+    #c-authcard{
+      position:relative;
+      display:grid;
+      grid-template-columns:minmax(280px,.82fr) minmax(430px,1.18fr);
+      column-gap:58px;
+      align-items:start;
+      padding:54px 62px;
+      overflow:hidden;
+      background:linear-gradient(112deg,#f5e8e3 0%,#fbf5f1 42%,#fffdfa 42%);
+    }
+    #c-authcard>.phead{
+      grid-column:1;
+      grid-row:1 / span 30;
+      align-self:center;
+      text-align:left;
+      padding:0 52px 0 0!important;
+      border-right:1px solid var(--line);
+    }
+    #c-authcard>.phead .auth-brand-mark{margin:0 0 22px}
+    #c-authcard>.phead .auth-subtitle{margin:12px 0 0;max-width:310px;font-size:15px;line-height:1.65}
+    #c-authcard>.phead h1{font-size:clamp(2.6rem,3.8vw,4.1rem);line-height:1.02}
+    #c-authcard>:not(.phead){grid-column:2;min-width:0}
+    #c-authcard .roleswitch{width:100%;max-width:none;margin:0 0 22px!important}
+    #c-authcard #googleBtnHolder,#c-authcard #shopBtnHolder{width:100%;max-width:none}
+    #c-authcard #googleBtn{display:flex;justify-content:center}
+    #c-authcard #googleBtn iframe{max-width:100%}
+  }
 
   @media(prefers-reduced-motion:reduce){.customer-content .flow.on{animation:none}.customer-nav button,.customer-nav .nav-icon,.customer-nav .loyalty-nav .nav-icon-wrap{transition:none}}
 
