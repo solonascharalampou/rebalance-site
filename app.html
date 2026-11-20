@@ -431,7 +431,7 @@
     font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
   .or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--line)}
   #googleBtnHolder{display:flex;justify-content:center}
-  #googleBtn{width:280px;min-height:46px;padding:2px;border-radius:999px;background:linear-gradient(105deg,#4285f4 0%,#34a853 34%,#fbbc05 66%,#ea4335 100%);box-shadow:0 8px 22px rgba(66,133,244,.17);overflow:hidden}
+  #googleBtn{width:280px;min-height:46px;padding:0;border:1px solid #dadce0;border-radius:999px;background:#fff;box-shadow:0 8px 22px rgba(74,59,62,.08);overflow:hidden}
   #googleBtn>div,#googleBtn iframe{display:block!important;margin:0 auto!important;border-radius:999px!important}
   #shopBtnHolder{display:flex;justify-content:center;margin-top:12px}
   .shop-login-btn{width:280px;height:46px;border:0;border-radius:999px;background:linear-gradient(105deg,#4f2ee8 0%,#6d45f5 48%,#8b63ff 100%);color:#fff;font-size:15px;font-weight:650;letter-spacing:-.01em;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 8px 22px rgba(84,51,235,.24),inset 0 1px 0 rgba(255,255,255,.26);transition:transform .2s,filter .2s,box-shadow .2s}
@@ -1265,9 +1265,13 @@
     .customer-account{justify-self:end}
     .customer-flow-head{margin-bottom:18px}
     .customer-content{width:100%;max-width:none}
+    #c-flow:has(#cs-home.on) .customer-flow-head{display:block;text-align:center}
+    #c-flow:has(#cs-home.on) .customer-flow-head .phead{width:100%;text-align:center}
     #cs-home{text-align:center}
     #cs-home .customer-home-grid{grid-template-columns:minmax(0,1.35fr) minmax(320px,.65fr)}
     #cs-home .home-panel{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+    #cs-home .home-panel>*{max-width:100%}
+    #cs-home .home-panel p,#cs-home .home-panel h2,#cs-home .home-panel .eyebrow{width:100%;text-align:center}
     #cs-home .home-actions{justify-content:center}
     #cs-home>.home-panel .sc-head{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center}
     #cs-home>.home-panel .sc-head>div{text-align:center}
