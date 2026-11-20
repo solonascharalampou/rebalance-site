@@ -1461,7 +1461,7 @@ def trainer_clients(_=Depends(require_trainer)):
     """Return the complete client list and booking history in one read-only query."""
     with db() as c:
         users = {row["email"]: dict(row) for row in c.execute(
-            "SELECT name,email,phone FROM users WHERE account_active=1"
+            "SELECT name,email,phone,profile_photo FROM users WHERE account_active=1"
         ).fetchall()}
         bookings = [dict(row) for row in c.execute(
             """SELECT id,user_email,name,date,hour,class_key,spot,private,pay,amount,
@@ -1478,6 +1478,7 @@ def trainer_clients(_=Depends(require_trainer)):
                 "name": user.get("name") or booking.get("name") or "Walk-in",
                 "email": email,
                 "phone": user.get("phone") or "",
+                "profile_photo": user.get("profile_photo") or "",
                 "bookings": [],
             }
         class_info = CLASSES.get(booking.get("class_key"), {})
@@ -2242,14 +2243,15 @@ def auth_google(req: GoogleAuth, request: Request):
     info = _verify_google_token(req.credential)
     email = info["email"].lower().strip()
     name = info.get("name") or email.split("@")[0]
+    provider_photo = (info.get("picture") or "").strip()
 
     with db() as c:
         row = c.execute("SELECT * FROM users WHERE email=?", (email,)).fetchone()
         if not row:
             # first time — create the account. Google has already verified the
             # email, so there's no code to send.
-            c.execute("INSERT INTO users(name,email,phone,pass_hash,credits) VALUES(?,?,?,?,0)",
-                      (name, email, req.phone, ""))   # empty hash = Google-only account
+            c.execute("INSERT INTO users(name,email,phone,pass_hash,credits,profile_photo) VALUES(?,?,?,?,0,?)",
+                      (name, email, req.phone, "", provider_photo or None))
             row = c.execute("SELECT * FROM users WHERE email=?", (email,)).fetchone()
             new_account = True
         else:
@@ -2260,6 +2262,11 @@ def auth_google(req: GoogleAuth, request: Request):
             # keep their phone if we didn't have one
             if req.phone and not row["phone"]:
                 c.execute("UPDATE users SET phone=? WHERE id=?", (req.phone, row["id"]))
+            # Import the provider avatar once, but never overwrite a picture
+            # the customer selected in their Rebalance profile.
+            if provider_photo and not row["profile_photo"]:
+                c.execute("UPDATE users SET profile_photo=? WHERE id=?",
+                          (provider_photo, row["id"]))
 
         # if they've turned on 2FA, Google alone isn't enough
         if row["totp_on"]:
@@ -2267,6 +2274,7 @@ def auth_google(req: GoogleAuth, request: Request):
 
         token = make_session(c, email, "customer", req.remember)
         c.execute("UPDATE users SET token=? WHERE id=?", (token, row["id"]))
+        row = c.execute("SELECT * FROM users WHERE id=?", (row["id"],)).fetchone()
 
     if new_account:
         notify(email, "Welcome to Rebalance",
@@ -2278,6 +2286,7 @@ def auth_google(req: GoogleAuth, request: Request):
                    "<p style='margin:0'>We look forward to seeing you in the studio.</p>"))
     return {"ok": True, "token": token, "name": row["name"], "email": email,
             "credits": row["credits"], "twofa": False, "new_account": new_account,
+            "profile_photo": row["profile_photo"] or "",
             "needs_phone": not (row["phone"] or req.phone)}
 
 
@@ -2412,21 +2421,26 @@ def shop_callback(code: str = "", state: str = "", error: str = ""):
         info = _verify_shop_id_token(tokens.get("id_token", ""), attempt["nonce"])
         email = info["email"].lower().strip()
         name = info.get("name") or email.split("@")[0]
+        provider_photo = (info.get("picture") or "").strip()
         with db() as c:
             row = c.execute("SELECT * FROM users WHERE email=?", (email,)).fetchone()
             if not row:
-                c.execute("INSERT INTO users(name,email,phone,pass_hash,credits) VALUES(?,?,?,?,0)",
-                          (name, email, "", ""))
+                c.execute("INSERT INTO users(name,email,phone,pass_hash,credits,profile_photo) VALUES(?,?,?,?,0,?)",
+                          (name, email, "", "", provider_photo or None))
                 row = c.execute("SELECT * FROM users WHERE email=?", (email,)).fetchone()
                 new_account = True
             else:
                 new_account = False
                 if not row["account_active"]:
                     c.execute("UPDATE users SET account_active=1 WHERE id=?", (row["id"],))
+                if provider_photo and not row["profile_photo"]:
+                    c.execute("UPDATE users SET profile_photo=? WHERE id=?",
+                              (provider_photo, row["id"]))
             if row["totp_on"]:
                 return _shop_redirect({"shop_error": "twofa"})
             session = make_session(c, email, "customer", True)
             c.execute("UPDATE users SET token=? WHERE id=?", (session, row["id"]))
+            row = c.execute("SELECT * FROM users WHERE id=?", (row["id"],)).fetchone()
         if new_account:
             notify(email, "Welcome to Rebalance",
                    f"Hi {name}, your account is ready. You can now book classes anytime. — Rebalance, Engomi",
@@ -2963,7 +2977,7 @@ def trainer_clients(_=Depends(require_trainer)):
     """Every client and their history, from the database — so she sees everyone,
     not just people who happened to book in her own browser."""
     with db() as c:
-        users = c.execute("""SELECT id,name,email,phone,credits,id_number,date_of_birth,address,
+        users = c.execute("""SELECT id,name,email,phone,profile_photo,credits,id_number,date_of_birth,address,
                               id_status,id_submitted,
                               cliniko_id,cliniko_email,cliniko_synced_at,cliniko_archived,
                               CASE WHEN id_front_path IS NOT NULL THEN 1 ELSE 0 END id_front,
@@ -2986,6 +3000,7 @@ def trainer_clients(_=Depends(require_trainer)):
             out.append({
                 "id": u["id"], "name": u["name"],
                 "email": u["cliniko_email"] or account_email, "phone": u["phone"] or "",
+                "profile_photo": u["profile_photo"] or "",
                 "id_number": u["id_number"] or "", "date_of_birth": u["date_of_birth"] or "",
                 "address": u["address"] or "", "id_status": u["id_status"] or "missing",
                 "id_submitted": u["id_submitted"] or "", "id_front": bool(u["id_front"]),
