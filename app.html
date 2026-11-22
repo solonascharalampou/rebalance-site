@@ -4285,12 +4285,12 @@ async function loadMyBookings(){
   if(!BACKEND) return;
   try{
     const rows=await api('/my-bookings',{token:authToken});
-    state.bookings=rows.filter(r=>r.status==='confirmed').map(r=>{
+    state.bookings=rows.map(r=>{
       const start=new Date(r.date+'T'+r.hour+':00');
       return {id:r.id,cls:(CLASSES.find(c=>c.id===r.class_key)||{}).name+(r.private?' · Private':''),
         price:r.amount,dayIdx:0,time:r.hour,date:r.date,spotIdx:r.spot,
         when:start.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})+' · '+r.hour,
-        start,status:'confirmed',paidBy:r.pay};
+        start,status:r.status||'confirmed',paidBy:r.pay};
     });
   }catch(e){/* ignore */}
 }
@@ -4304,6 +4304,7 @@ function renderMine(){
     const series=b.series?`<span class="series-tag">Weekly ${b.series}</span>`:'';
     if(b.status==='lost')pill='<span class="pill lost">Session lost</span>';
     else if(b.status==='rescheduled')pill='<span class="pill resc">Rescheduled</span>';
+    else if(b.status==='cancelled')pill='<span class="pill resc">Cancelled</span>';
     else{
       pill='<span class="pill ok">Confirmed</span>';
       const can=hoursUntil(b.start)>4;
@@ -4377,9 +4378,22 @@ function freeSlot(b){
   if(typeof b.spotIdx==='number' && c.spots[b.spotIdx]){c.spots[b.spotIdx]=null;}
   else{const i=c.spots.findIndex(s=>s&&s.name===(state.user?.name));if(i>-1)c.spots[i]=null;}
 }
-function doLose(id){const b=state.bookings.find(x=>x.id===id);b.status='lost';/* slot stays booked (no-show) */closeModal();renderMine();renderTSlots();
-  toast('Email sent: “Your session was cancelled within the 4-hour window and could not be moved.”','Email · '+(state.user?.email||'client'));}
-function doReschedule(id){const b=state.bookings.find(x=>x.id===id);b.status='rescheduled';freeSlot(b);closeModal();renderMine();renderTSlots();
+async function persistCustomerCancel(id,mode){
+  const b=state.bookings.find(x=>x.id===id); if(!b)return false;
+  if(BACKEND){
+    try{
+      const btn=document.getElementById('mConfirm'); btn.disabled=true; btn.textContent='Saving…';
+      await api('/my-cancel',{method:'POST',token:authToken,body:{date:b.date,hour:b.time,mode}});
+      await loadMyBookings();
+      return true;
+    }catch(e){toast(e.message||'Cancellation could not be saved','Booking');return false;}
+    finally{const btn=document.getElementById('mConfirm');btn.disabled=false;}
+  }
+  b.status=mode==='lose'?'lost':'rescheduled'; if(mode!=='lose')freeSlot(b); return true;
+}
+async function doLose(id){if(!(await persistCustomerCancel(id,'lose')))return;closeModal();renderMine();renderTSlots();
+  toast('Your cancellation was saved. This session is inside the 4-hour window.','Booking updated');}
+async function doReschedule(id){const b=state.bookings.find(x=>x.id===id);if(!(await persistCustomerCancel(id,'reschedule')))return;closeModal();renderMine();renderTSlots();
   toast('Email sent: “Your session was cancelled — reschedule your credit anytime.”','Email · '+(state.user?.email||'client'));
   if(document.getElementById('v-cust').classList.contains('on')){
     state.cls=CLASSES.find(c=>c.name===b.cls)||state.cls;
