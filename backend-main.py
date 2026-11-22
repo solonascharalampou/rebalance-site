@@ -948,6 +948,11 @@ class SlotAction(BaseModel):
     hour: str
     spot: Optional[int] = None
 
+class CustomerCancel(BaseModel):
+    date: str
+    hour: str
+    mode: str = "reschedule"  # reschedule (>4h) or lose (inside 4h)
+
 class CampaignCodeReq(BaseModel):
     code: str
 
@@ -1290,31 +1295,32 @@ def my_bookings(user=Depends(current_user)):
 
 
 @app.post("/my-cancel")
-def my_cancel(req: SlotAction, user=Depends(current_user)):
-    # The studio's policy is 4 hours' notice. Inside that window the spot can't be
-    # resold, so the customer is asked to phone instead of cancelling silently.
+def my_cancel(req: CustomerCancel, user=Depends(current_user)):
     try:
         when = dt.datetime.fromisoformat(f"{req.date}T{req.hour}")
         hours_left = (when - dt.datetime.now()).total_seconds() / 3600
     except Exception:
         hours_left = 99
-    if 0 < hours_left < CANCEL_HOURS:
-        raise HTTPException(409,
-            f"Sessions can only be cancelled more than {CANCEL_HOURS} hours ahead. "
-            "Please call the studio on 22 035001 and we'll do our best to help.")
+    inside_window = 0 < hours_left < CANCEL_HOURS
+    if inside_window and req.mode != "lose":
+        raise HTTPException(409, "This session is inside the 4-hour cancellation window.")
     with db() as c:
         b = c.execute("SELECT * FROM bookings WHERE user_email=? AND date=? AND hour=? AND status='confirmed'",
                       (user["email"], req.date, req.hour)).fetchone()
         if not b:
             raise HTTPException(404, "Booking not found")
         slot, spots = get_or_make_slot(c, req.date, req.hour)
-        if b["private"]:
-            slot["private"] = 0
-            spots = [None] * CAP
-        elif 0 <= b["spot"] < len(spots):
-            spots[b["spot"]] = None
-        save_slot(c, slot, spots)
-        c.execute("UPDATE bookings SET status='cancelled' WHERE id=?", (b["id"],))
+        # Inside four hours the customer loses the session and the place remains
+        # occupied, so capacity cannot accidentally be resold. Otherwise free it.
+        if not inside_window:
+            if b["private"]:
+                slot["private"] = 0
+                spots = [None] * CAP
+            elif 0 <= b["spot"] < len(spots):
+                spots[b["spot"]] = None
+            save_slot(c, slot, spots)
+        new_status = "lost" if inside_window else "rescheduled"
+        c.execute("UPDATE bookings SET status=? WHERE id=?", (new_status, b["id"]))
         push_to_calendar(req.date, req.hour, slot["class_key"], spots, bool(slot["private"]))
     notify(user["email"], "Your Rebalance booking was cancelled",
            f"Hi {user['name']},\n\nYour booking on {req.date} at {req.hour} has been cancelled. "
@@ -1329,8 +1335,9 @@ def my_cancel(req: SlotAction, user=Depends(current_user)):
                f"{user['name']} cancelled the booking on {req.date} at {req.hour}.")
     audit("booking.cancelled", user["email"], str(b["id"]),
           {"date": req.date, "hour": req.hour})
-    notify_waitlist(req.date, req.hour)   # a spot just freed up — tell the next person
-    return {"ok": True}
+    if not inside_window:
+        notify_waitlist(req.date, req.hour)   # a spot just freed up — tell the next person
+    return {"ok": True, "status": new_status}
 
 
 def require_trainer(authorization: str = Header(default="")):
