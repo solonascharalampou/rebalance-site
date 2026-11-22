@@ -726,7 +726,7 @@
   .trainer-calendar-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;background:var(--paper);border:1px solid var(--line);padding:14px 16px;margin:16px 0 12px}
   .trainer-week-nav,.trainer-view-switch{display:flex;align-items:center;gap:7px}.trainer-week-nav button,.trainer-view-switch button{border:1px solid var(--line);background:#fff;color:var(--ink);min-height:38px;padding:0 14px;font-size:12px}.trainer-week-nav button{width:40px;padding:0}.trainer-view-switch button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
   .trainer-week-label{min-width:210px;text-align:center;font-family:'Fraunces',serif;font-size:1.05rem}.trainer-calendar-scroll{overflow:auto;border:1px solid var(--line);background:var(--paper);box-shadow:0 18px 45px -38px rgba(72,46,51,.55)}
-  #tSlots.trainer-week-grid{display:grid;grid-template-columns:76px repeat(6,minmax(150px,1fr));gap:0;margin:0;min-width:1050px}
+  #tSlots.trainer-week-grid{display:grid;grid-template-columns:68px repeat(7,minmax(128px,1fr));gap:0;margin:0;min-width:1000px}
   .cal-corner,.cal-day-head{position:sticky;top:0;z-index:3;background:#fbf7f4;border-bottom:1px solid var(--line);min-height:74px}.cal-corner{left:0;z-index:4;border-right:1px solid var(--line)}
   .cal-day-head{display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid var(--line);gap:4px}.cal-day-head b{font:500 1.25rem 'Fraunces',serif}.cal-day-head span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}.cal-day-head.today{background:#f6e8e4;color:#8d5057}.cal-day-head.selected{box-shadow:inset 0 -3px #b56d76}
   .cal-time{position:sticky;left:0;z-index:2;min-height:104px;padding:13px 10px;background:#fbf7f4;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font-size:12px;color:var(--mut);text-align:right}
@@ -734,6 +734,15 @@
   .cal-event{width:100%;height:100%;min-height:88px;border:0;border-left:4px solid #b56d76;background:#f6e3df;color:var(--ink);padding:10px;text-align:left;cursor:pointer;transition:transform .16s,box-shadow .16s}.cal-event:hover{transform:translateY(-1px);box-shadow:0 9px 20px -15px rgba(75,45,51,.65)}.cal-event.private{background:#eee4f5;border-color:#8c6aa5}.cal-event.closed{background:#ece8e7;border-color:#8c8585;color:var(--mut)}.cal-event.empty{background:#f6f1eb;border-color:#c7a979}.cal-event-time{font-size:11px;color:var(--mut)}.cal-event-title{display:block;font-size:13px;margin:3px 0 6px;line-height:1.2}.cal-event-meta{font-size:11px;color:var(--mut);display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cal-event-avatars{display:flex;margin-top:7px}.cal-event-avatars .schedule-avatar{margin-right:-5px;border:2px solid #fff;width:23px;height:23px;font-size:9px}
   .trainer-drawer-backdrop{position:fixed;inset:0;z-index:500;background:rgba(38,28,31,.24);opacity:0;visibility:hidden;transition:.2s}.trainer-drawer-backdrop.show{opacity:1;visibility:visible}.trainer-drawer{position:absolute;right:0;top:0;height:100%;width:min(440px,100%);overflow:auto;background:#fbf7f4;padding:28px;box-shadow:-25px 0 60px -38px rgba(30,20,23,.8);transform:translateX(100%);transition:transform .28s cubic-bezier(.2,.8,.2,1)}.trainer-drawer-backdrop.show .trainer-drawer{transform:none}.drawer-close{position:absolute;right:20px;top:18px;width:38px;height:38px;border:1px solid var(--line);background:#fff;font-size:19px}.drawer-kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#a45f67;margin-bottom:8px}.drawer-title{font-size:1.75rem;padding-right:45px}.drawer-sub{color:var(--mut);font-size:13px;margin:7px 0 22px}.drawer-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}.drawer-stat{padding:12px 8px;border:1px solid var(--line);background:#fff;text-align:center}.drawer-stat b{display:block;font-family:'Fraunces',serif;font-size:1.25rem}.drawer-stat span{font-size:10px;color:var(--mut)}.drawer-client{border:1px solid var(--line);background:#fff;padding:14px;margin-bottom:10px}.drawer-client-head{display:flex;align-items:center;gap:10px}.drawer-client-head .schedule-avatar{width:36px;height:36px}.drawer-client-name{flex:1;font-size:13px;font-weight:600}.drawer-client-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.drawer-client-actions button,.drawer-footer-actions button,.drawer-back{border:1px solid var(--line);background:#fff;padding:8px 11px;font-size:11px}.drawer-client-actions button.on{background:var(--ink);color:#fff}.drawer-client-actions button.danger{color:var(--bad)}.drawer-footer-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}.drawer-profile{text-align:center;padding:18px 0}.drawer-profile .schedule-avatar{width:78px;height:78px;margin:0 auto 13px;font-size:25px}.drawer-profile h3{font-size:1.5rem}.drawer-profile p{color:var(--mut);font-size:13px;margin-top:5px}.drawer-detail-list{border-top:1px solid var(--line);margin-top:18px}.drawer-detail-row{display:flex;justify-content:space-between;gap:18px;padding:13px 0;border-bottom:1px solid var(--line);font-size:13px}.drawer-detail-row span{color:var(--mut)}
   @media(max-width:760px){.trainer-calendar-toolbar{align-items:stretch}.trainer-week-nav{justify-content:space-between}.trainer-week-label{min-width:0}.trainer-view-switch{width:100%}.trainer-view-switch button{flex:1}.trainer-drawer{padding:24px 20px}}
+  .trainer-calendar-app{display:grid;grid-template-columns:220px minmax(0,1fr);background:#fff;border:1px solid var(--line);min-height:690px;box-shadow:0 18px 45px -38px rgba(72,46,51,.55)}
+  .trainer-cal-side{padding:18px 16px;border-right:1px solid var(--line);background:#fff}
+  .trainer-create{width:100%;min-height:42px;border:0;background:#b85f68;color:#fff;font-size:13px;font-weight:600;margin-bottom:22px}
+  .mini-cal-title{display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:13px;margin-bottom:12px}.mini-cal-title button{border:0;background:transparent;color:var(--mut);font-size:17px;padding:3px 7px}
+  .mini-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center;font-size:11px}.mini-cal-grid .mh{color:var(--mut);font-size:9px;text-transform:uppercase}.mini-cal-grid button{aspect-ratio:1;border:0;background:transparent;color:var(--ink);font-size:11px;border-radius:50%}.mini-cal-grid button.muted{color:#b9adaf}.mini-cal-grid button.today{background:#392e31;color:#fff}.mini-cal-grid button.week{box-shadow:inset 0 0 0 1px #d6b4b7}
+  .trainer-cal-list{margin-top:30px;padding-top:20px;border-top:1px solid var(--line)}.trainer-cal-list h4{font:600 12px 'Inter',sans-serif;margin-bottom:13px}.trainer-cal-list label{display:flex;align-items:center;gap:9px;font-size:12px;margin:10px 0;color:var(--char)}.trainer-cal-list i{width:12px;height:12px;border-radius:3px;background:#d78991}.trainer-cal-list label:nth-child(3) i{background:#b9d7cb}.trainer-cal-list label:nth-child(4) i{background:#d8c8e7}
+  .trainer-cal-main{min-width:0}.trainer-cal-main .trainer-calendar-toolbar{margin:0;padding:14px 16px;border:0;border-bottom:1px solid var(--line);background:#fff}.trainer-cal-main .trainer-calendar-scroll{border:0;box-shadow:none}.trainer-today{border:1px solid var(--line);background:#fff;min-height:38px;padding:0 14px;font-size:12px}.trainer-calendar-app+.trainer-note{margin-top:14px}
+  #trainerOverview{display:none}
+  @media(max-width:900px){.trainer-calendar-app{grid-template-columns:1fr}.trainer-cal-side{display:none}.trainer-calendar-app{min-height:580px}}
   /* earnings panel */
   .earn-head{margin-bottom:18px}
   .earn-sub{font-size:13px;color:var(--mut);margin-top:4px}
@@ -2065,13 +2074,11 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
       </div>
 
       <div class="ppanel on" id="tp-sched">
-        <div class="trainer-calendar-toolbar">
-          <div class="trainer-week-nav"><button onclick="shiftTrainerWeek(-1)" aria-label="Previous week">‹</button><div class="trainer-week-label" id="tDayLabel">This week</div><button onclick="shiftTrainerWeek(1)" aria-label="Next week">›</button></div>
-          <div class="trainer-view-switch"><button onclick="setTrainerCalendarView('day')">Day</button><button class="on" onclick="setTrainerCalendarView('week')">Week</button><button onclick="setTrainerCalendarView('month')">Month</button></div>
-          <button class="refresh-btn" id="tRefresh" onclick="refreshSchedule()" title="Check for new bookings">↻ Refresh</button>
+        <div class="trainer-calendar-app">
+          <aside class="trainer-cal-side"><button class="trainer-create" onclick="toast('Choose a day and time in the calendar','New appointment')">+ Create appointment</button><div id="trainerMiniCalendar"></div><div class="trainer-cal-list"><h4>Calendars</h4><label><i></i> Group classes</label><label><i></i> Private sessions</label><label><i></i> Closed / held</label></div></aside>
+          <section class="trainer-cal-main"><div class="trainer-calendar-toolbar"><button class="trainer-today" onclick="trainerToday()">Today</button><div class="trainer-week-nav"><button onclick="shiftTrainerWeek(-1)" aria-label="Previous week">‹</button><div class="trainer-week-label" id="tDayLabel">This week</div><button onclick="shiftTrainerWeek(1)" aria-label="Next week">›</button></div><div class="trainer-view-switch"><button onclick="setTrainerCalendarView('day')">Day</button><button class="on" onclick="setTrainerCalendarView('week')">Week</button><button onclick="setTrainerCalendarView('month')">Month</button></div><button class="refresh-btn" id="tRefresh" onclick="refreshSchedule()" title="Check for new bookings">↻</button></div><div class="trainer-calendar-scroll"><div class="tslots trainer-week-grid" id="tSlots"></div></div></section>
         </div>
-        <div class="trainer-calendar-scroll"><div class="tslots trainer-week-grid" id="tSlots"></div></div>
-        <p style="font-size:12.5px;color:var(--mut);margin-top:16px">Select any appointment to manage the client, attendance, payment or availability without leaving the calendar.</p>
+        <p class="trainer-note" style="font-size:12.5px;color:var(--mut)">Select any appointment to manage the client, attendance, payment or availability without leaving the calendar.</p>
       </div>
       <div class="trainer-drawer-backdrop" id="trainerDrawerBackdrop" onclick="closeTrainerDrawer(event)"><aside class="trainer-drawer" onclick="event.stopPropagation()"><button class="drawer-close" onclick="closeTrainerDrawer()" aria-label="Close">×</button><div id="trainerDrawerContent"></div></aside></div>
 
@@ -2586,7 +2593,7 @@ let PACKAGES=[
 ];
 let CAP=5; // reformers per class (editable)
 const dow=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-const DAYS=[];for(let i=0;i<6;i++){const d=new Date();d.setDate(d.getDate()+i);DAYS.push(d);}
+const DAYS=[];for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()+i);DAYS.push(d);}
 let TIMES=['08:00','09:00','10:00','11:00','17:00','18:00','19:00'];
 let PROMOS={ 'FIRST20':{off:0.20,label:'20% off'}, 'WELCOME10':{off:0.10,label:'10% off'} };
 
@@ -4739,6 +4746,7 @@ function renderTSlots(){
   const first=DAYS[0],last=DAYS[DAYS.length-1];
   const label=document.getElementById('tDayLabel');
   if(label) label.textContent=`${first.toLocaleDateString('en-GB',{day:'numeric',month:'short'})} – ${last.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`;
+  renderTrainerMiniCalendar();
   const selected=store[state.trainerDay];
   const totalBooked=TIMES.reduce((n,t)=>n+spotsBooked(selected[t]),0),totalFree=TIMES.reduce((n,t)=>n+spotsFree(selected[t]),0),closed=TIMES.filter(t=>selected[t].closed).length;
   const overview=document.getElementById('trainerOverview');if(overview)overview.innerHTML=`<div class="overview-card"><span>Booked today</span><b>${totalBooked}</b></div><div class="overview-card"><span>Available places</span><b>${totalFree}</b></div><div class="overview-card"><span>Closed classes</span><b>${closed}</b></div>`;
@@ -4772,8 +4780,22 @@ function openTrainerCalendarClient(di,t,si){
   document.getElementById('trainerDrawerContent').innerHTML=`<button class="drawer-back" onclick="openTrainerCalendarSlot(${di},'${t}')">Back to appointment</button><div class="drawer-profile">${trainerAvatar(full)}<h3>${clientEsc(full.name||'Client')}</h3><p>${clientEsc(store[di][t].cls)} · ${clientEsc(t)}</p></div><div class="drawer-detail-list"><div class="drawer-detail-row"><span>Email</span><b>${clientEsc(full.email||'Not provided')}</b></div><div class="drawer-detail-row"><span>Phone</span><b>${clientEsc(full.phone||'Not provided')}</b></div><div class="drawer-detail-row"><span>Payment</span><b>${clientEsc(s.pay||'Paid')}</b></div><div class="drawer-detail-row"><span>Attendance</span><b>${s.attended===true?'Here':s.attended===false?'No-show':'Not marked'}</b></div></div><div class="drawer-footer-actions"><button onclick="tAttend(${di},'${t}',${si},true);openTrainerCalendarClient(${di},'${t}',${si})">✓ Mark here</button><button onclick="tAttend(${di},'${t}',${si},false);openTrainerCalendarClient(${di},'${t}',${si})">Mark no-show</button><button class="danger" onclick="tCancelSpot(${di},'${t}',${si})">Cancel booking</button></div>`;
 }
 function closeTrainerDrawer(){document.getElementById('trainerDrawerBackdrop')?.classList.remove('show');trainerDrawerCtx=null;}
+function renderTrainerMiniCalendar(){
+  const host=document.getElementById('trainerMiniCalendar');if(!host)return;
+  const focus=DAYS[0],year=focus.getFullYear(),month=focus.getMonth();
+  const first=new Date(year,month,1),start=new Date(first);start.setDate(first.getDate()-((first.getDay()+6)%7));
+  const today=isoDate(new Date()),weekDates=new Set(DAYS.map(isoDate));let cells='';
+  for(let i=0;i<42;i++){const d=new Date(start);d.setDate(start.getDate()+i);const key=isoDate(d);cells+=`<button class="${d.getMonth()!==month?'muted ':''}${key===today?'today ':''}${weekDates.has(key)?'week':''}" onclick="jumpTrainerDate('${key}')">${d.getDate()}</button>`;}
+  host.innerHTML=`<div class="mini-cal-title"><span>${focus.toLocaleDateString('en-GB',{month:'long',year:'numeric'})}</span><span><button onclick="shiftTrainerWeek(-1)" aria-label="Previous week">‹</button><button onclick="shiftTrainerWeek(1)" aria-label="Next week">›</button></span></div><div class="mini-cal-grid">${['M','T','W','T','F','S','S'].map(x=>`<span class="mh">${x}</span>`).join('')}${cells}</div>`;
+}
+function resetTrainerWeek(start){
+  DAYS.forEach((d,i)=>{const next=new Date(start);next.setDate(start.getDate()+i);d.setTime(next.getTime());store[i]={};TIMES.forEach((t,ti)=>{const cls=CLASSES[ti%CLASSES.length];store[i][t]={cls:cls.name,closed:false,private:false,spots:new Array(CAP).fill(null)};});});
+  state.trainerDay=0;renderTSlots();syncTrainerWeek().then(ok=>{if(ok)renderTSlots();});
+}
+function trainerToday(){resetTrainerWeek(new Date());}
+function jumpTrainerDate(key){const d=new Date(key+'T12:00:00'),idx=DAYS.findIndex(x=>isoDate(x)===key);if(idx>-1){setTDay(idx);return;}resetTrainerWeek(d);}
 function setTrainerCalendarView(view){document.querySelectorAll('.trainer-view-switch button').forEach(b=>b.classList.toggle('on',b.textContent.trim().toLowerCase()===view));if(view!=='week')toast(`${view[0].toUpperCase()+view.slice(1)} view is coming next — weekly view stays open.`,'Calendar');}
-function shiftTrainerWeek(direction){toast(direction<0?'Previous-week navigation will load here.':'Next-week navigation will load here.','Calendar');}
+function shiftTrainerWeek(direction){const start=new Date(DAYS[0]);start.setDate(start.getDate()+direction*7);resetTrainerWeek(start);}
 
 /* ---------- refunds ---------- */
 async function renderRefunds(){
