@@ -1357,6 +1357,84 @@
     #c-authcard #googleBtn iframe{max-width:100%}
   }
 
+  /* Final mobile pass: reserve space for Safari and the fixed app navigation. */
+  @media(max-width:760px){
+    body.customer-app-mode .customer-shell{
+      padding-left:max(18px,env(safe-area-inset-left));
+      padding-right:max(18px,env(safe-area-inset-right));
+      padding-bottom:calc(176px + env(safe-area-inset-bottom));
+    }
+    body.customer-app-mode .customer-content{overflow:visible}
+    body.customer-app-mode #cs-home,
+    body.customer-app-mode #cs-book,
+    body.customer-app-mode #cs-mine,
+    body.customer-app-mode #cs-loyalty,
+    body.customer-app-mode #cs-profile{padding-bottom:42px}
+    body.customer-app-mode .customer-nav{
+      bottom:calc(18px + env(safe-area-inset-bottom));
+      left:max(16px,env(safe-area-inset-left));
+      right:max(16px,env(safe-area-inset-right));
+      min-height:70px;
+      box-sizing:border-box;
+    }
+    body.customer-app-mode .customer-nav button{min-width:0;padding-inline:2px}
+
+    /* Keep booking options compact instead of stretching into poster-sized cards. */
+    body.customer-app-mode .classlist{display:flex;flex-direction:column;gap:12px}
+    body.customer-app-mode .classlist .cls{
+      flex:0 0 auto!important;
+      min-height:142px!important;
+      height:auto!important;
+      padding:20px!important;
+      align-content:start;
+    }
+    body.customer-app-mode .classlist .cls h3{font-size:1.35rem}
+    body.customer-app-mode .classlist .cls>div:last-child{margin-top:18px;padding-top:14px}
+
+    /* The screen title already names these pages; do not repeat it immediately below. */
+    body.customer-app-mode #cs-mine>.app-section-intro h2,
+    body.customer-app-mode #cs-profile>.app-section-intro h2{display:none}
+    body.customer-app-mode #cs-mine>.app-section-intro,
+    body.customer-app-mode #cs-profile>.app-section-intro{margin-top:-4px;margin-bottom:18px}
+    body.customer-app-mode #cs-mine .booking{padding:20px 18px}
+    body.customer-app-mode #cs-mine .booking .bact{gap:8px}
+    body.customer-app-mode #cs-mine .booking .bact button{padding:9px 12px}
+    body.customer-app-mode #cs-loyalty{padding-bottom:64px}
+    body.customer-app-mode #cs-loyalty:before{bottom:18px}
+    body.customer-app-mode .loyalty-card{padding:24px 20px 30px}
+    body.customer-app-mode .stamp-grid{margin:25px 0 22px;gap:8px}
+    body.customer-app-mode .profile-settings{margin-bottom:36px}
+
+    /* Fit sign-in comfortably above the mobile browser controls. */
+    body.customer-app-mode #v-cust:has(#c-auth.on) .customer-shell{padding-top:calc(12px + env(safe-area-inset-top));padding-bottom:32px}
+    body.customer-app-mode #c-auth .authwrap{margin:0 auto;max-width:420px}
+    body.customer-app-mode #c-authcard{padding:20px 18px 24px;border-radius:24px}
+    body.customer-app-mode #c-authcard .auth-brand-mark{width:58px;height:58px;margin-bottom:12px}
+    body.customer-app-mode #c-authcard .phead h1{font-size:25px;line-height:1.08}
+    body.customer-app-mode #c-authcard .auth-subtitle{font-size:12.5px;line-height:1.45;margin-top:7px}
+    body.customer-app-mode #c-authcard .roleswitch{margin:14px 0 12px}
+    body.customer-app-mode #c-authcard #shopBtnHolder{margin-top:8px}
+    body.customer-app-mode #c-authcard .or-divider{margin:12px 0}
+    body.customer-app-mode #c-authcard label{margin:8px 0 5px}
+    body.customer-app-mode #c-authcard input{min-height:43px;padding-block:10px}
+    body.customer-app-mode #c-authcard .remember-check{margin-top:9px}
+    body.customer-app-mode #c-authcard #cAuthBtn{margin-top:10px!important;min-height:46px}
+  }
+
+  @media(max-width:560px){
+    .chat-panel{
+      inset:calc(10px + env(safe-area-inset-top)) 10px calc(10px + env(safe-area-inset-bottom));
+      width:auto;max-width:none;height:auto;max-height:none;
+      box-sizing:border-box;border-radius:18px;
+    }
+    .chat-head{padding:15px 17px}.chat-body{padding:14px;overflow-x:hidden}
+    .chat-chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+    .chat-chips button{min-width:0;width:100%;padding-inline:9px;white-space:normal}
+    .chat-input{padding:11px;box-sizing:border-box}
+    .chat-input input{min-width:0;width:0;padding-inline:14px}
+    .chat-input button{width:42px;flex:0 0 42px}
+  }
+
   @media(prefers-reduced-motion:reduce){.customer-content .flow.on{animation:none}.customer-nav button,.customer-nav .nav-icon,.customer-nav .loyalty-nav .nav-icon-wrap{transition:none}}
 
   /* keep palette intact when the OS/browser forces dark mode */
