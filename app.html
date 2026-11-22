@@ -1189,6 +1189,43 @@
     .mobile-portal-bar{background:rgba(255,252,249,.97);border:1px solid var(--line);box-shadow:0 12px 30px -20px rgba(69,52,55,.4)}
     .mobile-portal-bar button{color:var(--muted)}.mobile-portal-bar button.on{background:var(--ink);color:#fff}
   }
+
+  /* Trainer workspace: true app shell with one screen at a time */
+  #t-app .portal-shell{grid-template-columns:248px minmax(0,1fr);background:#f8f4f1}
+  #t-app .portal-rail{position:sticky;top:0;width:auto;height:100dvh;min-height:100dvh;padding:26px 18px 20px;background:#392e31;color:#fff;border:0;display:flex;flex-direction:column;align-items:stretch;gap:0;backdrop-filter:none}
+  #t-app .portal-brand{font-size:1.35rem;margin:0 8px 38px;color:#fff}
+  #t-app .portal-brand .seed{width:32px;height:32px}
+  #t-app .portal-rail-kicker{display:block;color:rgba(255,255,255,.45);padding:0 12px;margin:0 0 9px}
+  #t-app .portal-nav{display:grid;flex:0;justify-content:stretch;gap:6px}
+  #t-app .portal-nav button{width:100%;min-height:50px;padding:0 13px;border-radius:12px;color:rgba(255,255,255,.66);justify-content:flex-start;gap:12px}
+  #t-app .portal-nav button:hover{background:rgba(255,255,255,.07);color:#fff}
+  #t-app .portal-nav button.on{background:#fff;color:#392e31;box-shadow:none}
+  #t-app .nav-glyph{width:25px;height:25px;border-radius:0;background:transparent;color:currentColor}
+  #t-app .nav-glyph svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  #t-app .portal-nav button.on .nav-glyph{background:transparent;color:#ad626b}
+  #t-app .portal-rail-footer{margin-top:auto;display:grid;gap:10px}
+  #t-app .rail-status{display:block;border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.035)}
+  #t-app .rail-exit{border:0;background:transparent;color:rgba(255,255,255,.62);text-align:left}
+  #t-app .portal-main{padding:34px clamp(26px,4vw,58px) 70px;min-width:0}
+  #t-app .portal-topbar,#t-app .portal-content{max-width:1320px;margin-left:auto;margin-right:auto}
+  #t-app .portal-topbar{align-items:center;margin-bottom:26px}
+  #t-app .portal-heading h1{font-size:clamp(2rem,3vw,2.8rem)}
+  #t-app .mobile-portal-bar{display:none!important}
+  .trainer-menu-toggle,.trainer-menu-close,.trainer-rail-scrim{display:none}
+  .trainer-menu-toggle{width:44px;height:44px;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:12px;place-items:center;font-size:21px;line-height:1}
+  .trainer-menu-close{position:absolute;right:14px;top:17px;width:38px;height:38px;border:0;background:rgba(255,255,255,.08);color:#fff;border-radius:10px;font-size:22px}
+  @media(max-width:1020px){
+    #t-app .portal-shell{display:block}
+    #t-app .portal-main{padding:22px 18px 54px}
+    #t-app .portal-topbar{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:14px}
+    #t-app .portal-heading{min-width:0}#t-app .portal-top-actions{grid-column:1/-1;justify-content:flex-start}
+    .trainer-menu-toggle{display:grid}
+    #t-app .portal-rail{display:flex;position:fixed;left:0;top:0;bottom:0;z-index:1200;width:min(290px,86vw);height:100dvh;transform:translateX(-104%);transition:transform .25s cubic-bezier(.2,.8,.2,1);box-shadow:22px 0 60px -34px rgba(20,12,15,.8)}
+    #t-app .portal-rail.open{transform:none}
+    .trainer-menu-close{display:block}
+    .trainer-rail-scrim{display:block;position:fixed;inset:0;z-index:1190;background:rgba(35,25,28,.34);opacity:0;visibility:hidden;transition:.2s}
+    .trainer-rail-scrim.open{opacity:1;visibility:visible}
+  }
   @media(max-width:760px){
     .customer-nav{background:rgba(235,218,211,.98);border:1px solid rgba(193,110,110,.18);box-shadow:0 16px 34px -20px rgba(92,71,75,.4)}
     .customer-nav button{color:#8a7175}.customer-nav button.on{background:transparent;color:#5c474b}
@@ -2638,6 +2675,8 @@ function isCustomerAppLaunch(){
 function customerBrandAction(){if(isCustomerAppLaunch())openCustomer();else show('home');}
 
 function portalGlyph(label){return `<span class="nav-glyph" aria-hidden="true">${label}</span>`;}
+function trainerNavIcon(name){const p={sched:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/>',clients:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',earnings:'<path d="M3 3v18h18"/><path d="m7 16 4-5 3 3 5-7"/>',manage:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21H9.6v-.1A1.7 1.7 0 0 0 8.5 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.1 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H2V9.6h.4A1.7 1.7 0 0 0 4.1 8.5a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 8.5 4.1a1.7 1.7 0 0 0 1-.6A1.7 1.7 0 0 0 9.9 2H14v.4a1.7 1.7 0 0 0 1.1 1.7 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 8.5c.18.42.54.78 1 1 .35.15.72.2 1.1.1H22v4h-.4a1.7 1.7 0 0 0-1.7 1.1Z"/>'}[name];return `<span class="nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24">${p}</svg></span>`;}
+function toggleTrainerMenu(force){const rail=document.querySelector('#t-app .portal-rail'),scrim=document.querySelector('#t-app .trainer-rail-scrim');if(!rail)return;const open=typeof force==='boolean'?force:!rail.classList.contains('open');rail.classList.toggle('open',open);scrim?.classList.toggle('open',open);document.body.style.overflow=open?'hidden':'';}
 function customerNavIcon(name){const p={home:'<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-7h6v7"/>',book:'<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',loyalty:'<path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10Z"/><path d="M9.5 11.5h5M12 9v5"/>',history:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',profile:'<circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/>'}[name];return `<svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;}
 function portalBrandSeed(){return `<svg class="seed" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M8 26C8 16 16 9 26 12C20 13 16 18 17 24C18 30 24 32 30 29C27 33 20 35 14 32C10 30 8 28 8 26Z" fill="#C77B7B"/><path d="M32 14C32 24 24 31 14 28C20 27 24 22 23 16C22 10 16 8 10 11C13 7 20 5 26 8C30 10 32 12 32 14Z" fill="#D4A8A0"/></svg>`;}
 function buildPortalExperience(){
@@ -2657,7 +2696,7 @@ function buildPortalExperience(){
     const oldHead=trainerApp.querySelector(':scope>.phead'),oldTabs=trainerApp.querySelector(':scope>.ptabs');
     const panels=[...trainerApp.querySelectorAll(':scope>.ppanel')];
     const shell=document.createElement('div');shell.className='portal-shell';
-    shell.innerHTML=`<aside class="portal-rail"><div class="portal-brand">${portalBrandSeed()}Rebalance</div><div class="portal-rail-kicker">Studio workspace</div><nav class="portal-nav" aria-label="Trainer portal"><button data-tpnav="sched" onclick="trainTab('sched')">${portalGlyph('01')}Schedule</button><button data-tpnav="clients" onclick="trainTab('clients')">${portalGlyph('02')}Clients</button><button data-tpnav="earnings" onclick="trainTab('earnings')">${portalGlyph('03')}Earnings</button><button data-tpnav="manage" onclick="trainTab('manage')">${portalGlyph('04')}Manage studio</button></nav><div class="portal-rail-footer"><div class="rail-status"><b>Studio connected</b>Bookings and client records in one place.</div><button class="rail-exit" onclick="trainerLogout()">Sign out</button></div></aside><main class="portal-main"><header class="portal-topbar"><div class="portal-heading"><span class="eyebrow">Trainer portal</span><h1 id="trainerPageTitle">Schedule</h1><p id="trainerPageSub">Today’s classes, attendance, and availability.</p></div><div class="portal-top-actions"><button class="app-pill" onclick="refreshSchedule()">Refresh schedule</button><button class="app-pill" onclick="show('home')">View website</button></div></header><div class="portal-content" id="trainerPortalContent"></div></main><nav class="mobile-portal-bar" aria-label="Trainer portal mobile"><button data-tpmob="sched" onclick="trainTab('sched')">Schedule</button><button data-tpmob="clients" onclick="trainTab('clients')">Clients</button><button data-tpmob="earnings" onclick="trainTab('earnings')">Earnings</button><button data-tpmob="manage" onclick="trainTab('manage')">Manage</button></nav>`;
+    shell.innerHTML=`<div class="trainer-rail-scrim" onclick="toggleTrainerMenu(false)"></div><aside class="portal-rail"><button class="trainer-menu-close" onclick="toggleTrainerMenu(false)" aria-label="Close navigation">×</button><div class="portal-brand">${portalBrandSeed()}Rebalance</div><div class="portal-rail-kicker">Studio workspace</div><nav class="portal-nav" aria-label="Trainer portal"><button data-tpnav="sched" onclick="trainTab('sched')">${trainerNavIcon('sched')}Schedule</button><button data-tpnav="clients" onclick="trainTab('clients')">${trainerNavIcon('clients')}Clients</button><button data-tpnav="earnings" onclick="trainTab('earnings')">${trainerNavIcon('earnings')}Earnings</button><button data-tpnav="manage" onclick="trainTab('manage')">${trainerNavIcon('manage')}Manage studio</button></nav><div class="portal-rail-footer"><div class="rail-status"><b>Studio connected</b>Bookings and client records in one place.</div><button class="rail-exit" onclick="trainerLogout()">Sign out</button></div></aside><main class="portal-main"><header class="portal-topbar"><button class="trainer-menu-toggle" onclick="toggleTrainerMenu()" aria-label="Open navigation">☰</button><div class="portal-heading"><span class="eyebrow">Trainer portal</span><h1 id="trainerPageTitle">Schedule</h1><p id="trainerPageSub">Today’s classes, attendance, and availability.</p></div><div class="portal-top-actions"><button class="app-pill" onclick="refreshSchedule()">Refresh schedule</button><button class="app-pill" onclick="show('home')">View website</button></div></header><div class="portal-content" id="trainerPortalContent"></div></main>`;
     trainerApp.appendChild(shell);const content=shell.querySelector('#trainerPortalContent');panels.forEach(p=>content.appendChild(p));oldHead?.remove();oldTabs?.remove();
     const sched=document.getElementById('tp-sched');if(sched){const overview=document.createElement('div');overview.className='trainer-overview';overview.id='trainerOverview';sched.insertBefore(overview,sched.firstChild);}
   }
@@ -4474,6 +4513,7 @@ function trainTab(t){document.querySelectorAll('#v-train .ptabs button').forEach
   const title=document.querySelector('#t-app .phead h1');
   if(title) title.textContent=({sched:'Studio schedule',clients:'Clients',earnings:'Earnings',manage:'Manage studio'})[t]||'Trainer portal';
   updateTrainerAppNav(t);
+  toggleTrainerMenu(false);
   if(t==='earnings')renderEarnings();
   if(t==='clients')loadTrainerClients();
   if(t==='manage')renderManage();}
